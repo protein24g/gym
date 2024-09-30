@@ -1,5 +1,6 @@
 import { Gym } from "src/gym/entities/gym.entity";
-import { Column, Entity, JoinColumn, ManyToOne, PrimaryGeneratedColumn } from "typeorm";
+import { User } from "src/user/entities/user.entity";
+import { Column, Entity, JoinColumn, ManyToOne, OneToMany, PrimaryGeneratedColumn } from "typeorm";
 
 @Entity()
 export class Branch {
@@ -24,4 +25,7 @@ export class Branch {
   @ManyToOne(() => Gym, gym => gym.branches)
   @JoinColumn({name: 'gymId'})
   gym: Gym;
+
+  @OneToMany(() => User, user => user.branch)
+  users: User[];
 }
