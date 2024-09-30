@@ -1,5 +1,6 @@
 import { Branch } from "src/branches/entities/branch.entity";
 import { Column, CreateDateColumn, Entity, JoinColumn, ManyToOne, PrimaryGeneratedColumn } from "typeorm";
+import { RoleType } from "../role/enums/role.type";
 
 @Entity()
 export class User {
@@ -23,6 +24,9 @@ export class User {
 
   @CreateDateColumn()
   createdAt: Date;
+
+  @Column({type: 'enum', enum: RoleType, default: RoleType.USER})
+  role: RoleType;
 
   @ManyToOne(() => Branch, branch => branch.users)
   @JoinColumn({name: 'branchId'})

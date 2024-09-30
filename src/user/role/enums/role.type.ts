@@ -1,0 +1,6 @@
+export enum RoleType {
+  OWNER = 'ROLES_OWNER',
+  MANAGER = 'ROLES_MANAGER',
+  TRAINER = 'ROLES_TRAINER',
+  USER = 'ROLES_USER',
+}
