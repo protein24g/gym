@@ -5,7 +5,7 @@ import { RoleGuard } from 'src/auth/roles/guards/role.guard';
 import { RoleType } from 'src/auth/roles/enums/role.type';
 import { Roles } from 'src/auth/roles/decorators/role.decorator';
 
-@Controller('api/trainer')
+@Controller('api/trainers')
 export class TrainerController {
   constructor(
     private readonly trainerService: TrainerService
