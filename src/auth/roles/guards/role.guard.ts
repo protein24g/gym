@@ -14,9 +14,7 @@ export class RoleGuard implements CanActivate {
     }
 
     const request = context.switchToHttp().getRequest();
-
     const user = request.user;
-
     if (!(user && user.role && roles.includes(user.role))) {
       throw new UnauthorizedException('권한이 없습니다');
     }

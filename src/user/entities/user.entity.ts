@@ -1,7 +1,6 @@
 import { Branch } from "src/branches/entities/branch.entity";
 import { BeforeInsert, Column, CreateDateColumn, Entity, ManyToOne, OneToOne, PrimaryColumn } from "typeorm";
 import { RoleType } from "../../auth/roles/enums/role.type";
-import { Manager } from "src/manager/entities/manager.entity";
 import { Trainer } from "src/trainer/entities/trainer.entity";
 import * as argon2 from "argon2";
 
@@ -33,9 +32,6 @@ export class User {
 
   @ManyToOne(() => Branch, branch => branch.users)
   branch: Branch;
-
-  @OneToOne(() => Manager, manager => manager.user)
-  manager: Manager;
 
   @OneToOne(() => Trainer, trainer => trainer.user)
   trainer: Trainer;

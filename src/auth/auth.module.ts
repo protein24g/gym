@@ -32,5 +32,6 @@ import { RoleService } from './roles/services/role.service';
   ],
   controllers: [AuthController, RoleController],
   providers: [AuthService, RoleService, TokenService, LocalStrategy, JwtStrategy, JwtRefreshStrategy],
+  exports: [AuthService, RoleService],
 })
 export class AuthModule {}

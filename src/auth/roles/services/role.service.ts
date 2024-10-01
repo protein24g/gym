@@ -14,8 +14,8 @@ export class RoleService {
     private readonly userService: UserService,
   ) {}
 
-  async update(loginId: string, role: RoleType) {
-    const user = await this.userService.findByUserId(loginId);
+  async update(userId: string, role: RoleType) {
+    const user = await this.userService.findByUserId(userId);
     if (!user) {
       throw new UnauthorizedException('존재하지 않는 유저');
     }
@@ -28,7 +28,13 @@ export class RoleService {
       throw new UnauthorizedException('이미 매니저가 존재합니다');
     }
 
-    user.role = role;
-    await this.userRepository.save(user);
+    if (user.role === role) {
+      throw new UnauthorizedException('이미 권한이 부여 된 유저입니다');
+    }
+
+    return await this.userRepository.save({
+      ...user,
+      role,
+    });
   }
 }

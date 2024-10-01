@@ -1,18 +1,23 @@
-import { Manager } from "src/manager/entities/manager.entity";
 import { User } from "src/user/entities/user.entity";
-import { Entity, JoinColumn, ManyToOne, OneToMany, OneToOne, PrimaryColumn } from "typeorm";
+import { Column, Entity, JoinColumn, OneToMany, OneToOne, PrimaryColumn } from "typeorm";
 
 @Entity()
 export class Trainer {
   @PrimaryColumn()
   userId: string;
 
+  @Column({type: 'text', nullable: true})
+  introduction: string;
+
+  @Column({type: 'json', nullable: true})
+  qualifacations: string[];
+
+  @Column({type: 'json', nullable: true})
+  experience: string[];
+
   @OneToOne(() => User, user => user.trainer)
   @JoinColumn({name: 'userId'})
   user: User;
-
-  @ManyToOne(() => Manager, manager => manager.trainers)
-  manager: Manager;
 
   @OneToMany(() => User, user => user.ptTrainer)
   ptUsers: User[];
