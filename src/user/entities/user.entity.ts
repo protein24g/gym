@@ -1,13 +1,14 @@
 import { Branch } from "src/branches/entities/branch.entity";
-import { Column, CreateDateColumn, Entity, ManyToOne, OneToOne, PrimaryColumn } from "typeorm";
-import { RoleType } from "../role/enums/role.type";
+import { BeforeInsert, Column, CreateDateColumn, Entity, ManyToOne, OneToOne, PrimaryColumn } from "typeorm";
+import { RoleType } from "../../auth/roles/enums/role.type";
 import { Manager } from "src/manager/entities/manager.entity";
 import { Trainer } from "src/trainer/entities/trainer.entity";
+import * as argon2 from "argon2";
 
 @Entity()
 export class User {
   @PrimaryColumn({ type: 'varchar', length: 50})
-  loginId: string;
+  userId: string;
 
   @Column({ type: 'varchar', length: 100, nullable: false })
   password: string;
@@ -15,10 +16,13 @@ export class User {
   @Column({ type: 'varchar', length: 20, nullable: false })
   name: string;
 
+  @Column({ type: 'varchar', length: 20, nullable: false, unique: true })
+  telNumber: string;
+
   @Column({ type: 'text', nullable: false })
   address: string;
 
-  @Column({ type: 'text', nullable: true })
+  @Column({ type: 'text'})
   addressDetail: string;
 
   @CreateDateColumn()
@@ -38,4 +42,12 @@ export class User {
 
   @ManyToOne(() => Trainer, trainer => trainer.ptUsers)
   ptTrainer: Trainer;
+
+  @BeforeInsert()
+  async hashPassword() {
+  this.password = await argon2.hash(this.password);
+  }
+
+  @Column({type: "text", nullable: true})
+  hashRefreshToken: string;
 }
