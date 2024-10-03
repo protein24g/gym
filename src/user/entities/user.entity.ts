@@ -1,5 +1,5 @@
 import { Branch } from "src/branches/entities/branch.entity";
-import { BeforeInsert, Column, CreateDateColumn, Entity, ManyToOne, OneToOne, PrimaryColumn } from "typeorm";
+import { BeforeInsert, Column, CreateDateColumn, Entity, JoinColumn, ManyToOne, OneToOne, PrimaryColumn } from "typeorm";
 import { RoleType } from "../../auth/roles/enums/role.type";
 import { Trainer } from "src/trainer/entities/trainer.entity";
 import * as argon2 from "argon2";
@@ -33,10 +33,11 @@ export class User {
   @ManyToOne(() => Branch, branch => branch.users)
   branch: Branch;
 
-  @OneToOne(() => Trainer, trainer => trainer.user)
+  @OneToOne(() => Trainer, trainer => trainer.user, {cascade: true, onDelete: 'SET NULL', nullable: true})
+  @JoinColumn()
   trainer: Trainer;
 
-  @ManyToOne(() => Trainer, trainer => trainer.ptUsers)
+  @ManyToOne(() => Trainer, trainer => trainer.ptUsers, {cascade: true, onDelete: 'SET NULL', eager: true, nullable: true})
   ptTrainer: Trainer;
 
   @BeforeInsert()

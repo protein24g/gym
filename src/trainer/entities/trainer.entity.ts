@@ -1,5 +1,5 @@
 import { User } from "src/user/entities/user.entity";
-import { Column, Entity, JoinColumn, OneToMany, OneToOne, PrimaryColumn } from "typeorm";
+import { Column, Entity, OneToMany, OneToOne, PrimaryColumn } from "typeorm";
 
 @Entity()
 export class Trainer {
@@ -10,13 +10,12 @@ export class Trainer {
   introduction: string;
 
   @Column({type: 'json', nullable: true})
-  qualifacations: string[];
+  qualifications: string[];
 
   @Column({type: 'json', nullable: true})
-  experience: string[];
+  careerDetails: string[];
 
   @OneToOne(() => User, user => user.trainer)
-  @JoinColumn({name: 'userId'})
   user: User;
 
   @OneToMany(() => User, user => user.ptTrainer)

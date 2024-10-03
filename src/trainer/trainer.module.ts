@@ -5,6 +5,7 @@ import { UserModule } from 'src/user/user.module';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { Trainer } from './entities/trainer.entity';
 import { AuthModule } from 'src/auth/auth.module';
+import { User } from 'src/user/entities/user.entity';
 
 @Module({
   imports: [
@@ -12,6 +13,7 @@ import { AuthModule } from 'src/auth/auth.module';
     forwardRef(() => AuthModule),
     TypeOrmModule.forFeature([
       Trainer,
+      User,
     ]),
   ],
   controllers: [TrainerController],
