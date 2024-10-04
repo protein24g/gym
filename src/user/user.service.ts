@@ -1,4 +1,4 @@
-import { Injectable, UnauthorizedException } from '@nestjs/common';
+import { ConflictException, Injectable, UnauthorizedException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { User } from 'src/user/entities/user.entity';
 import { Repository } from 'typeorm';
@@ -15,12 +15,12 @@ export class UserService {
   async signUp(userCreateDto: UserCreateDto) {
     const userId = await this.findByUserId(userCreateDto.userId);
     if (userId) {
-      throw new UnauthorizedException('이미 존재하는 아이디');
+      throw new ConflictException('이미 존재하는 아이디');
     }
     
     const telNumber = await this.findByTelNumber(userCreateDto.telNumber);
     if (telNumber) {
-      throw new UnauthorizedException('이미 존재하는 휴대폰 번호');
+      throw new ConflictException('이미 존재하는 휴대폰 번호');
     }
     
     const user = this.userRepository.create({

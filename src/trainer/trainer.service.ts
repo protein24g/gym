@@ -1,4 +1,4 @@
-import { Injectable, NotFoundException, UnauthorizedException } from '@nestjs/common';
+import { ConflictException, ForbiddenException, Injectable, NotFoundException, UnauthorizedException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Trainer } from './entities/trainer.entity';
 import { Repository } from 'typeorm';
@@ -19,7 +19,7 @@ export class TrainerService {
   async create(userId: string) {
     const trainer = await this.trainerRepository.findOne({where: {userId}});
     if (trainer) {
-      throw new NotFoundException('이미 등록된 트레이너');
+      throw new ConflictException('이미 등록된 트레이너');
     }
 
     const savedTrainer = await this.trainerRepository.save({
@@ -34,7 +34,7 @@ export class TrainerService {
 
   async createUser(trainerId: string, userId: string) {
     if(trainerId === userId) {
-      throw new UnauthorizedException('자기 자신은 추가할 수 없습니다');
+      throw new ForbiddenException('자기 자신은 추가할 수 없습니다');
     }
 
     const trainer = await this.trainerRepository.findOne({where: {userId: trainerId}});
@@ -48,7 +48,7 @@ export class TrainerService {
     }
 
     if (!!user.ptTrainer) {
-      throw new UnauthorizedException('이미 담당하고 있는 회원');
+      throw new ConflictException('이미 담당하고 있는 회원');
     }
 
     await this.userRepository.update(user.userId, {
@@ -96,7 +96,7 @@ export class TrainerService {
 
   async deleteUser(trainerId:string, userId: string) {
     if(trainerId === userId) {
-      throw new UnauthorizedException('자기 자신은 삭제할 수 없습니다');
+      throw new ConflictException('자기 자신은 삭제할 수 없습니다');
     }
 
     const trainer = await this.trainerRepository.findOne({where: {userId: trainerId}});
@@ -110,7 +110,7 @@ export class TrainerService {
     }
 
     if (!user.ptTrainer) {
-      throw new UnauthorizedException('이미 담당하지 않는 회원');
+      throw new ConflictException('이미 담당하지 않는 회원');
     }
 
     await this.userRepository.update(user.userId, {ptTrainer: null});

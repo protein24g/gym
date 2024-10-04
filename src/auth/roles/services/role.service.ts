@@ -1,4 +1,4 @@
-import { Inject, Injectable, UnauthorizedException } from "@nestjs/common";
+import { ConflictException, ForbiddenException, Inject, Injectable, NotFoundException, UnauthorizedException } from "@nestjs/common";
 import { UserService } from "src/user/user.service";
 import { RoleType } from "../enums/role.type";
 import { InjectRepository } from "@nestjs/typeorm";
@@ -17,19 +17,19 @@ export class RoleService {
   async update(userId: string, role: RoleType) {
     const user = await this.userService.findByUserId(userId);
     if (!user) {
-      throw new UnauthorizedException('존재하지 않는 유저');
+      throw new NotFoundException('존재하지 않는 유저');
     }
 
     if (user.role === RoleType.OWNER || RoleType.OWNER === role) {
-      throw new UnauthorizedException('상위 권한을 수정하거나 부여할 수 없습니다');
+      throw new ForbiddenException('상위 권한을 수정하거나 부여할 수 없습니다');
     }
 
     if (role === RoleType.MANAGER && await this.userService.isManagerExists()) {
-      throw new UnauthorizedException('이미 매니저가 존재합니다');
+      throw new ConflictException('이미 매니저가 존재합니다');
     }
 
     if (user.role === role) {
-      throw new UnauthorizedException('이미 권한이 부여 된 유저입니다');
+      throw new ConflictException('이미 권한이 부여 된 유저입니다');
     }
 
     return await this.userRepository.save({
