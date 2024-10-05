@@ -22,14 +22,17 @@ export class TrainerService {
       throw new ConflictException('이미 등록된 트레이너');
     }
 
-    const savedTrainer = await this.trainerRepository.save({
-      userId
+    const user = await this.userRepository.findOne({where: {userId}});
+    if (!user) {
+      throw new NotFoundException('존재하지 않는 유저');
+    }
+
+    await this.trainerRepository.save({
+      userId,
+      user
     });
 
-    await this.userRepository.update({userId}, {
-      role: RoleType.TRAINER,
-      trainer: savedTrainer,
-    })
+    await this.userRepository.update({userId}, {role: RoleType.TRAINER});
   }
 
   async createUser(trainerId: string, userId: string) {

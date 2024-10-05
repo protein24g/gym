@@ -34,7 +34,6 @@ export class User {
   branch: Branch;
 
   @OneToOne(() => Trainer, trainer => trainer.user, {cascade: true, onDelete: 'SET NULL', nullable: true})
-  @JoinColumn()
   trainer: Trainer;
 
   @ManyToOne(() => Trainer, trainer => trainer.ptUsers, {cascade: true, onDelete: 'SET NULL', eager: true, nullable: true})

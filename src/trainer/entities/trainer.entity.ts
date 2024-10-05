@@ -1,5 +1,5 @@
 import { User } from "src/user/entities/user.entity";
-import { Column, Entity, OneToMany, OneToOne, PrimaryColumn } from "typeorm";
+import { Column, Entity, JoinColumn, OneToMany, OneToOne, PrimaryColumn } from "typeorm";
 
 @Entity()
 export class Trainer {
@@ -16,6 +16,7 @@ export class Trainer {
   careerDetails: string[];
 
   @OneToOne(() => User, user => user.trainer)
+  @JoinColumn({name: 'userId'})
   user: User;
 
   @OneToMany(() => User, user => user.ptTrainer)
