@@ -1,14 +1,14 @@
 import { Body, Controller, Delete, Get, Post, Req, UseGuards } from '@nestjs/common';
 import { TrainerService } from './trainer.service';
-import { AuthGuard } from '@nestjs/passport';
 import { RoleGuard } from 'src/auth/roles/guards/role.guard';
 import { RoleType } from 'src/auth/roles/enums/role.type';
 import { Roles } from 'src/auth/roles/decorators/role.decorator';
 import { ApiBody, ApiConflictResponse, ApiCreatedResponse, ApiForbiddenResponse, ApiNotFoundResponse, ApiOkResponse, ApiOperation, ApiTags } from '@nestjs/swagger';
+import { JwtAuthGuard } from 'src/auth/guards/jwt-auth.guard';
 
 @Controller('api/trainers')
 @ApiTags('Trainers')
-@UseGuards(AuthGuard('jwt'), RoleGuard)
+@UseGuards(JwtAuthGuard, RoleGuard)
 export class TrainerController {
   constructor(
     private readonly trainerService: TrainerService

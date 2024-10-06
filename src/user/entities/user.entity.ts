@@ -1,5 +1,5 @@
 import { Branch } from "src/branches/entities/branch.entity";
-import { BeforeInsert, Column, CreateDateColumn, Entity, JoinColumn, ManyToOne, OneToOne, PrimaryColumn } from "typeorm";
+import { BeforeInsert, Column, CreateDateColumn, Entity, ManyToOne, OneToOne, PrimaryColumn } from "typeorm";
 import { RoleType } from "../../auth/roles/enums/role.type";
 import { Trainer } from "src/trainer/entities/trainer.entity";
 import * as argon2 from "argon2";

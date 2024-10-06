@@ -12,6 +12,10 @@ import { LocalStrategy } from './strategies/local-strategy';
 import { JwtRefreshStrategy } from './strategies/jwt-refresh.strategy';
 import { RoleController } from './roles/controllers/role.controller';
 import { RoleService } from './roles/services/role.service';
+import { KakaoStrategy } from './strategies/kakao-strategy';
+import { kakaoAuthController } from './controllers/kakao-auth.controller';
+import { kakaoAuthService } from './services/kakao-auth.service';
+import { HttpModule } from '@nestjs/axios';
 
 @Module({
   imports: [
@@ -19,6 +23,7 @@ import { RoleService } from './roles/services/role.service';
       User,
     ]),
     forwardRef(() => UserModule),
+    forwardRef(() => HttpModule),
     JwtModule.registerAsync({
       imports: [ConfigModule],
       inject: [ConfigService],
@@ -30,8 +35,8 @@ import { RoleService } from './roles/services/role.service';
       }),
     })
   ],
-  controllers: [AuthController, RoleController],
-  providers: [AuthService, RoleService, TokenService, LocalStrategy, JwtStrategy, JwtRefreshStrategy],
+  controllers: [AuthController, kakaoAuthController, RoleController],
+  providers: [AuthService, kakaoAuthService, RoleService, TokenService, LocalStrategy, JwtStrategy, JwtRefreshStrategy, KakaoStrategy],
   exports: [AuthService, RoleService],
 })
 export class AuthModule {}

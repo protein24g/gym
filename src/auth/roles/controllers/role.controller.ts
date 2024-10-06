@@ -1,10 +1,10 @@
 import { Body, Controller, Patch, UseGuards } from "@nestjs/common";
 import { RoleType } from "../enums/role.type";
-import { AuthGuard } from "@nestjs/passport";
 import { RoleService } from "../services/role.service";
 import { Roles } from "../decorators/role.decorator";
 import { RoleGuard } from "../guards/role.guard";
 import { ApiBody, ApiConflictResponse, ApiCookieAuth, ApiForbiddenResponse, ApiNotFoundResponse, ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
+import { JwtAuthGuard } from "src/auth/guards/jwt-auth.guard";
 
 @Controller('api/auth/roles')
 @ApiTags('Roles')
@@ -15,7 +15,7 @@ export class RoleController {
 
   @Patch()
   @Roles(RoleType.OWNER, RoleType.MANAGER)
-  @UseGuards(AuthGuard('jwt'), RoleGuard)
+  @UseGuards(JwtAuthGuard, RoleGuard)
   @ApiCookieAuth()
   @ApiOperation({
     summary: '권한 수정',

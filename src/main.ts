@@ -9,12 +9,8 @@ async function bootstrap() {
 
   const config = new DocumentBuilder()
     .setTitle('Gym API')
-    .setDescription('Gym API description')
+    .setDescription('Gym API 문서')
     .setVersion('1.0')
-    .addTag('Auth')
-    .addTag('Roles')
-    .addTag('Trainers')
-    .addTag('Users')
     .build();
   const document = SwaggerModule.createDocument(app, config);
   SwaggerModule.setup('api', app, document);
