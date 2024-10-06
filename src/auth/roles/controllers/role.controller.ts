@@ -4,9 +4,10 @@ import { AuthGuard } from "@nestjs/passport";
 import { RoleService } from "../services/role.service";
 import { Roles } from "../decorators/role.decorator";
 import { RoleGuard } from "../guards/role.guard";
-import { ApiBody, ApiConflictResponse, ApiCookieAuth, ApiForbiddenResponse, ApiNotFoundResponse, ApiOperation, ApiResponse } from '@nestjs/swagger';
+import { ApiBody, ApiConflictResponse, ApiCookieAuth, ApiForbiddenResponse, ApiNotFoundResponse, ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
 
 @Controller('api/auth/roles')
+@ApiTags('Roles')
 export class RoleController {
   constructor(
     private readonly roleService: RoleService,

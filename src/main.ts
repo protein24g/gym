@@ -11,7 +11,10 @@ async function bootstrap() {
     .setTitle('Gym API')
     .setDescription('Gym API description')
     .setVersion('1.0')
-    .addTag('gym')
+    .addTag('Auth')
+    .addTag('Roles')
+    .addTag('Trainers')
+    .addTag('Users')
     .build();
   const document = SwaggerModule.createDocument(app, config);
   SwaggerModule.setup('api', app, document);
