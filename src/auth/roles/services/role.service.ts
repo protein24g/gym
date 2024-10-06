@@ -1,4 +1,4 @@
-import { ConflictException, ForbiddenException, Inject, Injectable, NotFoundException, UnauthorizedException } from "@nestjs/common";
+import { ConflictException, ForbiddenException, Inject, Injectable, NotFoundException } from "@nestjs/common";
 import { UserService } from "src/user/user.service";
 import { RoleType } from "../enums/role.type";
 import { InjectRepository } from "@nestjs/typeorm";
@@ -29,10 +29,10 @@ export class RoleService {
     }
 
     if (user.role === role) {
-      throw new ConflictException('이미 권한이 부여 된 유저입니다');
+      throw new ConflictException('이미 권한이 부여된 유저입니다');
     }
 
-    return await this.userRepository.save({
+    await this.userRepository.save({
       ...user,
       role,
     });

@@ -1,4 +1,4 @@
-import { ForbiddenException, forwardRef, Inject, Injectable, NotFoundException, UnauthorizedException } from "@nestjs/common";
+import { forwardRef, Inject, Injectable, NotFoundException, UnauthorizedException } from "@nestjs/common";
 import { ConfigService } from "@nestjs/config";
 import { JwtService } from "@nestjs/jwt";
 import * as argon2 from "argon2";
@@ -39,13 +39,8 @@ export class TokenService {
       throw new NotFoundException('유효하지 않은 사용자');
     }
 
-    if (user.hashRefreshToken === null) {
-      throw new UnauthorizedException('로그아웃 된 사용자');
-    }
-
-    const isValid = await argon2.verify(user.hashRefreshToken, refreshToken);
-    if (!isValid) {
-        throw new UnauthorizedException('비정상 리프레시 토큰');
+    if (user.hashRefreshToken === null || !(await argon2.verify(user.hashRefreshToken, refreshToken))) {
+      throw new UnauthorizedException('비정상 refreshToken');
     }
 
     return user;

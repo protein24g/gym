@@ -1,4 +1,4 @@
-import { ConflictException, ForbiddenException, Injectable, NotFoundException, UnauthorizedException } from '@nestjs/common';
+import { ConflictException, ForbiddenException, Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Trainer } from './entities/trainer.entity';
 import { Repository } from 'typeorm';
@@ -57,11 +57,6 @@ export class TrainerService {
     await this.userRepository.update(user.userId, {
       ptTrainer: trainer,
     });
-
-    return {
-      trainerId: trainer.userId,
-      userId: user.userId,
-    }
   }
 
   async findAll(userId: string) {
@@ -117,10 +112,5 @@ export class TrainerService {
     }
 
     await this.userRepository.update(user.userId, {ptTrainer: null});
-
-    return {
-      trainerId: trainer.userId,
-      userId: user.userId,
-    }
   }
 }
