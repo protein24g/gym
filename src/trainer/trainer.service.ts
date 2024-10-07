@@ -16,7 +16,7 @@ export class TrainerService {
     private readonly userService: UserService,
   ) {}
 
-  async create(userId: string) {
+  async create(userId: string): Promise<void> {
     const trainer = await this.trainerRepository.findOne({where: {userId}});
     if (trainer) {
       throw new ConflictException('이미 등록된 트레이너');
@@ -35,7 +35,7 @@ export class TrainerService {
     await this.userRepository.update({userId}, {role: RoleType.TRAINER});
   }
 
-  async createUser(trainerId: string, userId: string) {
+  async createUser(trainerId: string, userId: string): Promise<void> {
     if(trainerId === userId) {
       throw new ForbiddenException('자기 자신은 추가할 수 없습니다');
     }
@@ -59,7 +59,7 @@ export class TrainerService {
     });
   }
 
-  async findAll(userId: string) {
+  async findAll(userId: string): Promise<User[]> {
     const trainer = await this.trainerRepository.findOne(
       {
         where: {userId},
@@ -82,7 +82,7 @@ export class TrainerService {
     return trainer.ptUsers;
   }
 
-  async delete(userId: string) {
+  async delete(userId: string): Promise<void> {
     const trainer = await this.trainerRepository.findOne({where: {userId}});
     if (!trainer) {
       throw new NotFoundException('존재하지 않는 트레이너');
@@ -92,7 +92,7 @@ export class TrainerService {
     await this.userRepository.update({userId}, {role: RoleType.USER});
   }
 
-  async deleteUser(trainerId:string, userId: string) {
+  async deleteUser(trainerId:string, userId: string): Promise<void> {
     if(trainerId === userId) {
       throw new ConflictException('자기 자신은 삭제할 수 없습니다');
     }

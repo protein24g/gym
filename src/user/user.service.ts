@@ -11,19 +11,19 @@ export class UserService {
     private readonly userRepository: Repository<User>,
   ) {}
 
-  async findByName(name: string) {
+  async findByName(name: string): Promise<User> {
     return await this.userRepository.findOne({where: {name}});
   }
 
-  async findByTelNumber(telNumber: string) {
+  async findByTelNumber(telNumber: string): Promise<User> {
     return await this.userRepository.findOne({where: {telNumber}});
   }
 
-  async findByUserId(userId: string) {
+  async findByUserId(userId: string): Promise<User> {
     return await this.userRepository.findOne({where: {userId}});
   }
 
-  async isManagerExists() {
+  async isManagerExists(): Promise<boolean> {
     const manager = await this.userRepository.findOne({where: {role: RoleType.MANAGER}});
     return !!manager;
   }

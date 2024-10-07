@@ -5,6 +5,7 @@ import { Roles } from "../decorators/role.decorator";
 import { RoleGuard } from "../guards/role.guard";
 import { ApiBody, ApiConflictResponse, ApiCookieAuth, ApiForbiddenResponse, ApiNotFoundResponse, ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { JwtAuthGuard } from "src/auth/guards/jwt-auth.guard";
+import { AuthPayload } from "src/auth/interfaces/auth-payload.interface";
 
 @Controller('api/auth/roles')
 @ApiTags('Roles')
@@ -35,7 +36,7 @@ export class RoleController {
   @ApiNotFoundResponse({description: '존재하지 않는 유저'})
   @ApiConflictResponse({description: '이미 매니저가 존재합니다'})
   @ApiConflictResponse({description: '이미 권한이 부여된 유저입니다'})
-  async update(@Body() body: { userId: string, role: RoleType }) {
-    await this.roleService.update(body.userId, body.role);
+  async update(@Body() payload: AuthPayload) {
+    await this.roleService.update(payload);
   }
 }

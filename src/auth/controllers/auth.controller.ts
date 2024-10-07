@@ -4,6 +4,8 @@ import { ApiBody, ApiConflictResponse, ApiCreatedResponse, ApiNotFoundResponse, 
 import { UserCreateDto } from 'src/auth/dto/user-create.dto';
 import { LocalAuthGuard } from '../guards/local-auth.guard';
 import { JwtRefreshAuthGuard } from '../guards/jwt-refresh-auth.guard';
+import { Request, Response } from 'express';
+import { AuthPayload } from '../interfaces/auth-payload.interface';
 
 @Controller('api/auth')
 @ApiTags('Auth')
@@ -29,14 +31,15 @@ export class AuthController {
   })
   @ApiOkResponse({description: '로그인 성공'})
   @ApiUnauthorizedResponse({description: '아이디 또는 패스워드 오류'})
-  async login(@Req() request: any, @Res() response:any) {
-    const token = await this.authService.signIn(request.user);
+  async login(@Req() request: Request, @Res() response: Response) {
+    const payload = request.user as AuthPayload;
+    const token = await this.authService.signIn(payload);
     response.cookie('accessToken', token.accessToken,
       {
         httpOnly: true,
         secure: process.env.isProduction === 'true',
         maxAge: +process.env.ACCESS_TOKEN_EXPIRE_IN,
-        sameSite: 'Strict',
+        sameSite: 'strict',
       }
     );
 
@@ -45,7 +48,7 @@ export class AuthController {
         httpOnly: true,
         secure: process.env.isProduction === 'true',
         maxAge: +process.env.REFRESH_TOKEN_EXPIRE_IN,
-        sameSite: 'Strict',
+        sameSite: 'strict',
       }
     );
     return response.json({ message: '로그인 성공' });
@@ -75,8 +78,10 @@ export class AuthController {
   @ApiOkResponse({description: '로그아웃 성공'})
   @ApiUnauthorizedResponse({description: '비정상 refreshToken'})
   @ApiNotFoundResponse({description: '유효하지 않은 사용자'})
-  async signOut(@Req() request: any, @Res() response: any) {
-    await this.authService.signOut(request);
+  async signOut(@Req() request: Request, @Res() response: Response) {
+    const user = request.user as AuthPayload;
+    const refreshToken = request.cookies['refreshToken'];
+    await this.authService.signOut(user, refreshToken);
     return response.json({ message: '로그아웃 성공'});
   }
 
@@ -86,16 +91,18 @@ export class AuthController {
     summary: '토큰 재발급',
   })
   @ApiCreatedResponse({description: '토큰 재발급 성공'})
-  @ApiUnauthorizedResponse({description: '비정상 refreshToken'})
+  @ApiUnauthorizedResponse({description: '비정상 리프레시 토큰'})
   @ApiNotFoundResponse({description: '유효하지 않은 사용자'})
-  async refreshToken(@Req() request: any, @Res() response: any) {
-    const token = await this.authService.refreshToken(request);
+  async refreshToken(@Req() request: Request, @Res() response: Response) {
+    const user = request.user as AuthPayload;
+    const refreshToken = request.cookies['refreshToken'];
+    const token = await this.authService.refreshToken(user, refreshToken);
     response.cookie('accessToken', token.accessToken,
       {
         httpOnly: true,
         secure: process.env.isProduction === 'true',
         maxAge: +process.env.ACCESS_TOKEN_EXPIRE_IN,
-        sameSite: 'Strict',
+        sameSite: 'strict',
       }
     );
 
@@ -104,7 +111,7 @@ export class AuthController {
         httpOnly: true,
         secure: process.env.isProduction === 'true',
         maxAge: +process.env.REFRESH_TOKEN_EXPIRE_IN,
-        sameSite: 'Strict',
+        sameSite: 'strict',
       }
     );
     return response.json({ message: '토큰 재발급 성공' });

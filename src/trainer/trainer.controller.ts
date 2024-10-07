@@ -5,6 +5,8 @@ import { RoleType } from 'src/auth/roles/enums/role.type';
 import { Roles } from 'src/auth/roles/decorators/role.decorator';
 import { ApiBody, ApiConflictResponse, ApiCreatedResponse, ApiForbiddenResponse, ApiNotFoundResponse, ApiOkResponse, ApiOperation, ApiTags } from '@nestjs/swagger';
 import { JwtAuthGuard } from 'src/auth/guards/jwt-auth.guard';
+import { Request } from 'express';
+import { AuthPayload } from 'src/auth/interfaces/auth-payload.interface';
 
 @Controller('api/trainers')
 @ApiTags('Trainers')
@@ -52,8 +54,9 @@ export class TrainerController {
   @ApiNotFoundResponse({description: '존재하지 않는 트레이너'})
   @ApiNotFoundResponse({description: '존재하지 않는 유저'})
   @ApiConflictResponse({description: '이미 담당하고 있는 회원'})
-  async createUser(@Req() request: any, @Body() body: {userId: string}) {
-    return await this.trainerService.createUser(request.user.userId, body.userId);
+  async createUser(@Req() request: Request, @Body() body: {userId: string}) {
+    const user = request.user as AuthPayload;
+    return await this.trainerService.createUser(user.userId, body.userId);
   }
 
   @Get('users')
@@ -71,8 +74,9 @@ export class TrainerController {
   })
   @ApiOkResponse({description: '회원 목록 조회 성공'})
   @ApiNotFoundResponse({description: '존재하지 않는 트레이너'})
-  async findAll(@Req() request: any) {
-    return await this.trainerService.findAll(request.user.userId);
+  async findAll(@Req() request: Request) {
+    const user = request.user as AuthPayload;
+    return await this.trainerService.findAll(user.userId);
   }
   
   @Delete()
@@ -112,7 +116,8 @@ export class TrainerController {
   @ApiNotFoundResponse({description: '존재하지 않는 트레이너'})
   @ApiNotFoundResponse({description: '존재하지 않는 유저'})
   @ApiConflictResponse({description: '이미 담당하지 않는 회원'})
-  async deleteUser(@Req() request: any, @Body() body: {userId: string}) {
-    return await this.trainerService.deleteUser(request.user.userId, body.userId);
+  async deleteUser(@Req() request: Request, @Body() body: {userId: string}) {
+    const user = request.user as AuthPayload;
+    return await this.trainerService.deleteUser(user.userId, body.userId);
   }
 }

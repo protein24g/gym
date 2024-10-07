@@ -2,6 +2,7 @@ import { Controller, Get, Query, Res, UseGuards } from "@nestjs/common";
 import { KakaoAuthGuard } from "../guards/kakao-auth.guard";
 import { ApiNotFoundResponse, ApiOkResponse, ApiOperation, ApiTags } from "@nestjs/swagger";
 import { kakaoAuthService } from "../services/kakao-auth.service";
+import { Response } from "express";
 
 @Controller('api/kakao/oauth')
 @ApiTags('OAuth')
@@ -25,14 +26,14 @@ export class kakaoAuthController {
   })
   @ApiOkResponse({description: '로그인 성공'})
   @ApiNotFoundResponse({description: '존재하지 않는 유저'})
-  async kakaoCallback(@Query('code') code: string, @Res() response: any) {
+  async kakaoCallback(@Query('code') code: string, @Res() response: Response) {
     const token = await this.kakaoAuthService.kakaoLogin(code);
     response.cookie('accessToken', token.accessToken,
       {
         httpOnly: true,
         secure: process.env.isProduction === 'true',
         maxAge: +process.env.ACCESS_TOKEN_EXPIRE_IN,
-        sameSite: 'Strict',
+        sameSite: 'strict',
       }
     );
 
@@ -41,7 +42,7 @@ export class kakaoAuthController {
         httpOnly: true,
         secure: process.env.isProduction === 'true',
         maxAge: +process.env.REFRESH_TOKEN_EXPIRE_IN,
-        sameSite: 'Strict',
+        sameSite: 'strict',
       }
     );
     

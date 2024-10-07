@@ -21,7 +21,7 @@ export class AuthUserCreateDto {
   })
   @IsNotEmpty({ message: '이름 필수 입력입니다.' })
   @IsString({ message: '이름은 문자열이어야 합니다.' })
-  name: string;
+  name?: string;
 
   @ApiProperty({
     required: true,
@@ -30,5 +30,5 @@ export class AuthUserCreateDto {
     example: '010-1111-1111',
   })
   @IsNotEmpty({ message: '연락처는 필수 입력입니다.' })
-  telNumber: string;
+  telNumber?: string;
 }

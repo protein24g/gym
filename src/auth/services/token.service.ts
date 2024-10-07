@@ -3,6 +3,8 @@ import { ConfigService } from "@nestjs/config";
 import { JwtService } from "@nestjs/jwt";
 import * as argon2 from "argon2";
 import { UserService } from "src/user/user.service";
+import { AuthPayload } from "../interfaces/auth-payload.interface";
+import { User } from "src/user/entities/user.entity";
 
 @Injectable()
 export class TokenService {
@@ -13,7 +15,7 @@ export class TokenService {
     private readonly configService: ConfigService,
   ) {}
 
-  createAccessToken(payload: any) {
+  createAccessToken(payload: AuthPayload): string {
     return this.jwtService.sign(
       payload,
       {
@@ -23,7 +25,7 @@ export class TokenService {
     );
   }
 
-  createRefreshToken(payload: any) {
+  createRefreshToken(payload: AuthPayload): string {
     return this.jwtService.sign(
       payload,
       {
@@ -33,14 +35,14 @@ export class TokenService {
     );
   }
 
-  async checkRefreshToken(userId: string, refreshToken: string) {
+  async checkRefreshToken(userId: string, refreshToken: string): Promise<User> {
     const user = await this.userService.findByUserId(userId);
     if (!user) {
       throw new NotFoundException('유효하지 않은 사용자');
     }
 
     if (user.hashRefreshToken === null || !(await argon2.verify(user.hashRefreshToken, refreshToken))) {
-      throw new UnauthorizedException('비정상 refreshToken');
+      throw new UnauthorizedException('비정상 리프레시 토큰');
     }
 
     return user;
