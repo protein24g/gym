@@ -1,6 +1,6 @@
-import { Controller, Get, Query, Req, Res, UseGuards } from "@nestjs/common";
+import { Controller, Get, Query, Res, UseGuards } from "@nestjs/common";
 import { KakaoAuthGuard } from "../guards/kakao-auth.guard";
-import { ApiOperation, ApiTags } from "@nestjs/swagger";
+import { ApiNotFoundResponse, ApiOkResponse, ApiOperation, ApiTags } from "@nestjs/swagger";
 import { kakaoAuthService } from "../services/kakao-auth.service";
 
 @Controller('api/kakao/oauth')
@@ -13,13 +13,18 @@ export class kakaoAuthController {
   @Get('authorize')
   @UseGuards(KakaoAuthGuard)
   @ApiOperation({
-    summary: '카카오 인가 코드 받기'
+    summary: '카카오 로그인 요청',
+    description: 'callback url로 인가 코드 전달',
   })
-  async getAuthorize(@Req() request: Request) {
-
-  }
+  async getAuthorize() {}
 
   @Get('callback')
+  @ApiOperation({
+    summary: '카카오 로그인 callback',
+    description: '카카오 인가 코드를 통해 엑세스 토큰 발급 후, 사용자 정보를 조회하여 회원가입 또는 로그인',
+  })
+  @ApiOkResponse({description: '로그인 성공'})
+  @ApiNotFoundResponse({description: '존재하지 않는 유저'})
   async kakaoCallback(@Query('code') code: string, @Res() response: any) {
     const token = await this.kakaoAuthService.kakaoLogin(code);
     response.cookie('accessToken', token.accessToken,

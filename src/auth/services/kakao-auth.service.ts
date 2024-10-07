@@ -2,7 +2,7 @@ import { Injectable, NotFoundException } from "@nestjs/common";
 import axios from "axios";
 import { KakaoProfile } from "../interfaces/kakao-profile.interface";
 import { AuthService } from "./auth.service";
-import { AuthUserCreateDto } from "src/user/dto/auth-user-create.dto";
+import { AuthUserCreateDto } from "src/auth/dto/auth-user-create.dto";
 import { UserService } from "src/user/user.service";
 
 @Injectable()
@@ -20,6 +20,7 @@ export class kakaoAuthService {
     const payload = await this.signUpWithKakao(kakaoUserInfo);
 
     const token = await this.authService.signIn(payload);
+
     return {
       accessToken: token.accessToken,
       refreshToken: token.refreshToken,
@@ -67,7 +68,6 @@ export class kakaoAuthService {
   }
 
   async signUpWithKakao(kakaoUserInfo: KakaoProfile) {
-
     const authUserCreateDto: AuthUserCreateDto = {
       userId: kakaoUserInfo.id,
       name: kakaoUserInfo.name,
