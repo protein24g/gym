@@ -6,6 +6,7 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { User } from 'src/user/entities/user.entity';
 import { TokenService } from './token.service';
 import { UserCreateDto } from 'src/user/dto/user-create.dto';
+import { AuthUserCreateDto } from 'src/user/dto/auth-user-create.dto';
 
 @Injectable()
 export class AuthService {
@@ -33,27 +34,26 @@ export class AuthService {
     };
   }
 
-  async signUp(userCreateDto: UserCreateDto) {
-    const userId = await this.userService.findByUserId(userCreateDto.userId);
+  async signUp(createDto: UserCreateDto | AuthUserCreateDto) {
+    const userId = await this.userService.findByUserId(createDto.userId);
     if (userId) {
       throw new ConflictException('이미 존재하는 아이디');
     }
     
-    const telNumber = await this.userService.findByTelNumber(userCreateDto.telNumber);
+    const telNumber = await this.userService.findByTelNumber(createDto.telNumber);
     if (telNumber) {
       throw new ConflictException('이미 존재하는 휴대폰 번호');
     }
     
     const user = this.userRepository.create({
-      ...userCreateDto,
+      ...createDto,
       createdAt: Date(),
     });
     await this.userRepository.save(user);
 
     return {
       userId: user.userId,
-      name: user.name,
-      createdAt: user.createdAt,
+      role: user.role,
     };
   }
 
