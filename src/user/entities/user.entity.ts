@@ -9,7 +9,7 @@ export class User {
   @PrimaryColumn({ type: 'varchar', length: 50})
   userId: string;
 
-  @Column({ type: 'varchar', length: 100, nullable: false })
+  @Column({ type: 'varchar', length: 100, nullable: true})
   password: string;
 
   @Column({ type: 'varchar', length: 20, nullable: false })
@@ -18,10 +18,10 @@ export class User {
   @Column({ type: 'varchar', length: 20, nullable: false, unique: true })
   telNumber: string;
 
-  @Column({ type: 'text', nullable: false })
+  @Column({ type: 'text', nullable: true })
   address: string;
 
-  @Column({ type: 'text'})
+  @Column({ type: 'text', nullable: true })
   addressDetail: string;
 
   @CreateDateColumn()
@@ -41,7 +41,9 @@ export class User {
 
   @BeforeInsert()
   async hashPassword() {
-  this.password = await argon2.hash(this.password);
+    if (this.password) {
+      this.password = await argon2.hash(this.password);
+    }
   }
 
   @Column({type: "text", nullable: true})
