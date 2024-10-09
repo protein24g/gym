@@ -1,6 +1,6 @@
-import { ConflictException, ForbiddenException, Inject, Injectable, NotFoundException } from "@nestjs/common";
+import { ConflictException, ForbiddenException, Inject, Injectable } from "@nestjs/common";
 import { UserService } from "src/user/user.service";
-import { RoleType } from "../enums/role.type";
+import { RoleType } from "../enums/role.type.enum";
 import { InjectRepository } from "@nestjs/typeorm";
 import { User } from "src/user/entities/user.entity";
 import { Repository } from "typeorm";
@@ -17,9 +17,6 @@ export class RoleService {
 
   async update(payload: AuthPayload): Promise<void> {
     const user = await this.userService.findByUserId(payload.userId);
-    if (!user) {
-      throw new NotFoundException('존재하지 않는 유저');
-    }
 
     if (user.role === RoleType.OWNER || RoleType.OWNER === payload.role) {
       throw new ForbiddenException('상위 권한을 수정하거나 부여할 수 없습니다');

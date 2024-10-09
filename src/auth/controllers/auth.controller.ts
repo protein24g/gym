@@ -1,11 +1,12 @@
-import { Body, Controller, HttpCode, Post, Req, Res, UseGuards, UsePipes, ValidationPipe } from '@nestjs/common';
+import { Body, Controller, HttpCode, Post, Req, Res, UploadedFile, UseGuards, UseInterceptors, UsePipes, ValidationPipe } from '@nestjs/common';
 import { AuthService } from '../services/auth.service';
-import { ApiBody, ApiConflictResponse, ApiCreatedResponse, ApiNotFoundResponse, ApiOkResponse, ApiOperation, ApiTags, ApiUnauthorizedResponse } from '@nestjs/swagger';
+import { ApiBody, ApiConflictResponse, ApiCreatedResponse, ApiInternalServerErrorResponse, ApiNotFoundResponse, ApiOkResponse, ApiOperation, ApiTags, ApiUnauthorizedResponse } from '@nestjs/swagger';
 import { UserCreateDto } from 'src/auth/dto/user-create.dto';
 import { LocalAuthGuard } from '../guards/local-auth.guard';
 import { JwtRefreshAuthGuard } from '../guards/jwt-refresh-auth.guard';
 import { Request, Response } from 'express';
 import { AuthPayload } from '../interfaces/auth-payload.interface';
+import { FileInterceptor } from '@nestjs/platform-express';
 
 @Controller('api/auth')
 @ApiTags('Auth')
@@ -56,6 +57,7 @@ export class AuthController {
   
   @HttpCode(201)
   @Post('signup')
+  @UseInterceptors(FileInterceptor('profileImage'))
   @UsePipes(new ValidationPipe({
     whitelist: true,
     transform: true,
@@ -65,8 +67,13 @@ export class AuthController {
   })
   @ApiOkResponse({description: '회원가입 성공'})
   @ApiConflictResponse({description: '이미 가입된 정보'})
-  async signUp(@Body() userCreateDto: UserCreateDto) {
-    return await this.authService.signUp(userCreateDto);
+  @ApiNotFoundResponse({description: '존재하지 않는 파일'})
+  @ApiInternalServerErrorResponse({description: '파일 저장 중 오류 발생'})
+  async signUp(
+    @Body() userCreateDto: UserCreateDto,
+    @UploadedFile() file: Express.Multer.File,
+  ) {
+    return await this.authService.signUp(userCreateDto, file);
   }
 
   @HttpCode(200)

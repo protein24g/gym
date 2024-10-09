@@ -6,6 +6,7 @@ import { ConfigModule } from '@nestjs/config';
 import { AuthModule } from './auth/auth.module';
 import { UserModule } from './user/user.module';
 import { TrainerModule } from './trainer/trainer.module';
+import { FileModule } from './file/file.module';
 
 @Module({
   imports: [
@@ -21,7 +22,8 @@ import { TrainerModule } from './trainer/trainer.module';
     }),
     AuthModule,
     UserModule,
-    TrainerModule
+    TrainerModule,
+    FileModule,
   ],
   controllers: [AppController],
   providers: [AppService],

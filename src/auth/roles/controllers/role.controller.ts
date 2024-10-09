@@ -1,5 +1,5 @@
 import { Body, Controller, Patch, UseGuards } from "@nestjs/common";
-import { RoleType } from "../enums/role.type";
+import { RoleType } from "../enums/role.type.enum";
 import { RoleService } from "../services/role.service";
 import { Roles } from "../decorators/role.decorator";
 import { RoleGuard } from "../guards/role.guard";

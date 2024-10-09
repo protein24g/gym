@@ -1,8 +1,9 @@
 import { Branch } from "src/branches/entities/branch.entity";
-import { BeforeInsert, Column, CreateDateColumn, Entity, ManyToOne, OneToOne, PrimaryColumn } from "typeorm";
-import { RoleType } from "../../auth/roles/enums/role.type";
+import { BeforeInsert, Column, CreateDateColumn, Entity, ManyToOne, OneToMany, OneToOne, PrimaryColumn } from "typeorm";
+import { RoleType } from "../../auth/roles/enums/role.type.enum";
 import { Trainer } from "src/trainer/entities/trainer.entity";
 import * as argon2 from "argon2";
+import { File } from "src/file/entities/file.entity";
 
 @Entity()
 export class User {
@@ -38,6 +39,9 @@ export class User {
 
   @ManyToOne(() => Trainer, trainer => trainer.ptUsers, {cascade: true, onDelete: 'SET NULL', eager: true, nullable: true})
   ptTrainer: Trainer;
+
+  @OneToMany(() => File, file => file.user)
+  files: File[];
 
   @BeforeInsert()
   async hashPassword() {

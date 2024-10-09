@@ -16,6 +16,7 @@ import { KakaoStrategy } from './strategies/kakao-strategy';
 import { kakaoAuthController } from './controllers/kakao-auth.controller';
 import { kakaoAuthService } from './services/kakao-auth.service';
 import { HttpModule } from '@nestjs/axios';
+import { FileModule } from 'src/file/file.module';
 
 @Module({
   imports: [
@@ -24,6 +25,7 @@ import { HttpModule } from '@nestjs/axios';
     ]),
     forwardRef(() => UserModule),
     forwardRef(() => HttpModule),
+    forwardRef(() => FileModule),
     JwtModule.registerAsync({
       imports: [ConfigModule],
       inject: [ConfigService],

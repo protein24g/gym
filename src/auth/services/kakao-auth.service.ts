@@ -66,7 +66,7 @@ export class kakaoAuthService {
     };
 
     try {
-      return await this.authService.signUp(authUserCreateDto);
+      return await this.authService.signUp(authUserCreateDto, null);
     } catch(error) {
       const user = await this.userSerivce.findByUserId(authUserCreateDto.userId);
       

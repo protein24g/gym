@@ -1,7 +1,7 @@
 import { Body, Controller, Delete, Get, Post, Req, UseGuards } from '@nestjs/common';
 import { TrainerService } from './trainer.service';
 import { RoleGuard } from 'src/auth/roles/guards/role.guard';
-import { RoleType } from 'src/auth/roles/enums/role.type';
+import { RoleType } from 'src/auth/roles/enums/role.type.enum';
 import { Roles } from 'src/auth/roles/decorators/role.decorator';
 import { ApiBody, ApiConflictResponse, ApiCreatedResponse, ApiForbiddenResponse, ApiNotFoundResponse, ApiOkResponse, ApiOperation, ApiTags } from '@nestjs/swagger';
 import { JwtAuthGuard } from 'src/auth/guards/jwt-auth.guard';

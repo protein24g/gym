@@ -2,7 +2,7 @@ import { ConflictException, ForbiddenException, Injectable, NotFoundException } 
 import { InjectRepository } from '@nestjs/typeorm';
 import { Trainer } from './entities/trainer.entity';
 import { Repository } from 'typeorm';
-import { RoleType } from 'src/auth/roles/enums/role.type';
+import { RoleType } from 'src/auth/roles/enums/role.type.enum';
 import { UserService } from 'src/user/user.service';
 import { User } from 'src/user/entities/user.entity';
 
