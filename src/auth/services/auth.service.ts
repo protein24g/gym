@@ -10,6 +10,8 @@ import { AuthUserCreateDto } from 'src/auth/dto/auth-user-create.dto';
 import { AuthPayload } from '../interfaces/auth-payload.interface';
 import { ProfileService } from 'src/file/services/profile-file.service';
 import { OAuthType } from '../enums/oauth-type.enum';
+import { TokenPayload } from '../interfaces/token-payload.interface';
+import axios from 'axios';
 
 @Injectable()
 export class AuthService {
@@ -67,7 +69,7 @@ export class AuthService {
     };
   }
 
-  async signIn(payload: AuthPayload): Promise<{accessToken: string, refreshToken: string}> {
+  async signIn(payload: AuthPayload): Promise<TokenPayload> {
     const accessToken = this.tokenService.createAccessToken(payload);
     const refreshToken = this.tokenService.createRefreshToken(payload);
 
@@ -77,13 +79,23 @@ export class AuthService {
     return { accessToken, refreshToken };
   }
 
-  async signOut(payload: AuthPayload, refreshToken: string) {
+  async signOut(payload: AuthPayload, kakaoAccessToken: string, refreshToken: string) {
     const user = await this.tokenService.checkRefreshToken(payload.userId, refreshToken);
+
+    if (user.provider === OAuthType.KAKAO) {
+      await axios.post('https://kapi.kakao.com/v1/user/logout', null,
+        {
+          headers: {
+            Authorization: `Bearer ${kakaoAccessToken}`
+          }
+        }
+      );
+    }
 
     await this.userRepository.update(user.userId, { hashRefreshToken: null });
   }
 
-  async refreshToken(payload: AuthPayload, refreshToken: string): Promise<{accessToken: string, refreshToken: string}> {
+  async refreshToken(payload: AuthPayload, refreshToken: string): Promise<TokenPayload> {
     const user = await this.tokenService.checkRefreshToken(payload.userId, refreshToken);
 
     const newAccessToken = this.tokenService.createAccessToken({

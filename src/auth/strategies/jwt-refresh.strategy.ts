@@ -28,6 +28,7 @@ export class JwtRefreshStrategy extends PassportStrategy(Strategy, 'jwt-refresh'
     if (!user) {
       throw new UnauthorizedException('존재하지 않는 유저');
     }
+
     return {
       userId: user.userId,
       role: user.role,

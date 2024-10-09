@@ -6,6 +6,7 @@ import { AuthUserCreateDto } from "src/auth/dto/auth-user-create.dto";
 import { UserService } from "src/user/user.service";
 import { AuthPayload } from "../interfaces/auth-payload.interface";
 import { OAuthType } from "../enums/oauth-type.enum";
+import { TokenPayload } from "../interfaces/token-payload.interface";
 
 @Injectable()
 export class kakaoAuthService {
@@ -14,10 +15,10 @@ export class kakaoAuthService {
     private readonly userSerivce: UserService,
   ) {}
 
-  async kakaoLogin(code: string): Promise<{accessToken: string, refreshToken: string}> {
-    const accessToken: string = await this.getKakaoAccessToken(code);
+  async kakaoLogin(code: string): Promise<TokenPayload> {
+    const kakaoAccessToken: string = await this.getKakaoAccessToken(code);
 
-    const kakaoUserInfo: KakaoProfile = await this.getKakaoUserInfo(accessToken);
+    const kakaoUserInfo: KakaoProfile = await this.getKakaoUserInfo(kakaoAccessToken);
 
     const payload = await this.signUpWithKakao(kakaoUserInfo);
 
@@ -25,6 +26,7 @@ export class kakaoAuthService {
 
     return {
       accessToken: token.accessToken,
+      kakaoAccessToken: kakaoAccessToken,
       refreshToken: token.refreshToken,
     }
   }
@@ -80,5 +82,17 @@ export class kakaoAuthService {
         role: user.role,
       }
     }
+  }
+
+  async logout(kakaoAccessToken: string) {
+    const response = await axios.post('https://kapi.kakao.com/v1/user/logout',
+      {
+        headers: {
+          'Content-type': 'application/x-www-form-urlencoded;charset=utf-8'
+        }
+      }
+    );
+
+    
   }
 }

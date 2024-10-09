@@ -37,6 +37,15 @@ export class kakaoAuthController {
       }
     );
 
+    response.cookie('kakaoAccessToken', token.kakaoAccessToken,
+      {
+        httpOnly: true,
+        secure: process.env.isProduction === 'true',
+        maxAge: +process.env.ACCESS_TOKEN_EXPIRE_IN,
+        sameSite: 'strict',
+      }
+    );
+
     response.cookie('refreshToken', token.refreshToken,
       {
         httpOnly: true,
