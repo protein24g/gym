@@ -4,6 +4,7 @@ import { RoleType } from "../../auth/roles/enums/role.type.enum";
 import { Trainer } from "src/trainer/entities/trainer.entity";
 import * as argon2 from "argon2";
 import { File } from "src/file/entities/file.entity";
+import { OAuthType } from "src/auth/enums/oauth-type.enum";
 
 @Entity()
 export class User {
@@ -30,6 +31,12 @@ export class User {
 
   @Column({ type: 'enum', enum: RoleType, default: RoleType.USER })
   role: RoleType;
+
+  @Column({ type: 'enum', enum: OAuthType, default: OAuthType.LOCAL})
+  provider: OAuthType;
+
+  @Column({ type: 'text', nullable: true})
+  oAuthProfileUrl: string;
 
   @ManyToOne(() => Branch, branch => branch.users)
   branch: Branch;

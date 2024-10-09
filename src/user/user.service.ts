@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { User } from 'src/user/entities/user.entity';
 import { Repository } from 'typeorm';
@@ -10,6 +10,15 @@ export class UserService {
     @InjectRepository(User)
     private readonly userRepository: Repository<User>,
   ) {}
+
+  async delete(userId: string): Promise<void> {
+    const user = await this.findByUserId(userId);
+    if (!user) {
+      throw new NotFoundException('존재하지 않는 유저');
+    }
+
+    await this.userRepository.remove(user);
+  }
 
   async findByName(name: string): Promise<User> {
     return await this.userRepository.findOne({where: {name}});

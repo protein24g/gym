@@ -5,6 +5,7 @@ import { AuthService } from "./auth.service";
 import { AuthUserCreateDto } from "src/auth/dto/auth-user-create.dto";
 import { UserService } from "src/user/user.service";
 import { AuthPayload } from "../interfaces/auth-payload.interface";
+import { OAuthType } from "../enums/oauth-type.enum";
 
 @Injectable()
 export class kakaoAuthService {
@@ -57,16 +58,20 @@ export class kakaoAuthService {
 
     return {
       id: response.data.id,
+      name: response.data.kakao_account.profile.nickname,
+      oAuthProfileUrl: response.data.kakao_account.profile.profile_image_url,
     };
   }
 
   async signUpWithKakao(kakaoUserInfo: KakaoProfile): Promise<AuthPayload> {
     const authUserCreateDto: AuthUserCreateDto = {
       userId: kakaoUserInfo.id,
+      name: kakaoUserInfo.name,
+      oAuthProfileUrl: kakaoUserInfo.oAuthProfileUrl,
     };
 
     try {
-      return await this.authService.signUp(authUserCreateDto, null);
+      return await this.authService.signUp(authUserCreateDto, null, OAuthType.KAKAO);
     } catch(error) {
       const user = await this.userSerivce.findByUserId(authUserCreateDto.userId);
       

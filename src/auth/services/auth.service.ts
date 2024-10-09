@@ -9,6 +9,7 @@ import { UserCreateDto } from 'src/auth/dto/user-create.dto';
 import { AuthUserCreateDto } from 'src/auth/dto/auth-user-create.dto';
 import { AuthPayload } from '../interfaces/auth-payload.interface';
 import { ProfileService } from 'src/file/services/profile-file.service';
+import { OAuthType } from '../enums/oauth-type.enum';
 
 @Injectable()
 export class AuthService {
@@ -38,9 +39,7 @@ export class AuthService {
   }
 
   async signUp(
-    createDto: UserCreateDto | AuthUserCreateDto,
-    file: Express.Multer.File,
-  ): Promise<AuthPayload> {
+    createDto: UserCreateDto | AuthUserCreateDto, file: Express.Multer.File, provider?: OAuthType): Promise<AuthPayload> {
     const userId = await this.userService.findByUserId(createDto.userId);
     if (userId) {
       throw new ConflictException('이미 존재하는 아이디');
@@ -50,10 +49,11 @@ export class AuthService {
     if (createDto.telNumber && telNumber) {
       throw new ConflictException('이미 존재하는 휴대폰 번호');
     }
-    
+
     const user = this.userRepository.create({
       ...createDto,
       createdAt: Date(),
+      provider: provider ? provider : OAuthType.LOCAL,
     });
     await this.userRepository.save(user);
 

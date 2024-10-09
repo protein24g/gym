@@ -31,4 +31,11 @@ export class AuthUserCreateDto {
   })
   @IsNotEmpty({ message: '연락처는 필수 입력입니다.' })
   telNumber?: string;
+
+  @ApiProperty({
+    type: String,
+    description: '프로필 주소',
+    example: 'http://k.kakaocdn.net/dn/dy231d/wgu1321guPjm41N67as8/img_640x640.jpg',
+  })
+  oAuthProfileUrl: string;
 }

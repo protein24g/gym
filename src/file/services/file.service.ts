@@ -56,26 +56,21 @@ export class FileService {
   }
 
   async update(userId: string, updateFile: Express.Multer.File, fileType: FileType, folder: string): Promise<void> {
-    try {
-      await this.delete(userId, folder);
-    } catch(error) {
-      await this.create(userId, updateFile, fileType, folder);
-    }
+    await this.delete(userId, folder);
+    await this.create(userId, updateFile, fileType, folder);
   }
 
   async delete(userId: string, folder: string): Promise<void> {
     const file = await this.findByUserId(userId);
-    if (!file) {
-      throw new NotFoundException('존재하지 않는 파일');
-    }
-
-    try {
-      unlinkSync(join(this.fileUploadPath, folder, file.fileName));
-
-      await this.fileRepository.remove(file);
-
-    } catch (error) {
-      throw new InternalServerErrorException('파일 삭제 중 오류 발생');
+    if (file) {
+      try {
+        unlinkSync(join(this.fileUploadPath, folder, file.fileName));
+  
+        await this.fileRepository.remove(file);
+  
+      } catch (error) {
+        throw new InternalServerErrorException('파일 삭제 중 오류 발생');
+      }
     }
   }
 

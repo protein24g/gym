@@ -11,7 +11,7 @@ export class ProfileService {
 
   async create(userId: string, file: Express.Multer.File): Promise<void> {
     if (!file) {
-      throw new NotFoundException('존재하지 않는 첨부파일');
+      throw new NotFoundException('존재하지 않는 파일');
     }
 
     await this.fileService.create(userId, file, FileType.PROFILE, '/' + FileType.PROFILE.toLocaleLowerCase() + '/');
