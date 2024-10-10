@@ -3,6 +3,8 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { User } from 'src/user/entities/user.entity';
 import { Repository } from 'typeorm';
 import { RoleType } from 'src/auth/roles/enums/role.type.enum';
+import { OAuthType } from 'src/auth/enums/oauth-type.enum';
+import axios from 'axios';
 
 @Injectable()
 export class UserService {
@@ -11,10 +13,20 @@ export class UserService {
     private readonly userRepository: Repository<User>,
   ) {}
 
-  async delete(userId: string): Promise<void> {
+  async delete(userId: string, kakaoAccessToken: string): Promise<void> {
     const user = await this.findByUserId(userId);
     if (!user) {
       throw new NotFoundException('존재하지 않는 유저');
+    }
+    
+    if (user.provider === OAuthType.KAKAO) {
+      await axios.post('https://kapi.kakao.com/v1/user/unlink', null,
+        {
+          headers: {
+            Authorization: `Bearer ${kakaoAccessToken}`
+          }
+        }
+      );
     }
 
     await this.userRepository.remove(user);

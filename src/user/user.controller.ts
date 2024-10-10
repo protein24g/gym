@@ -19,6 +19,7 @@ export class UserController {
   @ApiNotFoundResponse({description: '존재하지 않는 유저'})
   async delete(@Req() request: Request) {
     const user = request.user as AuthPayload;
-    await this.userService.delete(user.userId);
+    const kakaoAccessToken = request.cookies['kakaoAccessToken'];
+    await this.userService.delete(user.userId, kakaoAccessToken);
   }
 }
