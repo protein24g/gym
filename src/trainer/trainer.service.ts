@@ -5,6 +5,8 @@ import { Repository } from 'typeorm';
 import { RoleType } from 'src/auth/roles/enums/role.type.enum';
 import { UserService } from 'src/user/user.service';
 import { User } from 'src/user/entities/user.entity';
+import * as argon2 from "argon2";
+import { AuthPayload } from 'src/auth/interfaces/auth-payload.interface';
 
 @Injectable()
 export class TrainerService {
@@ -16,57 +18,59 @@ export class TrainerService {
     private readonly userService: UserService,
   ) {}
 
-  async create(userId: string): Promise<void> {
-    const trainer = await this.trainerRepository.findOne({where: {userId}});
-    if (trainer) {
-      throw new ConflictException('이미 등록된 트레이너');
-    }
-
-    const user = await this.userRepository.findOne({where: {userId}});
+  async create(payload: AuthPayload, email: string): Promise<void> {
+    const user = await this.userService.findByEmail(email);
     if (!user) {
       throw new NotFoundException('존재하지 않는 유저');
     }
 
+    const trainer = await this.trainerRepository.findOne({where: {userId: user.id}});
+    if (trainer) {
+      throw new ConflictException('이미 등록된 트레이너');
+    }
+
     await this.trainerRepository.save({
-      userId,
+      userId: user.id,
       user
     });
 
-    await this.userRepository.update({userId}, {role: RoleType.TRAINER});
+    if (payload.userId !== user.id) {
+      await this.userRepository.update({id: user.id}, {role: RoleType.TRAINER, password: await argon2.hash(user.birth)});
+    }
   }
 
-  async createUser(trainerId: string, userId: string): Promise<void> {
-    if(trainerId === userId) {
-      throw new ForbiddenException('자기 자신은 추가할 수 없습니다');
-    }
-
+  async createUser(trainerId: number, telNumber: string): Promise<void> {
     const trainer = await this.trainerRepository.findOne({where: {userId: trainerId}});
     if (!trainer) {
       throw new NotFoundException('존재하지 않는 트레이너');
     }
 
-    const user = await this.userService.findByUserId(userId);
+    const user = await this.userService.findUserByTelNumberWithPtTrainer(telNumber);
     if (!user) {
       throw new NotFoundException('존재하지 않는 유저');
+    }
+
+    if(trainer.userId === user.id) {
+      throw new ForbiddenException('자기 자신은 추가할 수 없습니다');
     }
 
     if (!!user.ptTrainer) {
       throw new ConflictException('이미 담당하고 있는 회원');
     }
 
-    await this.userRepository.update(user.userId, {
+    await this.userRepository.update(user.id, {
       ptTrainer: trainer,
     });
   }
 
-  async findAll(userId: string): Promise<User[]> {
+  async findAll(userId: number): Promise<User[]> {
     const trainer = await this.trainerRepository.findOne(
       {
         where: {userId},
         relations: ['ptUsers'],
         select: {
           ptUsers: {
-            userId: true,
+            id: true,
             name: true,
             telNumber: true,
             address: true,
@@ -82,17 +86,17 @@ export class TrainerService {
     return trainer.ptUsers;
   }
 
-  async delete(userId: string): Promise<void> {
+  async delete(userId: number): Promise<void> {
     const trainer = await this.trainerRepository.findOne({where: {userId}});
     if (!trainer) {
       throw new NotFoundException('존재하지 않는 트레이너');
     }
     
     await this.trainerRepository.remove(trainer);
-    await this.userRepository.update({userId}, {role: RoleType.USER});
+    await this.userRepository.update({id: userId}, {role: RoleType.USER});
   }
 
-  async deleteUser(trainerId:string, userId: string): Promise<void> {
+  async deleteUser(trainerId: number, userId: number): Promise<void> {
     if(trainerId === userId) {
       throw new ConflictException('자기 자신은 삭제할 수 없습니다');
     }
@@ -102,7 +106,7 @@ export class TrainerService {
       throw new NotFoundException('존재하지 않는 트레이너');
     }
 
-    const user = await this.userService.findByUserId(userId);
+    const user = await this.userService.findById(userId);
     if (!user) {
       throw new NotFoundException('존재하지 않는 유저');
     }
@@ -111,6 +115,6 @@ export class TrainerService {
       throw new ConflictException('이미 담당하지 않는 회원');
     }
 
-    await this.userRepository.update(user.userId, {ptTrainer: null});
+    await this.userRepository.update(user.id, {ptTrainer: null});
   }
 }

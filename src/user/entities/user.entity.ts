@@ -1,5 +1,5 @@
 import { Branch } from "src/branches/entities/branch.entity";
-import { BeforeInsert, Column, CreateDateColumn, Entity, ManyToOne, OneToMany, OneToOne, PrimaryColumn } from "typeorm";
+import { BeforeInsert, BeforeUpdate, Column, CreateDateColumn, Entity, ManyToOne, OneToMany, OneToOne, PrimaryGeneratedColumn } from "typeorm";
 import { RoleType } from "../../auth/roles/enums/role.type.enum";
 import { Trainer } from "src/trainer/entities/trainer.entity";
 import * as argon2 from "argon2";
@@ -8,17 +8,23 @@ import { OAuthType } from "src/auth/enums/oauth-type.enum";
 
 @Entity()
 export class User {
-  @PrimaryColumn({ type: 'varchar', length: 50})
-  userId: string;
+  @PrimaryGeneratedColumn()
+  id: number;
 
-  @Column({ type: 'varchar', length: 100, nullable: true})
+  @Column({ type: 'varchar', length: 50, nullable: true, unique: true })
+  email: string;
+
+  @Column({ type: 'varchar', length: 255, nullable: true })
   password: string;
 
-  @Column({ type: 'varchar', length: 20, nullable: true })
+  @Column({ type: 'varchar', length: 20, nullable: false })
   name: string;
 
   @Column({ type: 'varchar', length: 20, nullable: true, unique: true })
   telNumber: string;
+
+  @Column({ type: 'varchar', length: 6, nullable: false })
+  birth: string;
 
   @Column({ type: 'text', nullable: true })
   address: string;
@@ -44,13 +50,14 @@ export class User {
   @OneToOne(() => Trainer, trainer => trainer.user, {cascade: true, onDelete: 'SET NULL', nullable: true})
   trainer: Trainer;
 
-  @ManyToOne(() => Trainer, trainer => trainer.ptUsers, {cascade: true, onDelete: 'SET NULL', eager: true, nullable: true})
+  @ManyToOne(() => Trainer, trainer => trainer.ptUsers, {cascade: true, onDelete: 'SET NULL', nullable: true})
   ptTrainer: Trainer;
 
   @OneToMany(() => File, file => file.user)
   files: File[];
 
   @BeforeInsert()
+  @BeforeUpdate()
   async hashPassword() {
     if (this.password) {
       this.password = await argon2.hash(this.password);

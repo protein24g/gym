@@ -1,12 +1,12 @@
-import { Body, Controller, HttpCode, Post, Req, Res, UploadedFile, UseGuards, UseInterceptors, UsePipes, ValidationPipe } from '@nestjs/common';
+import { Body, Controller, HttpCode, Post, Req, Res, UploadedFile, UseGuards, UseInterceptors } from '@nestjs/common';
 import { AuthService } from '../services/auth.service';
-import { ApiBody, ApiConflictResponse, ApiCreatedResponse, ApiInternalServerErrorResponse, ApiNotFoundResponse, ApiOkResponse, ApiOperation, ApiTags, ApiUnauthorizedResponse } from '@nestjs/swagger';
-import { UserCreateDto } from 'src/auth/dto/user-create.dto';
-import { LocalAuthGuard } from '../guards/local-auth.guard';
+import { ApiBody, ApiConflictResponse, ApiCreatedResponse, ApiForbiddenResponse, ApiInternalServerErrorResponse, ApiNotFoundResponse, ApiOkResponse, ApiOperation, ApiTags, ApiUnauthorizedResponse } from '@nestjs/swagger';
 import { JwtRefreshAuthGuard } from '../guards/jwt-refresh-auth.guard';
 import { Request, Response } from 'express';
 import { AuthPayload } from '../interfaces/auth-payload.interface';
 import { FileInterceptor } from '@nestjs/platform-express';
+import { SignInDTO } from '../dto/signin.dto';
+import { SignUpDTO } from '../dto/signup.dto';
 
 @Controller('api/auth')
 @ApiTags('Auth')
@@ -17,7 +17,6 @@ export class AuthController {
 
   @HttpCode(200)
   @Post('signin')
-  @UseGuards(LocalAuthGuard)
   @ApiOperation({
     summary: '로그인',
   })
@@ -32,9 +31,13 @@ export class AuthController {
   })
   @ApiOkResponse({description: '로그인 성공'})
   @ApiUnauthorizedResponse({description: '아이디 또는 패스워드 오류'})
-  async login(@Req() request: Request, @Res() response: Response) {
+  @ApiForbiddenResponse({description: '권한이 없습니다'})
+  async login(@Req() request: Request, @Res() response: Response, @Body() signInDTO: SignInDTO) {
+    const res = await this.authService.validateUser(signInDTO);
+    request.user = res.user;
     const payload = request.user as AuthPayload;
     const token = await this.authService.signIn(payload);
+
     response.cookie('accessToken', token.accessToken,
       {
         httpOnly: true,
@@ -52,16 +55,12 @@ export class AuthController {
         sameSite: 'strict',
       }
     );
-    return response.json({ message: '로그인 성공' });
+    return response.json({ message: res.resetPassword ? '초기화된 비밀번호입니다. 비밀번호를 변경하세요' : '로그인 성공' });
   }
   
   @HttpCode(201)
   @Post('signup')
   @UseInterceptors(FileInterceptor('profileImage'))
-  @UsePipes(new ValidationPipe({
-    whitelist: true,
-    transform: true,
-  }))
   @ApiOperation({
     summary: '회원가입',
   })
@@ -69,11 +68,8 @@ export class AuthController {
   @ApiConflictResponse({description: '이미 가입된 정보'})
   @ApiNotFoundResponse({description: '존재하지 않는 파일'})
   @ApiInternalServerErrorResponse({description: '파일 저장 중 오류 발생'})
-  async signUp(
-    @Body() userCreateDto: UserCreateDto,
-    @UploadedFile() file: Express.Multer.File,
-  ) {
-    return await this.authService.signUp(userCreateDto, file);
+  async signUp(@Body() signUpDTO: SignUpDTO, @UploadedFile() file: Express.Multer.File) {
+    return await this.authService.signUp(signUpDTO, file);
   }
 
   @HttpCode(200)
@@ -122,6 +118,7 @@ export class AuthController {
         sameSite: 'strict',
       }
     );
+    
     return response.json({ message: '토큰 재발급 성공' });
   }
 }

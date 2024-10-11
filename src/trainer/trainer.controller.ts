@@ -25,15 +25,16 @@ export class TrainerController {
     schema: {
       type: 'object',
       properties: {
-        userId: { type: 'string', example: 'test05' },    
+        userId: { type: 'string', example: 'test05@email.com' },    
       }
     }
   })
   @ApiCreatedResponse({description: '트레이너 생성 성공'})
   @ApiConflictResponse({description: '이미 등록된 트레이너'})
   @ApiNotFoundResponse({description: '존재하지 않는 유저'})
-  async create(@Body() body: {userId: string}) {
-    await this.trainerService.create(body.userId);
+  async create(@Req() request: Request, @Body() body: {email: string}) {
+    const user = request.user as AuthPayload;
+    await this.trainerService.create(user, body.email);
   }
 
   @Post('users')
@@ -45,7 +46,7 @@ export class TrainerController {
     schema: {
       type: 'object',
       properties: {
-        userId: { type: 'string', example: 'test05' },    
+        userId: { type: 'string', example: '01011112222' },    
       }
     }
   })
@@ -54,23 +55,15 @@ export class TrainerController {
   @ApiNotFoundResponse({description: '존재하지 않는 트레이너'})
   @ApiNotFoundResponse({description: '존재하지 않는 유저'})
   @ApiConflictResponse({description: '이미 담당하고 있는 회원'})
-  async createUser(@Req() request: Request, @Body() body: {userId: string}) {
+  async createUser(@Req() request: Request, @Body() body: {telNumber: string}) {
     const user = request.user as AuthPayload;
-    return await this.trainerService.createUser(user.userId, body.userId);
+    return await this.trainerService.createUser(user.userId, body.telNumber);
   }
 
   @Get('users')
   @Roles(RoleType.TRAINER)
   @ApiOperation({
     summary: '트레이너가 관리하는 PT수업 회원 목록'
-  })
-  @ApiBody({
-    schema: {
-      type: 'object',
-      properties: {
-        userId: { type: 'string', example: 'test05' },    
-      }
-    }
   })
   @ApiOkResponse({description: '회원 목록 조회 성공'})
   @ApiNotFoundResponse({description: '존재하지 않는 트레이너'})
@@ -88,13 +81,13 @@ export class TrainerController {
     schema: {
       type: 'object',
       properties: {
-        userId: { type: 'string', example: 'test05' },    
+        userId: { type: 'number', example: '1' },    
       }
     }
   })
   @ApiOkResponse({description: '트레이너 삭제 성공'})
   @ApiNotFoundResponse({description: '존재하지 않는 트레이너'})
-  async delete(@Body() body: {userId: string}) {
+  async delete(@Body() body: {userId: number}) {
     await this.trainerService.delete(body.userId);
   }
 
@@ -116,7 +109,7 @@ export class TrainerController {
   @ApiNotFoundResponse({description: '존재하지 않는 트레이너'})
   @ApiNotFoundResponse({description: '존재하지 않는 유저'})
   @ApiConflictResponse({description: '이미 담당하지 않는 회원'})
-  async deleteUser(@Req() request: Request, @Body() body: {userId: string}) {
+  async deleteUser(@Req() request: Request, @Body() body: {userId: number}) {
     const user = request.user as AuthPayload;
     return await this.trainerService.deleteUser(user.userId, body.userId);
   }

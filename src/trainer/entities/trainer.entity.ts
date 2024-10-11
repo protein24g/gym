@@ -1,10 +1,13 @@
 import { User } from "src/user/entities/user.entity";
-import { Column, Entity, JoinColumn, OneToMany, OneToOne, PrimaryColumn } from "typeorm";
+import { Column, Entity, JoinColumn, OneToMany, OneToOne, PrimaryGeneratedColumn } from "typeorm";
 
 @Entity()
 export class Trainer {
-  @PrimaryColumn()
-  userId: string;
+  @PrimaryGeneratedColumn()
+  id: number;
+
+  @Column()
+  userId: number;
 
   @Column({type: 'text', nullable: true})
   introduction: string;

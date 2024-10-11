@@ -16,7 +16,7 @@ export class RoleService {
   ) {}
 
   async update(payload: AuthPayload): Promise<void> {
-    const user = await this.userService.findByUserId(payload.userId);
+    const user = await this.userService.findById(payload.userId);
 
     if (user.role === RoleType.OWNER || RoleType.OWNER === payload.role) {
       throw new ForbiddenException('상위 권한을 수정하거나 부여할 수 없습니다');

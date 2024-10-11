@@ -2,11 +2,11 @@ import { Injectable } from "@nestjs/common";
 import axios from "axios";
 import { KakaoProfile } from "../interfaces/kakao-profile.interface";
 import { AuthService } from "./auth.service";
-import { AuthUserCreateDto } from "src/auth/dto/auth-user-create.dto";
 import { UserService } from "src/user/user.service";
 import { AuthPayload } from "../interfaces/auth-payload.interface";
 import { OAuthType } from "../enums/oauth-type.enum";
 import { TokenPayload } from "../interfaces/token-payload.interface";
+import { OAuthSignUpDTO } from "../dto/oauth-signup.dto";
 
 @Injectable()
 export class kakaoAuthService {
@@ -19,6 +19,7 @@ export class kakaoAuthService {
     const kakaoAccessToken: string = await this.getKakaoAccessToken(code);
 
     const kakaoUserInfo: KakaoProfile = await this.getKakaoUserInfo(kakaoAccessToken);
+    // 리다이렉트로 추가 정보 입력 받은 후 프론트에서 post로 최종 가입 요청
 
     const payload = await this.signUpWithKakao(kakaoUserInfo);
 
@@ -66,19 +67,24 @@ export class kakaoAuthService {
   }
 
   async signUpWithKakao(kakaoUserInfo: KakaoProfile): Promise<AuthPayload> {
-    const authUserCreateDto: AuthUserCreateDto = {
-      userId: kakaoUserInfo.id,
+    const oAuthSignupDTO: OAuthSignUpDTO = {
+      // 임시로 만든 가짜 데이터(프론트에서 추가 정보 요청 받도록 수정 하기)
+      email: 'test',
       name: kakaoUserInfo.name,
+      telNumber: '01011111111',
+      birth: '010101',
+      address: '대구',
+      addressDetail: '대구 상세 주소',
       oAuthProfileUrl: kakaoUserInfo.oAuthProfileUrl,
     };
 
     try {
-      return await this.authService.signUp(authUserCreateDto, null, OAuthType.KAKAO);
+      return await this.authService.oAuthSignUp(oAuthSignupDTO, OAuthType.KAKAO);
     } catch(error) {
-      const user = await this.userSerivce.findByUserId(authUserCreateDto.userId);
+      const user = await this.userSerivce.findByTelNumber('01011112222'); // 임시로 만든 가짜 데이터(프론트에서 추가 정보 요청 받도록 수정 하기)
       
       return {
-        userId: user.userId,
+        userId: user.id,
         role: user.role,
       }
     }

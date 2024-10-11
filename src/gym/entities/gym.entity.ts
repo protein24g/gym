@@ -12,6 +12,6 @@ export class Gym {
   @Column({type: 'text'})
   description: string;
 
-  @OneToMany(() => Branch, branch => branch.gym)
+  @OneToMany(() => Branch, branch => branch.gym, {cascade: true, onDelete: 'SET NULL', nullable: true})
   branches: Branch[];
 }

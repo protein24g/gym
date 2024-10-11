@@ -13,8 +13,8 @@ export class UserService {
     private readonly userRepository: Repository<User>,
   ) {}
 
-  async delete(userId: string, kakaoAccessToken: string): Promise<void> {
-    const user = await this.findByUserId(userId);
+  async delete(userId: number, kakaoAccessToken: string): Promise<void> {
+    const user = await this.findById(userId);
     if (!user) {
       throw new NotFoundException('존재하지 않는 유저');
     }
@@ -36,12 +36,20 @@ export class UserService {
     return await this.userRepository.findOne({where: {name}});
   }
 
+  async findByEmail(email: string): Promise<User> {
+    return await this.userRepository.findOne({where: {email}});
+  }
+
   async findByTelNumber(telNumber: string): Promise<User> {
     return await this.userRepository.findOne({where: {telNumber}});
   }
 
-  async findByUserId(userId: string): Promise<User> {
-    return await this.userRepository.findOne({where: {userId}});
+  async findUserByTelNumberWithPtTrainer(telNumber: string): Promise<User> {
+    return await this.userRepository.findOne({where: {telNumber}, relations: ['ptTrainer']});
+  }
+
+  async findById(userId: number): Promise<User> {
+    return await this.userRepository.findOne({where: {id: userId}});
   }
 
   async isManagerExists(): Promise<boolean> {

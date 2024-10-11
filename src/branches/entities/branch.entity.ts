@@ -7,6 +7,9 @@ export class Branch {
   @PrimaryGeneratedColumn()
   id: number;
 
+  @Column()
+  gymId: number;
+
   @Column({type: "varchar", length: 50, nullable: false})
   name: string;
 
@@ -22,10 +25,10 @@ export class Branch {
   @Column({type: 'text', nullable: false})
   openingHours: string;
 
-  @ManyToOne(() => Gym, gym => gym.branches)
+  @ManyToOne(() => Gym, gym => gym.branches, {onDelete: 'CASCADE'})
   @JoinColumn({name: 'gymId'})
   gym: Gym;
 
-  @OneToMany(() => User, user => user.branch)
+  @OneToMany(() => User, user => user.branch, {cascade: true, onDelete: 'CASCADE'})
   users: User[];
 }

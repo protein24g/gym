@@ -35,8 +35,8 @@ export class TokenService {
     );
   }
 
-  async checkRefreshToken(userId: string, refreshToken: string): Promise<User> {
-    const user = await this.userService.findByUserId(userId);
+  async checkRefreshToken(userId: number, refreshToken: string): Promise<User> {
+    const user = await this.userService.findById(userId);
     if (!user) {
       throw new NotFoundException('유효하지 않은 사용자');
     }

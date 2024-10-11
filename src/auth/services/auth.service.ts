@@ -1,17 +1,19 @@
-import { ConflictException, Injectable, UnauthorizedException } from '@nestjs/common';
+import { ConflictException, ForbiddenException, Injectable, UnauthorizedException } from '@nestjs/common';
 import * as argon2 from 'argon2';
 import { UserService } from 'src/user/user.service';
 import { Repository } from 'typeorm';
 import { InjectRepository } from '@nestjs/typeorm';
 import { User } from 'src/user/entities/user.entity';
 import { TokenService } from './token.service';
-import { UserCreateDto } from 'src/auth/dto/user-create.dto';
-import { AuthUserCreateDto } from 'src/auth/dto/auth-user-create.dto';
+import { SignUpDTO } from 'src/auth/dto/signup.dto';
 import { AuthPayload } from '../interfaces/auth-payload.interface';
 import { ProfileService } from 'src/file/services/profile-file.service';
 import { OAuthType } from '../enums/oauth-type.enum';
 import { TokenPayload } from '../interfaces/token-payload.interface';
 import axios from 'axios';
+import { SignInDTO } from '../dto/signin.dto';
+import { RoleType } from '../roles/enums/role.type.enum';
+import { OAuthSignUpDTO } from '../dto/oauth-signup.dto';
 
 @Injectable()
 export class AuthService {
@@ -23,48 +25,85 @@ export class AuthService {
     private readonly profileService: ProfileService,
   ) {}
 
-  async validateUser(userId: string, password: string): Promise<AuthPayload> {
-    const user = await this.userService.findByUserId(userId);
+  async validateUser(signInDTO: SignInDTO): Promise<{
+    user: AuthPayload,
+    resetPassword: boolean,
+  }> {
+    const user = await this.userService.findByEmail(signInDTO.email);
     if (!user) {
-      throw new UnauthorizedException('아이디 또는 패스워드 오류');
+      throw new UnauthorizedException('아이디 또는 패스워드 오류d');
     }
 
-    const isValid = await argon2.verify(user.password, password);
+    if (user.role === RoleType.USER || !user.password) {
+      throw new ForbiddenException('권한이 없습니다');
+    }
+
+    const isValid = await argon2.verify(user.password, signInDTO.password);
     if (!isValid) {
       throw new UnauthorizedException('아이디 또는 패스워드 오류');
     }
 
     return {
-      userId: user.userId,
+      user: {
+        userId: user.id,
+        role: user.role,
+      },
+      resetPassword: await argon2.verify(user.password, user.birth)
+    };
+  }
+
+  async signUp(signUpDTO: SignUpDTO | OAuthSignUpDTO, file: Express.Multer.File): Promise<AuthPayload> {
+    if ('email' in signUpDTO) {
+      const email = await this.userService.findByEmail(signUpDTO.email);
+      if (email) {
+        throw new ConflictException('이미 존재하는 이메일');
+      }
+    }
+
+    const telNumber = await this.userService.findByTelNumber(signUpDTO.telNumber);
+    if (telNumber) {
+      throw new ConflictException('이미 존재하는 휴대폰 번호');
+    }
+    
+    const user = this.userRepository.create({
+      ...signUpDTO,
+      createdAt: Date(),
+      // 매니저 수동 생성
+      // role: RoleType.MANAGER,
+      // password: 'testpw',
+    });
+    await this.userRepository.save(user);
+
+    if (file) {
+      await this.profileService.create(user.id, file);
+    }
+
+    return {
+      userId: user.id,
       role: user.role,
     };
   }
 
-  async signUp(
-    createDto: UserCreateDto | AuthUserCreateDto, file: Express.Multer.File, provider?: OAuthType): Promise<AuthPayload> {
-    const userId = await this.userService.findByUserId(createDto.userId);
-    if (userId) {
-      throw new ConflictException('이미 존재하는 아이디');
-    }
-    
-    const telNumber = await this.userService.findByTelNumber(createDto.telNumber);
-    if (createDto.telNumber && telNumber) {
-      throw new ConflictException('이미 존재하는 휴대폰 번호');
+  async oAuthSignUp(signUpDTO: OAuthSignUpDTO, provider: OAuthType): Promise<AuthPayload> {
+    const email = await this.userService.findByEmail(signUpDTO.email);
+    if (email) {
+      throw new ConflictException('이미 존재하는 이메일');
     }
 
+    const telNumber = await this.userService.findByTelNumber(signUpDTO.telNumber);
+    if (telNumber) {
+      throw new ConflictException('이미 존재하는 휴대폰 번호');
+    }
+    
     const user = this.userRepository.create({
-      ...createDto,
+      ...signUpDTO,
       createdAt: Date(),
       provider: provider ? provider : OAuthType.LOCAL,
     });
     await this.userRepository.save(user);
 
-    if (file) {
-      await this.profileService.create(user.userId, file);
-    }
-
     return {
-      userId: user.userId,
+      userId: user.id,
       role: user.role,
     };
   }
@@ -92,23 +131,23 @@ export class AuthService {
       );
     }
 
-    await this.userRepository.update(user.userId, { hashRefreshToken: null });
+    await this.userRepository.update(user.id, { hashRefreshToken: null });
   }
 
   async refreshToken(payload: AuthPayload, refreshToken: string): Promise<TokenPayload> {
     const user = await this.tokenService.checkRefreshToken(payload.userId, refreshToken);
 
     const newAccessToken = this.tokenService.createAccessToken({
-      userId: user.userId,
+      userId: user.id,
       role: user.role,
     });
     const newRefreshToken = this.tokenService.createRefreshToken({
-      userId: user.userId,
+      userId: user.id,
       role: user.role,
     });
 
     const hashRefreshToken = await argon2.hash(newRefreshToken);
-    await this.userRepository.update(user.userId, { hashRefreshToken });
+    await this.userRepository.update(user.id, { hashRefreshToken });
 
     return {
       accessToken: newAccessToken,

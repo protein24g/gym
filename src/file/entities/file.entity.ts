@@ -1,11 +1,14 @@
-import { Column, CreateDateColumn, Entity, JoinColumn, ManyToOne, PrimaryColumn } from "typeorm";
+import { Column, CreateDateColumn, Entity, JoinColumn, ManyToOne, PrimaryGeneratedColumn } from "typeorm";
 import { FileType } from "../enums/file-type.enum";
 import { User } from "src/user/entities/user.entity";
 
 @Entity()
 export class File {
-  @PrimaryColumn()
-  userId: string;
+  @PrimaryGeneratedColumn()
+  id: number;
+
+  @Column()
+  userId: number;
 
   @Column()
   fileName: string;
@@ -28,7 +31,7 @@ export class File {
   @CreateDateColumn()
   createdAt: Date;
 
-  @ManyToOne(() => User, user => user.files, {onDelete: "CASCADE"})
+  @ManyToOne(() => User, user => user.files, {onDelete: 'CASCADE'})
   @JoinColumn({name: 'userId'})
   user: User;
 }

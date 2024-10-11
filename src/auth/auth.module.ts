@@ -8,7 +8,6 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { User } from 'src/user/entities/user.entity';
 import { TokenService } from './services/token.service';
 import { JwtStrategy } from './strategies/jwt.strategy';
-import { LocalStrategy } from './strategies/local-strategy';
 import { JwtRefreshStrategy } from './strategies/jwt-refresh.strategy';
 import { RoleController } from './roles/controllers/role.controller';
 import { RoleService } from './roles/services/role.service';
@@ -38,7 +37,7 @@ import { FileModule } from 'src/file/file.module';
     })
   ],
   controllers: [AuthController, kakaoAuthController, RoleController],
-  providers: [AuthService, kakaoAuthService, RoleService, TokenService, LocalStrategy, JwtStrategy, JwtRefreshStrategy, KakaoStrategy],
+  providers: [AuthService, kakaoAuthService, RoleService, TokenService, JwtStrategy, JwtRefreshStrategy, KakaoStrategy],
   exports: [AuthService, RoleService],
 })
 export class AuthModule {}

@@ -27,8 +27,8 @@ export class FileService {
     }
   }
 
-  async create(userId: string, file: Express.Multer.File, fileType: FileType, folder: string): Promise<void> {
-    const user = await this.userService.findByUserId(userId);
+  async create(userId: number, file: Express.Multer.File, fileType: FileType, folder: string): Promise<void> {
+    const user = await this.userService.findById(userId);
     if (!user) {
       throw new NotFoundException('존재하지 않는 유저');
     }
@@ -55,13 +55,13 @@ export class FileService {
     }
   }
 
-  async update(userId: string, updateFile: Express.Multer.File, fileType: FileType, folder: string): Promise<void> {
+  async update(userId: number, updateFile: Express.Multer.File, fileType: FileType, folder: string): Promise<void> {
     await this.delete(userId, folder);
     await this.create(userId, updateFile, fileType, folder);
   }
 
-  async delete(userId: string, folder: string): Promise<void> {
-    const file = await this.findByUserId(userId);
+  async delete(userId: number, folder: string): Promise<void> {
+    const file = await this.findById(userId);
     if (file) {
       try {
         unlinkSync(join(this.fileUploadPath, folder, file.fileName));
@@ -74,7 +74,7 @@ export class FileService {
     }
   }
 
-  async findByUserId(userId: string): Promise<File> {
+  async findById(userId: number): Promise<File> {
     return await this.fileRepository.findOne({where: {userId}});
   }
 }

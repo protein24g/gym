@@ -9,7 +9,7 @@ export class ProfileService {
     private readonly fileService: FileService,
   ) {}
 
-  async create(userId: string, file: Express.Multer.File): Promise<void> {
+  async create(userId: number, file: Express.Multer.File): Promise<void> {
     if (!file) {
       throw new NotFoundException('존재하지 않는 파일');
     }
@@ -17,7 +17,7 @@ export class ProfileService {
     await this.fileService.create(userId, file, FileType.PROFILE, '/' + FileType.PROFILE.toLocaleLowerCase() + '/');
   }
 
-  async update(userId: string, updateFile: Express.Multer.File): Promise<void> {
+  async update(userId: number, updateFile: Express.Multer.File): Promise<void> {
     if (!updateFile) {
       throw new NotFoundException('존재하지 않는 파일');
     }

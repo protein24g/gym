@@ -24,13 +24,13 @@ export class JwtRefreshStrategy extends PassportStrategy(Strategy, 'jwt-refresh'
   }
 
   async validate(payload: AuthPayload): Promise<AuthPayload> {
-    const user = await this.userService.findByUserId(payload.userId);
+    const user = await this.userService.findById(payload.userId);
     if (!user) {
       throw new UnauthorizedException('존재하지 않는 유저');
     }
 
     return {
-      userId: user.userId,
+      userId: user.id,
       role: user.role,
     };
   }
