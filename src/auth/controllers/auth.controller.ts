@@ -32,7 +32,7 @@ export class AuthController {
   @ApiOkResponse({description: '로그인 성공'})
   @ApiUnauthorizedResponse({description: '아이디 또는 패스워드 오류'})
   @ApiForbiddenResponse({description: '권한이 없습니다'})
-  async login(@Req() request: Request, @Res() response: Response, @Body() signInDTO: SignInDTO) {
+  async signIn(@Req() request: Request, @Res() response: Response, @Body() signInDTO: SignInDTO) {
     const res = await this.authService.validateUser(signInDTO);
     request.user = res.user;
     const payload = request.user as AuthPayload;

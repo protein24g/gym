@@ -5,6 +5,7 @@ import { Repository } from 'typeorm';
 import { RoleType } from 'src/auth/roles/enums/role.type.enum';
 import { OAuthType } from 'src/auth/enums/oauth-type.enum';
 import axios from 'axios';
+import { UserPayload } from './interfaces/user-payload.interface';
 
 @Injectable()
 export class UserService {
@@ -32,24 +33,78 @@ export class UserService {
     await this.userRepository.remove(user);
   }
 
-  async findByName(name: string): Promise<User> {
-    return await this.userRepository.findOne({where: {name}});
+  async findAll(): Promise<UserPayload[]> {
+    const users = await this.userRepository.find({where: {role: RoleType.USER}});
+
+    return users.map(user => ({
+      id: user.id,
+      email: user.email,
+      name: user.name,
+      telNumber: user.telNumber,
+      birth: user.birth,
+      address: user.address,
+      addressDetail: user.addressDetail,
+      createAt: user.createdAt,
+      role: user.role,
+    }));
   }
 
-  async findByEmail(email: string): Promise<User> {
-    return await this.userRepository.findOne({where: {email}});
+  async findByName(name: string): Promise<UserPayload[]> {
+    const users = await this.userRepository.find({where: {name, role: RoleType.USER}});
+
+    return users.map(user => ({
+      id: user.id,
+      email: user.email,
+      name: user.name,
+      telNumber: user.telNumber,
+      birth: user.birth,
+      address: user.address,
+      addressDetail: user.addressDetail,
+      createAt: user.createdAt,
+      role: user.role,
+    }));
   }
 
-  async findByTelNumber(telNumber: string): Promise<User> {
-    return await this.userRepository.findOne({where: {telNumber}});
+  async findByEmail(email: string): Promise<UserPayload> {
+    const user = await this.userRepository.findOne({where: {email, role: RoleType.USER}});
+    if (!user) return;
+
+    return {
+      id: user.id,
+      email: user.email,
+      name: user.name,
+      telNumber: user.telNumber,
+      birth: user.birth,
+      address: user.address,
+      addressDetail: user.addressDetail,
+      createAt: user.createdAt,
+      role: user.role,
+    };
   }
 
-  async findUserByTelNumberWithPtTrainer(telNumber: string): Promise<User> {
-    return await this.userRepository.findOne({where: {telNumber}, relations: ['ptTrainer']});
+  async findByTelNumber(telNumber: string): Promise<UserPayload> {
+    const user = await this.userRepository.findOne({where: {telNumber, role: RoleType.USER}});
+    if (!user) return;
+    
+    return {
+      id: user.id,
+      email: user.email,
+      name: user.name,
+      telNumber: user.telNumber,
+      birth: user.birth,
+      address: user.address,
+      addressDetail: user.addressDetail,
+      createAt: user.createdAt,
+      role: user.role,
+    };
   }
 
   async findById(userId: number): Promise<User> {
-    return await this.userRepository.findOne({where: {id: userId}});
+    return await this.userRepository.findOne({where: {id: userId}, relations: ['ptTrainer']});
+  }
+
+  async findByIdWithPtTrainer(userId: number): Promise<User> {
+    return await this.userRepository.findOne({where: {id: userId}, relations: ['ptTrainer']});
   }
 
   async isManagerExists(): Promise<boolean> {

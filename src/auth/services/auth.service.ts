@@ -29,12 +29,12 @@ export class AuthService {
     user: AuthPayload,
     resetPassword: boolean,
   }> {
-    const user = await this.userService.findByEmail(signInDTO.email);
-    if (!user) {
-      throw new UnauthorizedException('아이디 또는 패스워드 오류d');
+    const user = await this.userRepository.findOne({where: {email: signInDTO.email}});
+    if (!user || !user.password) {
+      throw new UnauthorizedException('아이디 또는 패스워드 오류');
     }
 
-    if (user.role === RoleType.USER || !user.password) {
+    if (user.role === RoleType.USER) {
       throw new ForbiddenException('권한이 없습니다');
     }
 
