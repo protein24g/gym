@@ -1,10 +1,7 @@
 import { ConflictException, ForbiddenException, Injectable, UnauthorizedException } from '@nestjs/common';
 import * as argon2 from 'argon2';
-import { UserService } from 'src/user/user.service';
 import { Repository } from 'typeorm';
 import { InjectRepository } from '@nestjs/typeorm';
-import { User } from 'src/user/entities/user.entity';
-import { TokenService } from './token.service';
 import { SignUpDTO } from 'src/auth/dto/signup.dto';
 import { AuthPayload } from '../interfaces/auth-payload.interface';
 import { ProfileService } from 'src/file/services/profile-file.service';
@@ -14,6 +11,9 @@ import axios from 'axios';
 import { SignInDTO } from '../dto/signin.dto';
 import { RoleType } from '../roles/enums/role.type.enum';
 import { OAuthSignUpDTO } from '../dto/oauth-signup.dto';
+import { User } from 'src/member/user/entities/user.entity';
+import { UserService } from 'src/member/user/user.service';
+import { TokenService } from './token.service';
 
 @Injectable()
 export class AuthService {
@@ -52,7 +52,7 @@ export class AuthService {
     };
   }
 
-  async signUp(signUpDTO: SignUpDTO | OAuthSignUpDTO, file: Express.Multer.File): Promise<AuthPayload> {
+  async signUp(signUpDTO: SignUpDTO, file: Express.Multer.File): Promise<AuthPayload> {
     if ('email' in signUpDTO) {
       const email = await this.userService.findByEmail(signUpDTO.email);
       if (email) {
@@ -68,8 +68,8 @@ export class AuthService {
     const user = this.userRepository.create({
       ...signUpDTO,
       createdAt: Date(),
-      // 매니저 수동 생성
-      // role: RoleType.MANAGER,
+      // 사장 수동 생성
+      // role: RoleType.OWNER,
       // password: 'testpw',
     });
     await this.userRepository.save(user);
@@ -85,22 +85,16 @@ export class AuthService {
   }
 
   async oAuthSignUp(signUpDTO: OAuthSignUpDTO, provider: OAuthType): Promise<AuthPayload> {
-    const email = await this.userService.findByEmail(signUpDTO.email);
-    if (email) {
-      throw new ConflictException('이미 존재하는 이메일');
-    }
-
-    const telNumber = await this.userService.findByTelNumber(signUpDTO.telNumber);
-    if (telNumber) {
-      throw new ConflictException('이미 존재하는 휴대폰 번호');
+    const oAuthId = await this.userService.findByOAuthId(signUpDTO.oAuthId);
+    if (oAuthId) {
+      throw new ConflictException('이미 존재하는 OAuth 계정');
     }
     
-    const user = this.userRepository.create({
+    const user = await this.userRepository.save({
       ...signUpDTO,
       createdAt: Date(),
       provider: provider ? provider : OAuthType.LOCAL,
     });
-    await this.userRepository.save(user);
 
     return {
       userId: user.id,

@@ -1,6 +1,6 @@
 import { Column, CreateDateColumn, Entity, JoinColumn, ManyToOne, PrimaryGeneratedColumn } from "typeorm";
 import { FileType } from "../enums/file-type.enum";
-import { User } from "src/user/entities/user.entity";
+import { User } from "src/member/user/entities/user.entity";
 
 @Entity()
 export class File {

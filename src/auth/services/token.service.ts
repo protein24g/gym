@@ -2,9 +2,10 @@ import { forwardRef, Inject, Injectable, NotFoundException, UnauthorizedExceptio
 import { ConfigService } from "@nestjs/config";
 import { JwtService } from "@nestjs/jwt";
 import * as argon2 from "argon2";
-import { UserService } from "src/user/user.service";
 import { AuthPayload } from "../interfaces/auth-payload.interface";
-import { User } from "src/user/entities/user.entity";
+import { UserService } from "src/member/user/user.service";
+import { User } from "src/member/user/entities/user.entity";
+import { OAuthPayload } from "../interfaces/oauth-payload.interface";
 
 @Injectable()
 export class TokenService {
@@ -14,6 +15,16 @@ export class TokenService {
     private readonly jwtService: JwtService,
     private readonly configService: ConfigService,
   ) {}
+
+  createOAuthAccessToken(payload: OAuthPayload): string {
+    return this.jwtService.sign(
+      payload,
+      {
+        secret: this.configService.get<string>('JWT_SECRET'),
+        expiresIn: this.configService.get<string>('JWT_EXPIRE_IN'),
+      },
+    );
+  }
 
   createAccessToken(payload: AuthPayload): string {
     return this.jwtService.sign(

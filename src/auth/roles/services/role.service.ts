@@ -1,10 +1,10 @@
 import { ConflictException, ForbiddenException, Inject, Injectable } from "@nestjs/common";
-import { UserService } from "src/user/user.service";
 import { RoleType } from "../enums/role.type.enum";
 import { InjectRepository } from "@nestjs/typeorm";
-import { User } from "src/user/entities/user.entity";
 import { Repository } from "typeorm";
 import { AuthPayload } from "src/auth/interfaces/auth-payload.interface";
+import { UserService } from "src/member/user/user.service";
+import { User } from "src/member/user/entities/user.entity";
 
 @Injectable()
 export class RoleService {

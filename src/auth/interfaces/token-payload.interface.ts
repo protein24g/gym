@@ -1,5 +1,5 @@
 export interface TokenPayload {
   accessToken: string;
-  refreshToken: string;
+  refreshToken?: string;
   kakaoAccessToken?: string;
 }

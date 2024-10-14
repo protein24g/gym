@@ -5,8 +5,8 @@ import { join } from 'path';
 import { Repository } from 'typeorm';
 import { v1 as uuid } from 'uuid';
 import { File } from '../entities/file.entity';
-import { UserService } from 'src/user/user.service';
 import { FileType } from '../enums/file-type.enum';
+import { UserService } from 'src/member/user/user.service';
 
 @Injectable()
 export class FileService {
