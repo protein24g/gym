@@ -64,7 +64,7 @@ export class AuthController {
   @ApiOperation({
     summary: '회원가입',
   })
-  @ApiOkResponse({description: '회원가입 성공'})
+  @ApiCreatedResponse({description: '회원가입 성공'})
   @ApiConflictResponse({description: '이미 가입된 정보'})
   @ApiNotFoundResponse({description: '존재하지 않는 파일'})
   @ApiInternalServerErrorResponse({description: '파일 저장 중 오류 발생'})

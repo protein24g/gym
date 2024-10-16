@@ -1,4 +1,4 @@
-import { ConflictException, ForbiddenException, Injectable, NotFoundException } from '@nestjs/common';
+import { ConflictException, Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Trainer } from './entities/trainer.entity';
 import { Repository } from 'typeorm';
@@ -8,6 +8,7 @@ import { User } from '../user/entities/user.entity';
 import { UserService } from '../user/user.service';
 import { AuthPayload } from 'src/auth/interfaces/auth-payload.interface';
 import { UserPayload } from '../user/interfaces/user-payload.interface';
+import { TrainerPayload } from './interfaces/trainer-payload.interface';
 
 @Injectable()
 export class TrainerService {
@@ -25,6 +26,10 @@ export class TrainerService {
       throw new NotFoundException('존재하지 않는 유저');
     }
 
+    if (payload.userId === user.id) {
+      throw new ConflictException('자신의 권한은 추가할 수 없습니다');
+    }
+
     if (user.ptTrainer) {
       throw new ConflictException('담당 트레이너가 있는 회원을 트레이너로 변경할 수 없습니다');
     }
@@ -39,9 +44,7 @@ export class TrainerService {
       });
     }
 
-    if (payload.userId !== user.id) {
-      await this.userRepository.update({id: user.id}, {role: RoleType.TRAINER, password: await argon2.hash(user.birth)});
-    }
+    await this.userRepository.update({id: user.id}, {role: RoleType.TRAINER, password: await argon2.hash(user.birth)});
   }
 
   async createUser(trainerId: number, userId: number): Promise<void> {
@@ -56,7 +59,7 @@ export class TrainerService {
     }
 
     if(trainer.userId === user.id) {
-      throw new ForbiddenException('자기 자신은 추가할 수 없습니다');
+      throw new ConflictException('자신의 권한은 추가할 수 없습니다');
     }
 
     if (!!user.ptTrainer) {
@@ -68,7 +71,22 @@ export class TrainerService {
     });
   }
 
-  async findAll(userId: number): Promise<UserPayload[]> {
+  async findAll(): Promise<TrainerPayload[]> {
+    const trainer = await this.trainerRepository.find({relations: ['user']});
+    if (!trainer) {
+      throw new NotFoundException('존재하지 않는 트레이너');
+    }
+
+    return trainer.map(trainer => ({
+      id: trainer.id,
+      name: trainer.user.name,
+      introduction: trainer.introduction,
+      qualifications: trainer.qualifications,
+      careerDetails: trainer.careerDetails,
+    }));
+  }
+
+  async findAllPtUsers(userId: number): Promise<UserPayload[]> {
     const trainer = await this.trainerRepository.findOne(
       {
         where: {userId},
@@ -93,19 +111,23 @@ export class TrainerService {
     }));
   }
 
-  async delete(userId: number): Promise<void> {
+  async delete(payload: AuthPayload, userId: number): Promise<void> {
     const trainer = await this.findById(userId);
     if (!trainer) {
       throw new NotFoundException('존재하지 않는 트레이너');
     }
     
+    if (payload.userId === trainer.id) {
+      throw new ConflictException('자신의 권한은 삭제할 수 없습니다');
+    }
+
     await this.trainerRepository.remove(trainer);
     await this.userRepository.update({id: userId}, {role: RoleType.USER});
   }
 
   async deleteUser(trainerId: number, userId: number): Promise<void> {
     if(trainerId === userId) {
-      throw new ConflictException('자기 자신은 삭제할 수 없습니다');
+      throw new ConflictException('자신의 권한은 삭제할 수 없습니다');
     }
 
     const trainer = await this.findById(trainerId);

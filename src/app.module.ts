@@ -7,6 +7,7 @@ import { AuthModule } from './auth/auth.module';
 import { TrainerModule } from './member/trainer/trainer.module';
 import { FileModule } from './file/file.module';
 import { UserModule } from './member/user/user.module';
+import { ManagerModule } from './member/manager/manager.module';
 
 @Module({
   imports: [
@@ -22,6 +23,7 @@ import { UserModule } from './member/user/user.module';
     }),
     AuthModule,
     UserModule,
+    ManagerModule,
     TrainerModule,
     FileModule,
   ],
