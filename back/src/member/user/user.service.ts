@@ -99,6 +99,23 @@ export class UserService {
     };
   }
 
+  async findMyInfo(userId: number): Promise<UserPayload> {
+    const user = await this.userRepository.findOne({where: {id: userId}, relations: ['ptTrainer']});
+    if (!user) return;
+
+    return {
+      id: user.id,
+      email: user.email,
+      name: user.name,
+      telNumber: user.telNumber,
+      birth: user.birth,
+      address: user.address,
+      addressDetail: user.addressDetail,
+      createAt: user.createdAt,
+      role: user.role,
+    }
+  }
+
   async findById(userId: number): Promise<User> {
     return await this.userRepository.findOne({where: {id: userId}, relations: ['ptTrainer']});
   }

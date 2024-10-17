@@ -9,7 +9,18 @@ export class SignUpDTO {
   })
   @IsString({ message: '이메일은 문자여야 합니다.' })
   @Matches(/^[a-zA-Z0-9+-\_.]+@[a-zA-Z0-9-]+\.[a-zA-Z0-9-.]+$/, { message: '이메일 형식이 유효하지 않습니다. {예: test@email.com}'})
-  email?: string;
+  email: string;
+
+  @ApiProperty({
+    type: String,
+    description: '비밀번호',
+    example: 'Password123!',
+  })
+  @IsString({ message: '비밀번호는 문자여야 합니다.' })
+  @Matches(/^(?=.*[A-Za-z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,16}$/, { 
+    message: '비밀번호는 8~16자, 영어 대/소문자, 숫자, 특수문자를 포함해야 합니다.',
+  })
+  password: string;
 
   @ApiProperty({
     required: true,

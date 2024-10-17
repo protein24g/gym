@@ -10,12 +10,12 @@ import { Roles } from 'src/auth/roles/decorators/role.decorator';
 
 @Controller('api/users')
 @UseGuards(JwtAuthGuard, RoleGuard)
-@Roles(RoleType.OWNER, RoleType.MANAGER, RoleType.TRAINER)
 @ApiTags('Users')
 export class UserController {
   constructor(private readonly userService: UserService) {}
 
   @Get()
+  @Roles(RoleType.OWNER, RoleType.MANAGER, RoleType.TRAINER)
   @ApiOperation({ summary: '사용자 전체 검색' })
   @ApiNotFoundResponse({ description: '존재하지 않는 유저' })
   async findAll() {
@@ -23,6 +23,7 @@ export class UserController {
   }
 
   @Get('name/:name')
+  @Roles(RoleType.OWNER, RoleType.MANAGER, RoleType.TRAINER)
   @ApiOperation({ summary: '사용자 이름으로 검색' })
   @ApiNotFoundResponse({ description: '존재하지 않는 유저' })
   async findByName(@Param('name') name: string) {
@@ -30,6 +31,7 @@ export class UserController {
   }
 
   @Get('email/:email')
+  @Roles(RoleType.OWNER, RoleType.MANAGER, RoleType.TRAINER)
   @ApiOperation({ summary: '사용자 이메일로 검색' })
   @ApiNotFoundResponse({ description: '존재하지 않는 유저' })
   async findByEmail(@Param('email') email: string) {
@@ -37,13 +39,24 @@ export class UserController {
   }
 
   @Get('tel/:telNumber')
+  @Roles(RoleType.OWNER, RoleType.MANAGER, RoleType.TRAINER)
   @ApiOperation({ summary: '사용자 전화번호로 검색' })
   @ApiNotFoundResponse({ description: '존재하지 않는 유저' })
   async findByTelNumber(@Param('telNumber') telNumber: string) {
     return await this.userService.findByTelNumber(telNumber);
   }
 
+  @Get('me')
+  @Roles(RoleType.OWNER, RoleType.MANAGER, RoleType.TRAINER, RoleType.USER)
+  @ApiOperation({ summary: '내 정보' })
+  @ApiNotFoundResponse({ description: '존재하지 않는 유저' })
+  async findMyInfo(@Req() request: Request) {
+    const user = request.user as AuthPayload;
+    return await this.userService.findMyInfo(user.userId);
+  }
+
   @Delete('me')
+  @Roles(RoleType.USER)
   @ApiOperation({
     summary: '회원 탈퇴',
   })

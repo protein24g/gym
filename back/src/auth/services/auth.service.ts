@@ -1,4 +1,4 @@
-import { ConflictException, ForbiddenException, Injectable, UnauthorizedException } from '@nestjs/common';
+import { ConflictException, Injectable, UnauthorizedException } from '@nestjs/common';
 import * as argon2 from 'argon2';
 import { Repository } from 'typeorm';
 import { InjectRepository } from '@nestjs/typeorm';
@@ -9,7 +9,6 @@ import { OAuthType } from '../enums/oauth-type.enum';
 import { TokenPayload } from '../interfaces/token-payload.interface';
 import axios from 'axios';
 import { SignInDTO } from '../dto/signin.dto';
-import { RoleType } from '../roles/enums/role.type.enum';
 import { OAuthSignUpDTO } from '../dto/oauth-signup.dto';
 import { User } from 'src/member/user/entities/user.entity';
 import { UserService } from 'src/member/user/user.service';
@@ -32,10 +31,6 @@ export class AuthService {
     const user = await this.userRepository.findOne({where: {email: signInDTO.email}});
     if (!user || !user.password) {
       throw new UnauthorizedException('아이디 또는 패스워드 오류');
-    }
-
-    if (user.role === RoleType.USER) {
-      throw new ForbiddenException('권한이 없습니다');
     }
 
     const isValid = await argon2.verify(user.password, signInDTO.password);
