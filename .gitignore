@@ -1,6 +1,4 @@
-# compiled output
-/dist
-/node_modules
-/build
-.env
-/uploads
+/**/node_modules
+/**/dist
+/**/.env
+/**/uploads
