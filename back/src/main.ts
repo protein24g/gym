@@ -7,7 +7,10 @@ import { BadRequestException, ValidationPipe } from '@nestjs/common';
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
   app.use(cookieParser());
-  app.enableCors();
+  app.enableCors({
+    origin: '*',
+    credentials: true,
+  });
 
   app.useGlobalPipes(new ValidationPipe({
     transform: true, // DTO로 변환
