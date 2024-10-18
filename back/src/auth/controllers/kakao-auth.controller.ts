@@ -1,6 +1,6 @@
 import { Body, Controller, Get, Post, Query, Req, Res, UseGuards } from "@nestjs/common";
 import { KakaoAuthGuard } from "../guards/kakao-auth.guard";
-import { ApiNotFoundResponse, ApiOperation, ApiTags } from "@nestjs/swagger";
+import { ApiConflictResponse, ApiNotFoundResponse, ApiOperation, ApiTags } from "@nestjs/swagger";
 import { kakaoAuthService } from "../services/kakao-auth.service";
 import { Request, Response } from "express";
 import { UserService } from "src/member/user/user.service";
@@ -10,6 +10,7 @@ import { TokenService } from "../services/token.service";
 import { AuthPayload } from "../interfaces/auth-payload.interface";
 import { JwtService } from "@nestjs/jwt";
 import { OAuthPayload } from "../interfaces/oauth-payload.interface";
+import { OAuthSignUpDTO } from "../dto/oauth-signup.dto";
 
 @Controller('api/kakao/oauth')
 @ApiTags('OAuth')
@@ -63,7 +64,7 @@ export class kakaoAuthController {
         }
       );
 
-      return response.redirect('dashboard'); // 로그인 성공 시 대시보드로 이동
+      return response.redirect('http://localhost:5173/'); // 로그인 성공 시 대시보드로 이동
     } else {
       const token = this.tokenService.createOAuthAccessToken(oAuthPayload);
 
@@ -76,55 +77,40 @@ export class kakaoAuthController {
         }
       );
     
-      return response.redirect('register');
+      return response.redirect('http://localhost:5173/oauth-signup'); // 가입 안 된 사용자이기 때문에 기존 받은 정보와 함께 추가 정보 입력 페이지로 이동
     }
   }
 
-  @Get('dashboard')
-  async dashboard() {
-  }
-
-  @Get('register') // 토큰 검증 후 OAuth 가입 정보 목록 반환, 추가 정보 입력 폼
+  @Post('signUp')
   @ApiOperation({
-    summary: '가입시 추가 정보 입력',
+    summary: '카카오 회원가입',
+    description: '카카오에서 받은 사용자 정보와 추가 정보를 합쳐서 회원가입 요청',
   })
-  async registerPage(@Req() request: Request): Promise<OAuthPayload> {
-    const token = request.cookies['accessToken'];
-    const decoded = await this.jwtService.decode(token);
-
-    return {
-      oAuthId: decoded.oAuthId,
-      name: decoded.name,
-      oAuthProfileUrl: decoded.oAuthProfileUrl
-    };
-  }
-
-  @Post('register') // 클라이언트에서 보낸 추가 정보로 계정 생성 후 로그인 토큰 발급
-  @ApiOperation({
-    summary: '추가 정보를 받아 회원가입 후 로그인',
-  })
-  async register(@Body() body: any, @Res() response: Response) {
-    const payload = await this.authService.oAuthSignUp(body, OAuthType.KAKAO);
+  @ApiNotFoundResponse({description: '존재하지 않는 유저'})
+  @ApiConflictResponse({description: '이미 존재하는 OAuth 계정'})
+  async signUp(@Req() request: Request, @Body() body: OAuthSignUpDTO, @Res() response: Response) {
+    const accessToken = request.cookies['accessToken'];
+    const user: OAuthPayload= this.jwtService.decode(accessToken);
+    const payload = await this.authService.oAuthSignUp({
+      ...user,
+      ...body
+    }, OAuthType.KAKAO);
     const token = await this.authService.signIn(payload);
 
-    response.cookie('accessToken', token.accessToken,
-      {
-        httpOnly: true,
-        secure: process.env.isProduction === 'true',
-        maxAge: +process.env.ACCESS_TOKEN_EXPIRE_IN,
-        sameSite: 'strict',
-      }
-    );
+    response.cookie('accessToken', token.accessToken, {
+      httpOnly: true,
+      secure: process.env.isProduction === 'true',
+      maxAge: +process.env.ACCESS_TOKEN_EXPIRE_IN,
+      sameSite: 'strict',
+    });
 
-    response.cookie('refreshToken', token.refreshToken,
-      {
-        httpOnly: true,
-        secure: process.env.isProduction === 'true',
-        maxAge: +process.env.ACCESS_TOKEN_EXPIRE_IN,
-        sameSite: 'strict',
-      }
-    );
+    response.cookie('refreshToken', token.refreshToken, {
+      httpOnly: true,
+      secure: process.env.isProduction === 'true',
+      maxAge: +process.env.ACCESS_TOKEN_EXPIRE_IN,
+      sameSite: 'strict',
+    });
 
-    return response.redirect('dashboard'); // 로그인 성공 시 대시보드로 이동
+    return response.status(201).json({message: '회원가입 성공'});
   }
 }

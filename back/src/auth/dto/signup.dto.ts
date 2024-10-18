@@ -23,6 +23,17 @@ export class SignUpDTO {
   password: string;
 
   @ApiProperty({
+    type: String,
+    description: '비밀번호 확인',
+    example: 'Password123!',
+  })
+  @IsString({ message: '비밀번호는 문자여야 합니다.' })
+  @Matches(/^(?=.*[A-Za-z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,16}$/, { 
+    message: '비밀번호는 8~16자, 영어 대/소문자, 숫자, 특수문자를 포함해야 합니다.',
+  })
+  passwordChk: string;
+
+  @ApiProperty({
     required: true,
     type: String,
     description: '이름',

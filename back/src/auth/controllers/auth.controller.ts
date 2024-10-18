@@ -55,7 +55,12 @@ export class AuthController {
         sameSite: 'strict',
       }
     );
-    return response.json({ message: res.resetPassword ? '초기화된 비밀번호입니다. 비밀번호를 변경하세요' : '로그인 성공' });
+
+    if (res.resetPassword) {
+      return response.status(403).json({message: '초기화된 비밀번호입니다. 비밀번호를 변경하세요'});
+    } else {
+      return response.status(200).json({message: '로그인 성공'});
+    }
   }
   
   @HttpCode(201)
@@ -68,8 +73,10 @@ export class AuthController {
   @ApiConflictResponse({description: '이미 가입된 정보'})
   @ApiNotFoundResponse({description: '존재하지 않는 파일'})
   @ApiInternalServerErrorResponse({description: '파일 저장 중 오류 발생'})
-  async signUp(@Body() signUpDTO: SignUpDTO, @UploadedFile() file: Express.Multer.File) {
-    return await this.authService.signUp(signUpDTO, file);
+  async signUp(@Body() signUpDTO: SignUpDTO, @UploadedFile() file: Express.Multer.File, @Res() response: Response) {
+    await this.authService.signUp(signUpDTO, file);
+
+    return response.status(201).json({message: '회원가입 성공'});
   }
 
   @HttpCode(200)

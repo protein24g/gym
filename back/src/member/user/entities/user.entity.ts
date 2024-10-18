@@ -32,7 +32,7 @@ export class User {
   @Column({ type: 'text', nullable: true })
   address: string;
 
-  @Column({ type: 'text', nullable: true })
+  @Column({ type: 'text', nullable: true, default: null })
   addressDetail: string;
 
   @CreateDateColumn()
