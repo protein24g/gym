@@ -3,43 +3,12 @@ import { IsNotEmpty, IsString, Matches } from 'class-validator';
 
 export class SignUpDTO {
   @ApiProperty({
-    type: String,
-    description: '이메일',
-    example: 'test@email.com',
-  })
-  @IsString({ message: '이메일은 문자여야 합니다.' })
-  @Matches(/^[a-zA-Z0-9+-\_.]+@[a-zA-Z0-9-]+\.[a-zA-Z0-9-.]+$/, { message: '이메일 형식이 유효하지 않습니다. {예: test@email.com}'})
-  email: string;
-
-  @ApiProperty({
-    type: String,
-    description: '비밀번호',
-    example: 'Password123!',
-  })
-  @IsString({ message: '비밀번호는 문자여야 합니다.' })
-  @Matches(/^(?=.*[A-Za-z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,16}$/, { 
-    message: '비밀번호는 8~16자, 영어 대/소문자, 숫자, 특수문자를 포함해야 합니다.',
-  })
-  password: string;
-
-  @ApiProperty({
-    type: String,
-    description: '비밀번호 확인',
-    example: 'Password123!',
-  })
-  @IsString({ message: '비밀번호는 문자여야 합니다.' })
-  @Matches(/^(?=.*[A-Za-z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,16}$/, { 
-    message: '비밀번호는 8~16자, 영어 대/소문자, 숫자, 특수문자를 포함해야 합니다.',
-  })
-  passwordChk: string;
-
-  @ApiProperty({
     required: true,
     type: String,
     description: '이름',
     example: '감동',
   })
-  @IsNotEmpty({ message: '이름 필수 입력입니다.' })
+  @IsNotEmpty({ message: '이름은 필수 입력입니다.' })
   @IsString({ message: '이름은 문자열이어야 합니다.' })
   name: string;
 
@@ -60,6 +29,7 @@ export class SignUpDTO {
     description: '생년월일',
     example: '010203',
   })
+  @IsNotEmpty({ message: '생년월일은 필수 입력입니다.'})
   @IsString({ message: '생년월일은 문자여야 합니다.' })
   @Matches(/^([0-9]{2}(0[1-9]|1[0-2])(0[1-9]|[1,2][0-9]|3[0,1]))$/, { message: '생년월일 형식이 유효하지 않습니다. {예: YYMMDD}'})
   birth: string;

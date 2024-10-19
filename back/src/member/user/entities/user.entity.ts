@@ -23,13 +23,13 @@ export class User {
   @Column({ type: 'varchar', length: 20, nullable: false })
   name: string;
 
-  @Column({ type: 'varchar', length: 20, nullable: true, unique: true })
+  @Column({ type: 'varchar', length: 20, nullable: false, unique: true })
   telNumber: string;
 
-  @Column({ type: 'varchar', length: 6, nullable: true })
+  @Column({ type: 'varchar', length: 6, nullable: false })
   birth: string;
 
-  @Column({ type: 'text', nullable: true })
+  @Column({ type: 'text', nullable: false })
   address: string;
 
   @Column({ type: 'text', nullable: true, default: null })

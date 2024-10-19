@@ -4,8 +4,6 @@ import { IoEyeOutline } from "react-icons/io5";
 import { IoEyeOffOutline } from "react-icons/io5";
 import { RiKakaoTalkFill } from 'react-icons/ri';
 import axios from 'axios';
-import { AiOutlineMail } from "react-icons/ai";
-import { RiLockPasswordLine } from "react-icons/ri";
 
 const SignInPage: FC = () => {
   const [isPasswordVisible, setIsPasswordVisible] = useState<boolean>(false);
@@ -43,25 +41,31 @@ const SignInPage: FC = () => {
   return (
     <div className='flex min-h-screen justify-center items-center bg-custom-gray text-white'>
       <div className='w-full sm:max-w-lg p-3'>
-        {/* 사이트 로고 */}
-        <div className='my-2'>
-          <img src={LogoImage} className='mx-auto max-w-xs'/>
-        </div>
-        {/* 로그인 폼 */}
-        <form onSubmit={signIn}>
+        {/* 회원가입 폼 */}
+        <form onSubmit={signIn} className='p-10 shadow-2xl rounded'>
+          {/* 사이트 로고 */}
+          <div className='my-2'>
+            <img src={LogoImage} className='mx-auto max-w-xs'/>
+          </div>
           {/* 이메일 */}
-          <div className='flex my-2'>
-            <div className='flex items-center justify-center'><AiOutlineMail className='w-12 h-12 p-2 bg-white text-gray-500 border-r'/></div>
-            <input className='px-2 py-3 w-full bg-white text-black' placeholder='이메일' id='email' type='email' onChange={(e) => setEmail(e.target.value)} value={email}/>
+          <div className='my-3'>
+            <div className='mb-2'>
+              <label htmlFor='email'>이메일</label>
+              <span className='text-red-500'>*</span>
+            </div>
+            <input className='p-2 w-full border text-black rounded' placeholder='이메일을 입력해주세요' id='email' type='email' onChange={(e) => setEmail(e.target.value)} value={email}/>
           </div>
           {/* 비밀번호 */}
-          <div className='flex my-2 relative'>
-            <div className='flex items-center justify-center'><RiLockPasswordLine className='w-12 h-12 p-2 bg-white text-gray-500 border-r'/></div>
-            <input className='px-2 py-3 w-full bg-white text-black' placeholder='비밀번호' id='password' type={isPasswordVisible ? 'text' : 'password'} onChange={(e) => {setPassword(e.target.value)}} value={password}/>
+          <div className='my-3 relative'>
+            <div className='mb-2'>
+              <label htmlFor='password'>비밀번호</label>
+              <span className='text-red-500'>*</span>
+            </div>
+            <input className='p-2 w-full border text-black rounded' placeholder='비밀번호를 입력해주세요' id='password' type={isPasswordVisible ? 'text' : 'password'} onChange={(e) => setPassword(e.target.value)} value={password}/>
             {isPasswordVisible ? 
-              <IoEyeOutline className='absolute right-4 top-3 w-6 h-6 text-black cursor-pointer' onClick={() => {setIsPasswordVisible(!isPasswordVisible)}}/>
+              <IoEyeOutline className='absolute right-4 bottom-2 w-6 h-6 text-black cursor-pointer' onClick={() => {setIsPasswordVisible(!isPasswordVisible)}}/>
             :
-              <IoEyeOffOutline className='absolute right-4 top-3 w-6 h-6 text-black cursor-pointer' onClick={() => {setIsPasswordVisible(!isPasswordVisible)}}/>
+              <IoEyeOffOutline className='absolute right-4 bottom-2 w-6 h-6 text-black cursor-pointer' onClick={() => {setIsPasswordVisible(!isPasswordVisible)}}/>
             }
           </div>
           {/* 비밀번호 찾기 */}
@@ -69,21 +73,26 @@ const SignInPage: FC = () => {
             <a className='mb-4 text-sm' href='#'>비밀번호 찾기</a>
           </div>
           {/* 로그인 버튼 */}
-          <div className='my-2'>
-            <button className='px-2 py-3 w-full bg-emerald-600 font-bold text-white hover:bg-emerald-500' type='submit'>로그인</button>
-            <div className='my-2 grid grid-cols-3 items-center'>
-              <hr className='broder-gray-400'/>
-              <p className='text-center'>OR</p>
-              <hr className='broder-gray-400'/>
-            </div>
-            <button className='flex justify-center px-2 py-3 w-full bg-yellow-300 font-bold text-black hover:bg-yellow-200' onClick={() => {window.location.href = 'http://localhost:3000/api/kakao/oauth/authorize';}} type='button'>
-              <RiKakaoTalkFill className='relative top-1 right-1'/>카카오로 시작하기
-            </button>
+          <div className='my-5'>
+            <button className='p-2 w-full bg-blue-500 font-bold text-white hover:bg-blue-600 rounded border border-transparent' type='submit'>로그인</button>
           </div>
+          
+          <div className='my-2 grid grid-cols-3 items-center'>
+               <hr className='broder-gray-400'/>
+               <p className='text-center'>OR</p>
+               <hr className='broder-gray-400'/>
+             </div>
+             <button className='flex justify-center p-2 rounded border border-transparent w-full bg-yellow-300 font-bold text-black hover:bg-yellow-200' onClick={() => {window.location.href = 'http://localhost:3000/api/kakao/oauth/authorize';}} type='button'>
+               <RiKakaoTalkFill className='relative top-1 right-1'/>카카오로 시작하기
+             </button>
+            <div className='my-3'>
+              <span>계정이 없으신가요?</span>
+              <a className='mx-3 text-blue-500 font-bold' href='/signup'>회원가입</a>
+            </div>
         </form>
       </div>
     </div>
   )
 }
 
-export default SignInPage;
+export default SignInPage

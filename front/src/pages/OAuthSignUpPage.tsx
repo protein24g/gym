@@ -83,4 +83,4 @@ const OAuthSignUpPage: FC = () => {
   )
 }
 
-export default OAuthSignUpPage;
+export default OAuthSignUpPage

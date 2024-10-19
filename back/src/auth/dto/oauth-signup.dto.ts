@@ -12,7 +12,6 @@ export class OAuthSignUpDTO {
   oAuthId?: string;
 
   @ApiProperty({
-    required: true,
     type: String,
     description: '이름',
     example: '감동',
@@ -46,6 +45,7 @@ export class OAuthSignUpDTO {
     description: '생년월일',
     example: '010203',
   })
+  @IsNotEmpty({ message: '생년월일은 필수 입력입니다.' })
   @IsString({ message: '생년월일은 문자여야 합니다.' })
   @Matches(/^([0-9]{2}(0[1-9]|1[0-2])(0[1-9]|[1,2][0-9]|3[0,1]))$/, { message: '생년월일 형식이 유효하지 않습니다. {예: YYMMDD}'})
   birth: string;

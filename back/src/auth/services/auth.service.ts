@@ -48,13 +48,6 @@ export class AuthService {
   }
 
   async signUp(signUpDTO: SignUpDTO, file: Express.Multer.File): Promise<AuthPayload> {
-    if ('email' in signUpDTO) {
-      const email = await this.userService.findByEmail(signUpDTO.email);
-      if (email) {
-        throw new ConflictException('이미 존재하는 이메일');
-      }
-    }
-
     const telNumber = await this.userService.findByTelNumber(signUpDTO.telNumber);
     if (telNumber) {
       throw new ConflictException('이미 존재하는 휴대폰 번호');
