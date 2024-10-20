@@ -20,8 +20,8 @@ export class TokenService {
     return this.jwtService.sign(
       payload,
       {
-        secret: this.configService.get<string>('JWT_SECRET'),
-        expiresIn: this.configService.get<string>('JWT_EXPIRE_IN'),
+        secret: this.configService.get<string>('KAKAO_JWT_SECRET'),
+        expiresIn: this.configService.get<string>('KAKAO_JWT_EXPIRE_IN'),
       },
     );
   }
@@ -57,5 +57,14 @@ export class TokenService {
     }
 
     return user;
+  }
+
+  checkOAuthAccessToken(accessToken: string): boolean {
+    try {
+      const token = this.jwtService.verify(accessToken, {secret: this.configService.get<string>('KAKAO_JWT_SECRET')});
+      return (!!token);
+    } catch(error) {
+      return false;
+    }
   }
 }

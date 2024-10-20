@@ -81,6 +81,22 @@ export class kakaoAuthController {
     }
   }
 
+  @Post('verify-token')
+  @ApiOperation({
+    summary: '카카오 회원가입 추가정보 입력 페이지 접속 토큰 검증',
+    description: '추가정보 입력 페이지 접속시 기존에 받은 기본 정보를 담은 토큰 검증',
+  })
+  verifyToken(@Req() request: Request, @Res() response: Response) {
+    const accessToken = request.cookies['accessToken'];
+    
+    if (!accessToken) {
+      return response.json({ success: false });
+    }
+  
+    const isValid = this.tokenService.checkOAuthAccessToken(accessToken);
+    return response.json({ success: isValid });
+  }
+
   @Post('signUp')
   @ApiOperation({
     summary: '카카오 회원가입',
@@ -88,6 +104,7 @@ export class kakaoAuthController {
   })
   @ApiNotFoundResponse({description: '존재하지 않는 유저'})
   @ApiConflictResponse({description: '이미 존재하는 OAuth 계정'})
+  @ApiConflictResponse({description: '이미 존재하는 휴대폰 번호'})
   async signUp(@Req() request: Request, @Body() body: OAuthSignUpDTO, @Res() response: Response) {
     const accessToken = request.cookies['accessToken'];
     const user: OAuthPayload= this.jwtService.decode(accessToken);

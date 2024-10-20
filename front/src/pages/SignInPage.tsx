@@ -73,7 +73,7 @@ const SignInPage: FC = () => {
             <a className='mb-4 text-sm' href='#'>비밀번호 찾기</a>
           </div>
           {/* 로그인 버튼 */}
-          <div className='my-5'>
+          <div className='my-3'>
             <button className='p-2 w-full bg-blue-500 font-bold text-white hover:bg-blue-600 rounded border border-transparent' type='submit'>로그인</button>
           </div>
           

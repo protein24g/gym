@@ -77,6 +77,11 @@ export class AuthService {
     if (oAuthId) {
       throw new ConflictException('이미 존재하는 OAuth 계정');
     }
+
+    const telNumber = await this.userService.findByTelNumber(signUpDTO.telNumber);
+    if (telNumber) {
+      throw new ConflictException('이미 존재하는 휴대폰 번호');
+    }
     
     const user = await this.userRepository.save({
       ...signUpDTO,
