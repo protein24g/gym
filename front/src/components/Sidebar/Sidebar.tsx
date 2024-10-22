@@ -1,7 +1,8 @@
-import { FC, ReactNode } from "react"
+import { FC, ReactNode, useContext } from "react"
 import { SidebarMenus } from "./SidebarMenus"
 import { Link, useLocation } from "react-router-dom"
 import { IoStatsChart } from "react-icons/io5";
+import { SidebarContext } from "../../context/SidebarContext";
 
 interface MenuItem {
   roles: string[];
@@ -11,7 +12,9 @@ interface MenuItem {
   icon: ReactNode;
 }
 
-const Sidebar: FC<{isSidebarOpen: boolean, toggleSidebar: () => void}> = ({isSidebarOpen, toggleSidebar}) => {
+const Sidebar: FC = () => {
+  const {isSidebarOpen, toggleSidebar} = useContext(SidebarContext);
+  
   const location = useLocation(); // useLocation 훅 사용
   const { pathname } = location; // pathname 속성 추출
 

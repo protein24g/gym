@@ -7,24 +7,28 @@ import Layout from './components/Layout/Layout'
 import Dashboard from './components/Dashboard'
 import Providers from './components/Providers'
 import { useState } from 'react'
+import { SidebarContext } from './context/SidebarContext'
 
 function App() {
   const [isSidebarOpen, setSidebarOpen] = useState<boolean>(true);
+
   const toggleSidebar = (): void => {
     setSidebarOpen(!isSidebarOpen);
-    console.log(isSidebarOpen);
   }
+
   return (
     <BrowserRouter>
-      <Routes>
-        <Route path='/' element={<Layout isSidebarOpen={isSidebarOpen} toggleSidebar={toggleSidebar}/>}>
-          <Route path='/dashboard' element={<Dashboard/>}></Route>
-          <Route path='/providers' element={<Providers/>}></Route>
-        </Route>
-        <Route path='/signin' element={<SignInPage/>}></Route>
-        <Route path='/signup' element={<SignUpPage/>}></Route>
-        <Route path='/oauth-signup' element={<OAuthSignUpPage/>}></Route>
-      </Routes>
+      <SidebarContext.Provider value={{isSidebarOpen, toggleSidebar}}>
+        <Routes>
+          <Route path='/' element={<Layout/>}>
+            <Route path='/dashboard' element={<Dashboard/>}></Route>
+            <Route path='/providers' element={<Providers/>}></Route>
+          </Route>
+          <Route path='/signin' element={<SignInPage/>}></Route>
+          <Route path='/signup' element={<SignUpPage/>}></Route>
+          <Route path='/oauth-signup' element={<OAuthSignUpPage/>}></Route>
+        </Routes>
+      </SidebarContext.Provider>
     </BrowserRouter>
   )
 }

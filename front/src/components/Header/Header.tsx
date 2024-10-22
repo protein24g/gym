@@ -1,8 +1,11 @@
-import { FC } from "react"
+import { FC, useContext } from "react"
 import { CiSearch } from "react-icons/ci"
 import { RxHamburgerMenu } from "react-icons/rx"
+import { SidebarContext } from "../../context/SidebarContext";
 
-const Header: FC<{toggleSidebar: () => void}> = ({toggleSidebar}) => {
+const Header: FC = () => {
+  const { toggleSidebar } = useContext(SidebarContext);
+
   return (
     <div className="bg-white h-16 px-4 flex justify-between items-center">
       <div className="flex flex-1 items-center">
