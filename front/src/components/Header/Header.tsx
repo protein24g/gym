@@ -1,10 +1,16 @@
 import { FC } from "react"
+import { CiSearch } from "react-icons/ci"
+import { RxHamburgerMenu } from "react-icons/rx"
 
-const Header: FC = () => {
+const Header: FC<{toggleSidebar: () => void}> = ({toggleSidebar}) => {
   return (
     <div className="bg-white h-16 px-4 flex justify-between items-center">
-      <div className="relative">
-        <input type="text" placeholder="Search..." className="text-sm focus:outline-none w-full xl:w-[24rem] h-10 border border-gray-400 rounded-sm px-4"></input>
+      <div className="flex flex-1 items-center">
+        <RxHamburgerMenu className="cursor-pointer mr-4" onClick={toggleSidebar}/>
+        <div className="relative w-full">
+          <input type="text" placeholder="Search..." className="text-sm focus:outline-none w-3/4 md:w-2/5 h-10 border border-gray-400 rounded-sm px-4 pl-7"></input>
+          <CiSearch className="absolute left-2 top-3"/>
+        </div>
       </div>
       <div>side buttons</div>
     </div>

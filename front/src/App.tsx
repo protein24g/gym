@@ -6,12 +6,18 @@ import OAuthSignUpPage from './pages/OAuthSignUpPage'
 import Layout from './components/Layout/Layout'
 import Dashboard from './components/Dashboard'
 import Providers from './components/Providers'
+import { useState } from 'react'
 
 function App() {
+  const [isSidebarOpen, setSidebarOpen] = useState<boolean>(true);
+  const toggleSidebar = (): void => {
+    setSidebarOpen(!isSidebarOpen);
+    console.log(isSidebarOpen);
+  }
   return (
     <BrowserRouter>
       <Routes>
-        <Route path='/' element={<Layout/>}>
+        <Route path='/' element={<Layout isSidebarOpen={isSidebarOpen} toggleSidebar={toggleSidebar}/>}>
           <Route path='/dashboard' element={<Dashboard/>}></Route>
           <Route path='/providers' element={<Providers/>}></Route>
         </Route>
