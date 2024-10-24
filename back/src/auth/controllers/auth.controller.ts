@@ -57,9 +57,9 @@ export class AuthController {
     );
 
     if (res.resetPassword) {
-      return response.status(403).json({message: '초기화된 비밀번호입니다. 비밀번호를 변경하세요'});
+      return response.status(403).json({message: '초기화된 비밀번호입니다. 비밀번호를 변경하세요', role: res.user.role});
     } else {
-      return response.status(200).json({message: '로그인 성공'});
+      return response.status(200).json({message: '로그인 성공', role: res.user.role});
     }
   }
   

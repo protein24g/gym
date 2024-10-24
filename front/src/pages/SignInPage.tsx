@@ -4,11 +4,14 @@ import { IoEyeOutline } from "react-icons/io5";
 import { IoEyeOffOutline } from "react-icons/io5";
 import { RiKakaoTalkFill } from 'react-icons/ri';
 import axios from 'axios';
+import { useNavigate } from 'react-router-dom';
 
 const SignInPage: FC = () => {
   const [isPasswordVisible, setIsPasswordVisible] = useState<boolean>(false);
   const [email, setEmail] = useState<string>('');
   const [password, setPassword] = useState<string>('');
+
+  const navigate = useNavigate();
 
   const signIn = async (e: React.FormEvent<HTMLFormElement>): Promise<void> => {
     e.preventDefault(); // 기본 폼 제출 방지
@@ -24,15 +27,24 @@ const SignInPage: FC = () => {
       );
 
       if (response.status === 200) {
-        window.location.href = 'http://localhost:5173/';
+        localStorage.setItem('role', response.data.role);
+        navigate('/dashboard');
       }
     } catch (error) {
       if (axios.isAxiosError(error)) {
         const res = error.response?.data.message;
-        if (typeof res === 'string') {
-          alert(res);
-        } else {
+        console.log(error.response?.status);
+        console.log(error.response?.data.message);
+        const status = error.response?.status;
+
+        if (status === 400) {
           alert(Object.values(res[0].constraints).join(''));
+        } else if (status === 401) {
+          alert(error.response?.data.message);
+        } else if (status === 403) {
+          alert(error.response?.data.message);
+          navigate('/change-password');
+          localStorage.setItem('role', error.response?.data.role);
         }
       }
     }
@@ -87,7 +99,7 @@ const SignInPage: FC = () => {
              </button>
             <div className='my-3'>
               <span>계정이 없으신가요?</span>
-              <a className='mx-3 text-blue-500 font-bold' href='/signup'>회원가입</a>
+              <a className='mx-3 text-blue-500 font-bold' href='http://localhost:3000/auth/signup'>회원가입</a>
             </div>
         </form>
       </div>

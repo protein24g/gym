@@ -1,6 +1,6 @@
 import { FC } from "react"
 
-const Providers: FC = () => {
+const Managers: FC = () => {
   return (
     <div>
       점장
@@ -8,4 +8,4 @@ const Providers: FC = () => {
   )
 }
 
-export default Providers
+export default Managers

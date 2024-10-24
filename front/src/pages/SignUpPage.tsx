@@ -37,7 +37,7 @@ const SignUpPage: FC = () => {
   
       if (response.status === 201) {
         alert(response.data.message);
-        window.location.href = 'http://localhost:5173/';
+        window.location.href = 'http://localhost:3000/';
       }
     } catch (error) {
       if (axios.isAxiosError(error)) {
@@ -132,7 +132,7 @@ const SignUpPage: FC = () => {
           </div>
           <div className='my-3'>
             <span>이미 계정이 있으신가요?</span>
-            <a className='mx-3 text-blue-500 font-bold' href='/signin'>로그인</a>
+            <a className='mx-3 text-blue-500 font-bold' href='http://localhost:3000/auth/signin'>로그인</a>
           </div>
         </form>
       </div>

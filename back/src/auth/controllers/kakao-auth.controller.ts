@@ -11,6 +11,7 @@ import { AuthPayload } from "../interfaces/auth-payload.interface";
 import { JwtService } from "@nestjs/jwt";
 import { OAuthPayload } from "../interfaces/oauth-payload.interface";
 import { OAuthSignUpDTO } from "../dto/oauth-signup.dto";
+import { ConfigService } from "@nestjs/config";
 
 @Controller('api/kakao/oauth')
 @ApiTags('OAuth')
@@ -21,6 +22,7 @@ export class kakaoAuthController {
     private readonly authService: AuthService,
     private readonly tokenService: TokenService,
     private readonly jwtService: JwtService,
+    private readonly configService: ConfigService,
   ) {}
 
   @Get('authorize')
@@ -64,7 +66,7 @@ export class kakaoAuthController {
         }
       );
 
-      return response.redirect('http://localhost:5173/'); // 로그인 성공 시 대시보드로 이동
+      return response.redirect(this.configService.get<string>('FRONT_URL'));
     } else {
       const token = this.tokenService.createOAuthAccessToken(oAuthPayload);
 
@@ -77,7 +79,7 @@ export class kakaoAuthController {
         }
       );
     
-      return response.redirect('http://localhost:5173/oauth-signup'); // 가입 안 된 사용자이기 때문에 기존 받은 정보와 함께 추가 정보 입력 페이지로 이동
+      return response.redirect(this.configService.get<string>('FRONT_URL') + 'oauth-signup'); // 가입 안 된 사용자이기 때문에 기존 받은 정보와 함께 추가 정보 입력 페이지로 이동
     }
   }
 
