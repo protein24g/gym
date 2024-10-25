@@ -3,10 +3,9 @@ import axios from 'axios';
 
 const OAuthSignUpPage: FC = () => {
   const [isLoading, setIsLoading] = useState(true);
+  const [email, setEmail] = useState<string>('');
   const [telNumber, setTelNumber] = useState<string>('');
   const [birth, setBirth] = useState<string>('');
-  const [address, setAddress] = useState<string>('');
-  const [addressDetail, setAddressDetail] = useState<string>('');
 
   useEffect(() => {
     const verifyToken = async () => {
@@ -40,10 +39,9 @@ const OAuthSignUpPage: FC = () => {
     try {
       const response = await axios.post('http://localhost:3000/api/kakao/oauth/signup',
         {
+          email,
           telNumber,
-          birth,
-          address,
-          addressDetail      
+          birth   
         },
         {
           withCredentials: true,
@@ -52,7 +50,7 @@ const OAuthSignUpPage: FC = () => {
   
       if (response.status === 201) {
         alert(response.data.message);
-        window.location.href = 'http://localhost:5173/';
+        window.location.href = 'http://localhost:5173/dashboard';
       }
     } catch (error) {
       if (axios.isAxiosError(error)) {
@@ -75,6 +73,11 @@ const OAuthSignUpPage: FC = () => {
         {/* 회원가입 폼 */}
         <form onSubmit={signUp} className='p-10 shadow-2xl rounded'>
           <div className='text-2xl font-semibold mb-5 text-center text-yellow-400'>카카오 회원가입 추가정보</div>
+          {/* 이메일 */}
+          <div className='my-3'>
+            <label htmlFor='email'>이메일</label>
+            <input className='p-2 w-full border text-black rounded' id='email' placeholder='이메일을 입력해 주세요' type='email' onChange={(e) => setEmail(e.target.value)} value={email}/>
+          </div>
           {/* 연락처 */}
           <div className='my-3'>
             <div className='mb-2'>
@@ -90,18 +93,6 @@ const OAuthSignUpPage: FC = () => {
               <span className='text-red-500'>*</span>
             </div>
             <input className='p-2 w-full border text-black rounded' placeholder='YYMMDD' type='text' onChange={(e) => setBirth(e.target.value)} value={birth}/>
-          </div>
-          {/* 주소 */}
-          <div className='my-3'>
-            <div className='mb-2'>
-              <label htmlFor='address'>주소</label>
-              <span className='text-red-500'>*</span>
-            </div>
-            <input className='p-2 w-full border text-black rounded' id='address' placeholder='주소' type='text' onChange={(e) => setAddress(e.target.value)} value={address}/>
-          </div>
-          {/* 상세 주소 */}
-          <div className='my-3'>
-            <input className='p-2 w-full border text-black rounded' id='address-detail' placeholder='상세 주소' type='text' onChange={(e) => setAddressDetail(e.target.value)} value={addressDetail}/>
           </div>
           {/* 회원가입 버튼 */}
           <div className='mt-10'>

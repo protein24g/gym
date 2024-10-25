@@ -96,7 +96,7 @@ const SignUpPage: FC = () => {
             </div>
             <input className='p-2 w-full border text-black rounded' id='name' placeholder='이름을 입력해 주세요' type='text' onChange={(e) => setName(e.target.value)} value={name}/>
           </div>
-          {/* 이름 */}
+          {/* 이메일 */}
           <div className='my-3'>
             <label htmlFor='email'>이메일</label>
             <input className='p-2 w-full border text-black rounded' id='email' placeholder='이메일을 입력해 주세요' type='email' onChange={(e) => setEmail(e.target.value)} value={email}/>
