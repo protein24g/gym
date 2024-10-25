@@ -8,4 +8,5 @@ export interface UserPayload {
   birth: string;
   createAt: Date;
   role: RoleType;
+  branchId: number;
 }

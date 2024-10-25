@@ -1,10 +1,11 @@
 import { Branch } from "src/branches/entities/branch.entity";
-import { BeforeInsert, BeforeUpdate, Column, CreateDateColumn, Entity, ManyToOne, OneToOne, PrimaryGeneratedColumn } from "typeorm";
+import { BeforeInsert, BeforeUpdate, Column, CreateDateColumn, Entity, JoinColumn, ManyToOne, OneToMany, OneToOne, PrimaryGeneratedColumn } from "typeorm";
 import { Trainer } from "src/member/trainer/entities/trainer.entity";
 import * as argon2 from "argon2";
 import { File } from "src/file/entities/file.entity";
 import { OAuthType } from "src/auth/enums/oauth-type.enum";
 import { RoleType } from "src/auth/roles/enums/role.type.enum";
+import { Attendance } from "../../../attendance/entities/attendance.entity";
 
 @Entity()
 export class User {
@@ -42,6 +43,7 @@ export class User {
   oAuthProfileUrl: string;
 
   @ManyToOne(() => Branch, branch => branch.users)
+  @JoinColumn()
   branch: Branch;
 
   @OneToOne(() => Trainer, trainer => trainer.user, {cascade: true, onDelete: 'SET NULL', nullable: true})
@@ -52,6 +54,9 @@ export class User {
 
   @OneToOne(() => File, file => file.user)
   profileImage: File;
+
+  @OneToMany(() => Attendance, attendance => attendance.user)
+  attendances: Attendance[];
 
   @BeforeInsert()
   @BeforeUpdate()

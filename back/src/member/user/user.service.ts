@@ -44,6 +44,7 @@ export class UserService {
       birth: user.birth,
       createAt: user.createdAt,
       role: user.role,
+      branchId: user.branch.id
     }));
   }
 
@@ -58,6 +59,7 @@ export class UserService {
       birth: user.birth,
       createAt: user.createdAt,
       role: user.role,
+      branchId: user.branch.id
     }));
   }
 
@@ -73,11 +75,12 @@ export class UserService {
       birth: user.birth,
       createAt: user.createdAt,
       role: user.role,
+      branchId: user.branch.id
     };
   }
 
   async findByTelNumber(telNumber: string): Promise<UserPayload> {
-    const user = await this.userRepository.findOne({where: {telNumber, role: RoleType.USER}});
+    const user = await this.userRepository.findOne({where: {telNumber, role: RoleType.USER}, relations: ['branch']});
     if (!user) return;
     
     return {
@@ -88,6 +91,7 @@ export class UserService {
       birth: user.birth,
       createAt: user.createdAt,
       role: user.role,
+      branchId: user.branch.id
     };
   }
 
@@ -103,6 +107,7 @@ export class UserService {
       birth: user.birth,
       createAt: user.createdAt,
       role: user.role,
+      branchId: user.branch.id
     }
   }
 

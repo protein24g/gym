@@ -1,4 +1,5 @@
 import { Gym } from "src/gym/entities/gym.entity";
+import { Attendance } from "src/attendance/entities/attendance.entity";
 import { User } from "src/member/user/entities/user.entity";
 import { Column, Entity, JoinColumn, ManyToOne, OneToMany, PrimaryGeneratedColumn } from "typeorm";
 
@@ -31,4 +32,7 @@ export class Branch {
 
   @OneToMany(() => User, user => user.branch, {cascade: true, onDelete: 'CASCADE'})
   users: User[];
+
+  @OneToMany(() => Attendance, attendance => attendance.user)
+  attendances: Attendance[];
 }

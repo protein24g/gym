@@ -11,6 +11,7 @@ import { ManagerModule } from './member/manager/manager.module';
 import { MypageModule } from './mypage/mypage.module';
 import { ServeStaticModule } from '@nestjs/serve-static';
 import { join } from 'path';  
+import { AttendanceModule } from './attendance/attendance.module';
 
 @Module({
   imports: [
@@ -34,6 +35,7 @@ import { join } from 'path';
     TrainerModule,
     FileModule,
     MypageModule,
+    AttendanceModule,
   ],
   controllers: [AppController],
   providers: [AppService],

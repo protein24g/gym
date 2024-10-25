@@ -57,9 +57,10 @@ export class AuthService {
       ...signUpDTO,
       createdAt: Date(),
       // 사장 수동 생성
-      // role: RoleType.OWNER,
-      // password: 'testpw',
+      //role: RoleType.OWNER,
+      //password: 'testpw',
     });
+    
     await this.userRepository.save(user);
 
     if (file) {
