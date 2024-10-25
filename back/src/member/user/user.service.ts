@@ -42,8 +42,6 @@ export class UserService {
       name: user.name,
       telNumber: user.telNumber,
       birth: user.birth,
-      address: user.address,
-      addressDetail: user.addressDetail,
       createAt: user.createdAt,
       role: user.role,
     }));
@@ -58,8 +56,6 @@ export class UserService {
       name: user.name,
       telNumber: user.telNumber,
       birth: user.birth,
-      address: user.address,
-      addressDetail: user.addressDetail,
       createAt: user.createdAt,
       role: user.role,
     }));
@@ -75,8 +71,6 @@ export class UserService {
       name: user.name,
       telNumber: user.telNumber,
       birth: user.birth,
-      address: user.address,
-      addressDetail: user.addressDetail,
       createAt: user.createdAt,
       role: user.role,
     };
@@ -92,8 +86,6 @@ export class UserService {
       name: user.name,
       telNumber: user.telNumber,
       birth: user.birth,
-      address: user.address,
-      addressDetail: user.addressDetail,
       createAt: user.createdAt,
       role: user.role,
     };
@@ -109,15 +101,13 @@ export class UserService {
       name: user.name,
       telNumber: user.telNumber,
       birth: user.birth,
-      address: user.address,
-      addressDetail: user.addressDetail,
       createAt: user.createdAt,
       role: user.role,
     }
   }
 
   async findById(userId: number): Promise<User> {
-    return await this.userRepository.findOne({where: {id: userId}, relations: ['ptTrainer']});
+    return await this.userRepository.findOne({where: {id: userId}, relations: ['ptTrainer', 'profileImage']});
   }
 
   async findByOAuthId(oAuthId: string): Promise<User> {

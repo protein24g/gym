@@ -5,10 +5,9 @@ import { FaCamera } from 'react-icons/fa';
 
 const SignUpPage: FC = () => {
   const [name, setName] = useState<string>('');
+  const [email, setEmail] = useState<string>('');
   const [telNumber, setTelNumber] = useState<string>('');
   const [birth, setBirth] = useState<string>('');
-  const [address, setAddress] = useState<string>('');
-  const [addressDetail, setAddressDetail] = useState<string>('');
   const [profileImage, setProfileImage] = useState<File | null>(null);
   const [imagePreview, setImagePreview] = useState<string | null>(null); // 이미지 미리보기 상태
 
@@ -18,10 +17,9 @@ const SignUpPage: FC = () => {
     try {
       const formData = new FormData(); // FormData 객체 생성
       formData.append('name', name);
+      formData.append('email', email);
       formData.append('telNumber', telNumber);
       formData.append('birth', birth);
-      formData.append('address', address);
-      formData.append('addressDetail', addressDetail);
   
       if (profileImage) {
         formData.append('profileImage', profileImage); // 파일 첨부
@@ -37,7 +35,7 @@ const SignUpPage: FC = () => {
   
       if (response.status === 201) {
         alert(response.data.message);
-        window.location.href = 'http://localhost:3000/';
+        window.location.href = 'http://localhost:5173/auth/signin';
       }
     } catch (error) {
       if (axios.isAxiosError(error)) {
@@ -98,6 +96,11 @@ const SignUpPage: FC = () => {
             </div>
             <input className='p-2 w-full border text-black rounded' id='name' placeholder='이름을 입력해 주세요' type='text' onChange={(e) => setName(e.target.value)} value={name}/>
           </div>
+          {/* 이름 */}
+          <div className='my-3'>
+            <label htmlFor='email'>이메일</label>
+            <input className='p-2 w-full border text-black rounded' id='email' placeholder='이메일을 입력해 주세요' type='email' onChange={(e) => setEmail(e.target.value)} value={email}/>
+          </div>
           {/* 연락처 */}
           <div className='my-3'>
             <div className='mb-2'>
@@ -114,25 +117,13 @@ const SignUpPage: FC = () => {
             </div>
             <input className='p-2 w-full border text-black rounded' placeholder='YYMMDD' type='text' onChange={(e) => setBirth(e.target.value)} value={birth}/>
           </div>
-          {/* 주소 */}
-          <div className='my-3'>
-            <div className='mb-2'>
-              <label htmlFor='address'>주소</label>
-              <span className='text-red-500'>*</span>
-            </div>
-            <input className='p-2 w-full border text-black rounded' id='address' placeholder='주소' type='text' onChange={(e) => setAddress(e.target.value)} value={address}/>
-          </div>
-          {/* 상세 주소 */}
-          <div className='my-3'>
-            <input className='p-2 w-full border text-black rounded' id='address-detail' placeholder='상세 주소' type='text' onChange={(e) => setAddressDetail(e.target.value)} value={addressDetail}/>
-          </div>
           {/* 회원가입 버튼 */}
           <div className='mt-10'>
             <button className='p-2 w-full border border-transparent bg-blue-500 font-bold text-white hover:bg-blue-600 rounded' type='submit'>회원가입</button>
           </div>
           <div className='my-3'>
             <span>이미 계정이 있으신가요?</span>
-            <a className='mx-3 text-blue-500 font-bold' href='http://localhost:3000/auth/signin'>로그인</a>
+            <a className='mx-3 text-blue-500 font-bold' href='http://localhost:5173/auth/signin'>로그인</a>
           </div>
         </form>
       </div>

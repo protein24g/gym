@@ -33,8 +33,6 @@ const SignInPage: FC = () => {
     } catch (error) {
       if (axios.isAxiosError(error)) {
         const res = error.response?.data.message;
-        console.log(error.response?.status);
-        console.log(error.response?.data.message);
         const status = error.response?.status;
 
         if (status === 400) {
@@ -99,7 +97,7 @@ const SignInPage: FC = () => {
              </button>
             <div className='my-3'>
               <span>계정이 없으신가요?</span>
-              <a className='mx-3 text-blue-500 font-bold' href='http://localhost:3000/auth/signup'>회원가입</a>
+              <a className='mx-3 text-blue-500 font-bold' href='http://localhost:5173/auth/signup'>회원가입</a>
             </div>
         </form>
       </div>

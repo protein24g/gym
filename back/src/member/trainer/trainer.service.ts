@@ -104,8 +104,6 @@ export class TrainerService {
       name: user.name,
       telNumber: user.telNumber,
       birth: user.birth,
-      address: user.address,
-      addressDetail: user.addressDetail,
       createAt: user.createdAt,
       role: user.role,
     }));

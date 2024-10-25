@@ -2,12 +2,10 @@ import { RoleType } from "src/auth/roles/enums/role.type.enum";
 
 export interface UserPayload {
   id: number;
-  email: string;
+  email: string | null;
   name: string;
   telNumber: string;
   birth: string;
-  address: string;
-  addressDetail: string;
   createAt: Date;
   role: RoleType;
 }

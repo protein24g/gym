@@ -87,12 +87,9 @@ const Sidebar: FC = () => {
                     )
                   )}
                 </li>
-              )
-            )}
+              ))}
             </ul>
           </div>
-          <hr className="border"></hr>
-          <div className="p-6">bottom part</div>
         </div>
       </div>
     </>

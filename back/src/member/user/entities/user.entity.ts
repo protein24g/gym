@@ -1,5 +1,5 @@
 import { Branch } from "src/branches/entities/branch.entity";
-import { BeforeInsert, BeforeUpdate, Column, CreateDateColumn, Entity, ManyToOne, OneToMany, OneToOne, PrimaryGeneratedColumn } from "typeorm";
+import { BeforeInsert, BeforeUpdate, Column, CreateDateColumn, Entity, ManyToOne, OneToOne, PrimaryGeneratedColumn } from "typeorm";
 import { Trainer } from "src/member/trainer/entities/trainer.entity";
 import * as argon2 from "argon2";
 import { File } from "src/file/entities/file.entity";
@@ -29,12 +29,6 @@ export class User {
   @Column({ type: 'varchar', length: 6, nullable: false })
   birth: string;
 
-  @Column({ type: 'text', nullable: false })
-  address: string;
-
-  @Column({ type: 'text', nullable: true, default: null })
-  addressDetail: string;
-
   @CreateDateColumn()
   createdAt: Date;
 
@@ -56,8 +50,8 @@ export class User {
   @ManyToOne(() => Trainer, trainer => trainer.ptUsers, {cascade: true, onDelete: 'SET NULL', nullable: true})
   ptTrainer: Trainer;
 
-  @OneToMany(() => File, file => file.user)
-  files: File[];
+  @OneToOne(() => File, file => file.user)
+  profileImage: File;
 
   @BeforeInsert()
   @BeforeUpdate()

@@ -8,9 +8,16 @@ import { TrainerModule } from './member/trainer/trainer.module';
 import { FileModule } from './file/file.module';
 import { UserModule } from './member/user/user.module';
 import { ManagerModule } from './member/manager/manager.module';
+import { MypageModule } from './mypage/mypage.module';
+import { ServeStaticModule } from '@nestjs/serve-static';
+import { join } from 'path';  
 
 @Module({
   imports: [
+    ServeStaticModule.forRoot({
+      rootPath: join(__dirname, '../uploads/profile'),
+      serveRoot: '/uploads',
+  }), 
     ConfigModule.forRoot({
       isGlobal: true,
     }),
@@ -26,6 +33,7 @@ import { ManagerModule } from './member/manager/manager.module';
     ManagerModule,
     TrainerModule,
     FileModule,
+    MypageModule,
   ],
   controllers: [AppController],
   providers: [AppService],

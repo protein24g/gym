@@ -48,8 +48,6 @@ export class ManagerService {
       name: manager.name,
       telNumber: manager.telNumber,
       birth: manager.birth,
-      address: manager.address,
-      addressDetail: manager.addressDetail,
       createAt: manager.createdAt,
       role: manager.role,
     }));

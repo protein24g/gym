@@ -7,6 +7,7 @@ import { v1 as uuid } from 'uuid';
 import { File } from '../entities/file.entity';
 import { FileType } from '../enums/file-type.enum';
 import { UserService } from 'src/member/user/user.service';
+import { ConfigService } from '@nestjs/config';
 
 @Injectable()
 export class FileService {
@@ -14,10 +15,11 @@ export class FileService {
     @InjectRepository(File)
     private readonly fileRepository: Repository<File>,
     private readonly userService: UserService,
+    private readonly configService: ConfigService,
   ) {
     this.ensureDirectoryExists(this.fileUploadPath);
   }
-  private fileUploadPath = join(__dirname, '/../../../uploads');
+  private fileUploadPath = join(this.configService.get<string>('FILE_UPLOAD_PATH'));
 
   ensureDirectoryExists(path: string): void {
     try {
