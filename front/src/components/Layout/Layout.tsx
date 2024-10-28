@@ -3,12 +3,12 @@ import { Outlet } from "react-router-dom"
 import Sidebar from "../sidebar/Sidebar"
 import Header from "../header/Header"
 
-const Layout: FC<{imageSrc: string | undefined}> = ({imageSrc}) => {
+const Layout: FC = () => {
   return (
     <div className="flex bg-slate-100 h-screen">
       <Sidebar/>
       <div className="flex flex-1 flex-col">
-        <Header imageSrc={imageSrc}/>
+        <Header/>
         <Outlet/>
       </div>
     </div>

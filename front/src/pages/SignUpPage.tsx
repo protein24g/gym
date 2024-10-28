@@ -94,12 +94,12 @@ const SignUpPage: FC = () => {
               <label htmlFor='name'>이름</label>
               <span className='text-red-500'>*</span>
             </div>
-            <input className='p-2 w-full border text-black rounded' id='name' placeholder='이름을 입력해 주세요' type='text' onChange={(e) => setName(e.target.value)} value={name}/>
+            <input className='p-2 w-full border text-black rounded' id='name' placeholder='이름을 입력해 주세요' type='text' onChange={(e) => setName(e.target.value)} value={name} required/>
           </div>
           {/* 이메일 */}
           <div className='my-3'>
             <label htmlFor='email'>이메일</label>
-            <input className='p-2 w-full border text-black rounded' id='email' placeholder='이메일을 입력해 주세요' type='email' onChange={(e) => setEmail(e.target.value)} value={email}/>
+            <input className='p-2 w-full border text-black rounded' id='email' placeholder='이메일을 입력해 주세요' type='email' onChange={(e) => setEmail(e.target.value)} value={email} required/>
           </div>
           {/* 연락처 */}
           <div className='my-3'>
@@ -107,7 +107,7 @@ const SignUpPage: FC = () => {
               <label htmlFor='tel-number'>휴대폰</label>
               <span className='text-red-500'>*</span>
             </div>
-            <input className='p-2 w-full border text-black rounded' id='tel-number' placeholder="'-' 없이 숫자만" type='text' onChange={(e) => setTelNumber(e.target.value)} value={telNumber}/>
+            <input className='p-2 w-full border text-black rounded' id='tel-number' placeholder="'-' 없이 숫자만" type='text' onChange={(e) => setTelNumber(e.target.value)} value={telNumber} required/>
           </div>
           {/* 생년월일 */}
           <div className='my-3'>
@@ -115,7 +115,7 @@ const SignUpPage: FC = () => {
               <label htmlFor='birth'>생년월일</label>
               <span className='text-red-500'>*</span>
             </div>
-            <input className='p-2 w-full border text-black rounded' placeholder='YYMMDD' type='text' onChange={(e) => setBirth(e.target.value)} value={birth}/>
+            <input className='p-2 w-full border text-black rounded' placeholder='YYMMDD' type='text' onChange={(e) => setBirth(e.target.value)} value={birth} required/>
           </div>
           {/* 회원가입 버튼 */}
           <div className='mt-10'>

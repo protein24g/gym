@@ -1,11 +1,27 @@
-import { FC, useContext } from "react"
+import { FC, useContext, useEffect, useState } from "react"
 import { CiSearch } from "react-icons/ci"
 import { RxHamburgerMenu } from "react-icons/rx"
 import { SidebarContext } from "../../context/SidebarContext";
 import { CgProfile } from "react-icons/cg";
+import axios from "axios";
 
-const Header: FC<{imageSrc: string | undefined}> = ({imageSrc}) => {
+const Header: FC = () => {
   const { toggleSidebar } = useContext(SidebarContext);
+  const [imageSrc, setImageSrc] = useState<string | undefined>(undefined);
+
+  const getMyProfileImage = async () => {
+    const response = await axios.get('http://localhost:3000/api/mypage/profile/image', {
+      withCredentials: true,
+    });
+
+    if (response.status === 200) {
+      setImageSrc(response.data);
+    }
+  };
+
+  useEffect(() => {
+    getMyProfileImage();
+  }, []);
 
   return (
     <div className="bg-white h-16 px-4 flex justify-between items-center">

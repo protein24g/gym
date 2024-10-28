@@ -1,10 +1,12 @@
-import { FC, useState } from 'react';
+import { FC, useEffect, useState } from 'react';
 import LogoImage from '../assets/logo.png';
 import { IoEyeOutline } from "react-icons/io5";
 import { IoEyeOffOutline } from "react-icons/io5";
 import { RiKakaoTalkFill } from 'react-icons/ri';
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
+import { authState } from '../recoil/AuthState';
+import { useRecoilState } from 'recoil';
 
 const SignInPage: FC = () => {
   const [isPasswordVisible, setIsPasswordVisible] = useState<boolean>(false);
@@ -12,6 +14,7 @@ const SignInPage: FC = () => {
   const [password, setPassword] = useState<string>('');
 
   const navigate = useNavigate();
+  const [auth, setAuth] = useRecoilState(authState);
 
   const signIn = async (e: React.FormEvent<HTMLFormElement>): Promise<void> => {
     e.preventDefault(); // 기본 폼 제출 방지
@@ -27,8 +30,7 @@ const SignInPage: FC = () => {
       );
 
       if (response.status === 200) {
-        localStorage.setItem('role', response.data.role);
-        navigate('/dashboard');
+        setAuth({isAuthenticated: true, role: response.data.role});
       }
     } catch (error) {
       if (axios.isAxiosError(error)) {
@@ -40,13 +42,18 @@ const SignInPage: FC = () => {
         } else if (status === 401) {
           alert(error.response?.data.message);
         } else if (status === 403) {
+          setAuth({isAuthenticated: true, role: error.response?.data.role});
           alert(error.response?.data.message);
-          navigate('/change-password');
-          localStorage.setItem('role', error.response?.data.role);
         }
       }
     }
   }
+
+  useEffect(() => {
+    if (auth.isAuthenticated) {
+      navigate('/dashboard');
+    }
+  }, [auth.isAuthenticated]);
 
   return (
     <div className='flex min-h-screen justify-center items-center bg-custom-gray text-white'>
@@ -63,7 +70,7 @@ const SignInPage: FC = () => {
               <label htmlFor='email'>이메일</label>
               <span className='text-red-500'>*</span>
             </div>
-            <input className='p-2 w-full border text-black rounded' placeholder='이메일을 입력해주세요' id='email' type='email' onChange={(e) => setEmail(e.target.value)} value={email}/>
+            <input className='p-2 w-full border text-black rounded' placeholder='이메일을 입력해주세요' id='email' type='email' onChange={(e) => setEmail(e.target.value)} value={email} required/>
           </div>
           {/* 비밀번호 */}
           <div className='my-3 relative'>
@@ -71,7 +78,7 @@ const SignInPage: FC = () => {
               <label htmlFor='password'>비밀번호</label>
               <span className='text-red-500'>*</span>
             </div>
-            <input className='p-2 w-full border text-black rounded' placeholder='비밀번호를 입력해주세요' id='password' type={isPasswordVisible ? 'text' : 'password'} onChange={(e) => setPassword(e.target.value)} value={password}/>
+            <input className='p-2 w-full border text-black rounded' placeholder='비밀번호를 입력해주세요' id='password' type={isPasswordVisible ? 'text' : 'password'} onChange={(e) => setPassword(e.target.value)} value={password} required/>
             {isPasswordVisible ? 
               <IoEyeOutline className='absolute right-4 bottom-2 w-6 h-6 text-black cursor-pointer' onClick={() => {setIsPasswordVisible(!isPasswordVisible)}}/>
             :

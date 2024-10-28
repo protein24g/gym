@@ -5,57 +5,41 @@ import SignUpPage from './pages/SignUpPage'
 import OAuthSignUpPage from './pages/OAuthSignUpPage'
 import Layout from './components/layout/Layout'
 import Dashboard from './components/sidebar/Dashboard'
-import { useEffect, useState } from 'react'
+import { useState } from 'react'
 import { SidebarContext } from './context/SidebarContext'
-import { AuthContext } from './context/AuthContext'
 import Users from './components/sidebar/member_management/Users'
 import Managers from './components/sidebar/member_management/Managers'
 import Trainers from './components/sidebar/member_management/Trainers'
 import MyPage from './components/sidebar/my-page/MyPage'
-import axios from 'axios'
+import ProtectedRoute from './components/ProtectedRoute'
+import { RecoilRoot } from 'recoil'
 
 function App() {
   const [isSidebarOpen, setSidebarOpen] = useState<boolean>(true);
-  const [role, setRole] = useState<string | undefined>(undefined);
-  const [imageSrc, setImageSrc] = useState<string | undefined>(undefined);
 
   const toggleSidebar = (): void => {
     setSidebarOpen(!isSidebarOpen);
   }
 
-  const getMyProfileImage = async () => {
-    const response = await axios.get('http://localhost:3000/api/mypage/profile/image', {
-      withCredentials: true,
-    });
-
-    if (response.status === 200) {
-      setImageSrc(response.data);
-    }
-  };
-
-  useEffect(() => {
-    getMyProfileImage();
-  }, []);
-
   return (
-    <BrowserRouter>
-      <SidebarContext.Provider value={{isSidebarOpen, toggleSidebar}}>
-        <AuthContext.Provider value={{ role, setRole }}>
+    <RecoilRoot>
+      <BrowserRouter>
+        <SidebarContext.Provider value={{ isSidebarOpen, toggleSidebar }}>
           <Routes>
-            <Route element={<Layout imageSrc={imageSrc}/>}>
-              <Route path='/dashboard' element={<Dashboard/>}></Route>
-              <Route path='/managers' element={<Managers/>}></Route>
-              <Route path='/trainers' element={<Trainers/>}></Route>
-              <Route path='/users' element={<Users/>}></Route>
-              <Route path='/my-page' element={<MyPage/>}></Route>
+            <Route element={<ProtectedRoute><Layout /></ProtectedRoute>}>
+              <Route path='/dashboard' element={<Dashboard />} />
+              <Route path='/managers' element={<Managers />} />
+              <Route path='/trainers' element={<Trainers />} />
+              <Route path='/users' element={<Users />} />
+              <Route path='/my-page' element={<MyPage />} />
             </Route>
-            <Route path='/auth/signin' element={<SignInPage/>}></Route>
-            <Route path='/auth/signup' element={<SignUpPage/>}></Route>
-            <Route path='/oauth-signup' element={<OAuthSignUpPage/>}></Route>
+            <Route path='/auth/signin' element={<SignInPage />} />
+            <Route path='/auth/signup' element={<SignUpPage />} />
+            <Route path='/oauth-signup' element={<OAuthSignUpPage />} />
           </Routes>
-        </AuthContext.Provider>
-      </SidebarContext.Provider>
-    </BrowserRouter>
+        </SidebarContext.Provider>
+      </BrowserRouter>
+    </RecoilRoot>
   )
 }
 
