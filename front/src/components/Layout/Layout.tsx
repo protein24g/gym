@@ -1,7 +1,7 @@
 import { FC } from "react"
 import { Outlet } from "react-router-dom"
-import Sidebar from "../sidebar/Sidebar"
-import Header from "../header/Header"
+import Sidebar from "../Sidebar/Sidebar"
+import Header from "../Header/Header"
 
 const Layout: FC = () => {
   return (

@@ -1,4 +1,4 @@
-import { Body, Controller, HttpCode, Post, Req, Res, UploadedFile, UseGuards, UseInterceptors } from '@nestjs/common';
+import { Body, Controller, Get, HttpCode, Post, Req, Res, UploadedFile, UseGuards, UseInterceptors } from '@nestjs/common';
 import { AuthService } from '../services/auth.service';
 import { ApiBody, ApiConflictResponse, ApiCreatedResponse, ApiForbiddenResponse, ApiInternalServerErrorResponse, ApiNotFoundResponse, ApiOkResponse, ApiOperation, ApiTags, ApiUnauthorizedResponse } from '@nestjs/swagger';
 import { JwtRefreshAuthGuard } from '../guards/jwt-refresh-auth.guard';
@@ -7,6 +7,7 @@ import { AuthPayload } from '../interfaces/auth-payload.interface';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { SignInDTO } from '../dto/signin.dto';
 import { SignUpDTO } from '../dto/signup.dto';
+import { JwtAuthGuard } from '../guards/jwt-auth.guard';
 
 @Controller('api/auth')
 @ApiTags('Auth')
@@ -127,5 +128,15 @@ export class AuthController {
     );
     
     return response.json({ message: '토큰 재발급 성공' });
+  }
+
+  @Get('check-token')
+  @UseGuards(JwtAuthGuard)
+  @ApiOperation({
+    summary: '엑세스 토큰 검증',
+  })
+  checkToken(@Req() request: Request, @Res() response: Response): Response<{ role: string }> {
+    const user = request.user as AuthPayload;
+    return response.status(200).json({role: user.role});
   }
 }

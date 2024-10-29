@@ -2,15 +2,17 @@ import { FC, useContext, useState } from "react"
 import { Link, useLocation } from "react-router-dom"
 import { IoStatsChart } from "react-icons/io5";
 import { SidebarContext } from "../../context/SidebarContext";
-import { SidebarMenus, SideBarMenuType } from "./menu/SidebarMenus";
-import { UsersMenuType } from "./menu/users/usersMenus";
 import { GoTriangleDown, GoTriangleUp } from "react-icons/go";
+import { SidebarMenus, SideBarMenuType } from "./menu/SidebarMenus";
+import { UsersMenuType } from "./menu/users/UsersMenus";
+import { useRecoilValue } from "recoil";
+import { authState } from "../../recoil/AuthState";
 
 const Sidebar: FC = () => {
   const {isSidebarOpen, toggleSidebar} = useContext(SidebarContext);
   const [openMenus, setOpenMenus] = useState<Set<string>>(new Set());
 
-  const role = localStorage.getItem('role');
+  const auth = useRecoilValue(authState);
 
   const location = useLocation(); // useLocation 훅 사용
   const { pathname } = location; // pathname 속성 추출
@@ -43,7 +45,6 @@ const Sidebar: FC = () => {
       </Link>
     )
   }
-
   
   const toggleDropdown = (key: string) => {
     setOpenMenus((prev) => {
@@ -73,11 +74,11 @@ const Sidebar: FC = () => {
               {SidebarMenus.map((menu) => (
                 <li key={menu.key}>
                   {SidebarLink(menu)}
-                  {menu.children && role && (
+                  {menu.children && (
                     openMenus.has(menu.key) && (
                       <ul className={`${pathname === menu.path ? 'bg-gray-500' : ''}`}>
                         {menu.children.map((children) =>
-                          (children.roles.includes(role) && (
+                          (auth.role && children.roles.includes(auth.role) && (
                             <li key={children.key} className="w-full">
                               {DropdownLink(children)}
                             </li>

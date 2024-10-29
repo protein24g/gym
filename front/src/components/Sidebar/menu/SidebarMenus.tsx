@@ -1,6 +1,6 @@
 import { MdOutlineSpaceDashboard } from "react-icons/md";
-import { UsersMenus, UsersMenuType } from "./users/usersMenus";
 import { ReactNode } from "react";
+import { UsersMenus, UsersMenuType } from "./users/UsersMenus";
 
 export interface SideBarMenuType {
   roles?: string[],
