@@ -110,13 +110,20 @@ export class AuthService {
     const user = await this.tokenService.checkRefreshToken(payload.userId, refreshToken);
 
     if (user.provider === OAuthType.KAKAO) {
-      await axios.post('https://kapi.kakao.com/v1/user/logout', null,
-        {
-          headers: {
-            Authorization: `Bearer ${kakaoAccessToken}`
+      try {
+        const response = await axios.post('https://kapi.kakao.com/v1/user/logout', null,
+          {
+            headers: {
+              Authorization: `Bearer ${kakaoAccessToken}`,
+              'Content-Type': 'application/x-www-form-urlencoded',
+            }
           }
-        }
-      );
+        );
+
+        console.log(response.status);
+      } catch(error) {
+        console.log(error.status);
+      }
     }
 
     await this.userRepository.update(user.id, { hashRefreshToken: null });

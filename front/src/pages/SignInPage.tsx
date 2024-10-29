@@ -44,6 +44,7 @@ const SignInPage: FC = () => {
         } else if (status === 403) {
           setAuth({isAuthenticated: true, role: error.response?.data.role});
           alert(error.response?.data.message);
+          navigate('/my-page');
         }
       }
     }
@@ -53,7 +54,7 @@ const SignInPage: FC = () => {
     if (auth.isAuthenticated) {
       navigate('/dashboard');
     }
-  }, [auth.isAuthenticated]);
+  }, [setAuth]);
 
   return (
     <div className='flex min-h-screen justify-center items-center bg-custom-gray text-white'>

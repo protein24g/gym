@@ -57,6 +57,15 @@ export class kakaoAuthController {
         }
       );
 
+      response.cookie('kakaoAccessToken', kakaoAccessToken,
+        {
+          httpOnly: true,
+          secure: process.env.isProduction === 'true',
+          maxAge: +process.env.ACCESS_TOKEN_EXPIRE_IN,
+          sameSite: 'strict',
+        }
+      );
+
       response.cookie('refreshToken', token.refreshToken,
         {
           httpOnly: true,
@@ -66,7 +75,7 @@ export class kakaoAuthController {
         }
       );
 
-      return response.redirect(this.configService.get<string>('FRONT_URL'));
+      return response.redirect(this.configService.get<string>('FRONT_URL') + 'dashboard');
     } else {
       const token = this.tokenService.createOAuthAccessToken(oAuthPayload);
 
@@ -92,7 +101,7 @@ export class kakaoAuthController {
     const accessToken = request.cookies['accessToken'];
     
     if (!accessToken) {
-      return response.json({ success: false });
+      return response.status(401).json({ success: false });
     }
   
     const isValid = this.tokenService.checkOAuthAccessToken(accessToken);
@@ -109,7 +118,17 @@ export class kakaoAuthController {
   @ApiConflictResponse({description: '이미 존재하는 휴대폰 번호'})
   async signUp(@Req() request: Request, @Body() body: OAuthSignUpDTO, @Res() response: Response) {
     const accessToken = request.cookies['accessToken'];
-    const user: OAuthPayload= this.jwtService.decode(accessToken);
+    if (!accessToken) {
+      return response.status(401).json({ success: false });
+    }
+
+    let user: OAuthPayload;
+    try {
+      user = this.jwtService.decode(accessToken);
+    } catch (error) {
+      return response.status(400).json({ message: '잘못된 토큰입니다.' });
+    }
+    
     const payload = await this.authService.oAuthSignUp({
       ...user,
       ...body

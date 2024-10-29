@@ -94,6 +94,10 @@ export class AuthController {
     const kakaoAccessToken = request.cookies['kakaoAccessToken'];
     const refreshToken = request.cookies['refreshToken'];
     await this.authService.signOut(user, kakaoAccessToken, refreshToken);
+    response.clearCookie('accessToken', { httpOnly: true, secure: true, sameSite: 'strict' });
+    response.clearCookie('kakaoAccessToken', { httpOnly: true, secure: true, sameSite: 'strict' });
+    response.clearCookie('refreshToken', { httpOnly: true, secure: true, sameSite: 'strict' });
+  
     return response.json({ message: '로그아웃 성공'});
   }
 
