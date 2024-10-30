@@ -13,13 +13,13 @@ export class SignUpDTO {
   name: string;
 
   @ApiProperty({
+    required: false,
     type: String,
     description: '이메일',
     example: 'example@email.com',
   })
   @IsString({ message: '이메일은 문자열이어야 합니다.' })
-  @Matches(/^[a-zA-Z0-9+-\_.]+@[a-zA-Z0-9-]+\.[a-zA-Z0-9-.]+$/, { message: '이메일 형식이 유효하지 않습니다. (예: example@email.com)' })
-  email: string;
+  email?: string;
 
   @ApiProperty({
     required: true,

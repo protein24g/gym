@@ -34,7 +34,10 @@ export class UserService {
   }
 
   async findAll(): Promise<UserPayload[]> {
-    const users = await this.userRepository.find({where: {role: RoleType.USER}});
+    const users = await this.userRepository.find({where: {role: RoleType.USER}, relations: ['branch']});
+    if (users.length === 0) {
+      throw new NotFoundException('존재하지 않는 유저');
+    }
 
     return users.map(user => ({
       id: user.id,
@@ -44,7 +47,7 @@ export class UserService {
       birth: user.birth,
       createAt: user.createdAt,
       role: user.role,
-      branchId: user.branch.id
+      branchId: user.branch ? user.branch.id : null
     }));
   }
 

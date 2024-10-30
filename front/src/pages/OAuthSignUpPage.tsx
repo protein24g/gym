@@ -76,7 +76,7 @@ const OAuthSignUpPage: FC = () => {
           {/* 이메일 */}
           <div className='my-3'>
             <label htmlFor='email'>이메일</label>
-            <input className='p-2 w-full border text-black rounded' id='email' placeholder='이메일을 입력해 주세요' type='email' onChange={(e) => setEmail(e.target.value)} value={email} required/>
+            <input className='p-2 w-full border text-black rounded' id='email' placeholder='이메일을 입력해 주세요' type='email' onChange={(e) => setEmail(e.target.value)} value={email}/>
           </div>
           {/* 연락처 */}
           <div className='my-3'>
@@ -84,7 +84,7 @@ const OAuthSignUpPage: FC = () => {
               <label htmlFor='tel-number'>휴대폰</label>
               <span className='text-red-500'>*</span>
             </div>
-            <input className='p-2 w-full border text-black rounded' id='tel-number' placeholder="'-' 없이 숫자만" type='text' onChange={(e) => setTelNumber(e.target.value)} value={telNumber}/>
+            <input className='p-2 w-full border text-black rounded' id='tel-number' placeholder="'-' 없이 숫자만" type='text' onChange={(e) => setTelNumber(e.target.value)} value={telNumber} required/>
           </div>
           {/* 생년월일 */}
           <div className='my-3'>

@@ -16,7 +16,7 @@ export class UserController {
 
   @Get()
   @Roles(RoleType.OWNER, RoleType.MANAGER, RoleType.TRAINER)
-  @ApiOperation({ summary: '사용자 전체 검색' })
+  @ApiOperation({ summary: '회원 전체 검색' })
   @ApiNotFoundResponse({ description: '존재하지 않는 유저' })
   async findAll() {
     return await this.userService.findAll();
@@ -24,7 +24,7 @@ export class UserController {
 
   @Get('name/:name')
   @Roles(RoleType.OWNER, RoleType.MANAGER, RoleType.TRAINER)
-  @ApiOperation({ summary: '사용자 이름으로 검색' })
+  @ApiOperation({ summary: '회원 이름으로 검색' })
   @ApiNotFoundResponse({ description: '존재하지 않는 유저' })
   async findByName(@Param('name') name: string) {
     return await this.userService.findByName(name);
@@ -32,7 +32,7 @@ export class UserController {
 
   @Get('email/:email')
   @Roles(RoleType.OWNER, RoleType.MANAGER, RoleType.TRAINER)
-  @ApiOperation({ summary: '사용자 이메일로 검색' })
+  @ApiOperation({ summary: '회원 이메일로 검색' })
   @ApiNotFoundResponse({ description: '존재하지 않는 유저' })
   async findByEmail(@Param('email') email: string) {
     return await this.userService.findByEmail(email);
@@ -40,7 +40,7 @@ export class UserController {
 
   @Get('tel/:telNumber')
   @Roles(RoleType.OWNER, RoleType.MANAGER, RoleType.TRAINER)
-  @ApiOperation({ summary: '사용자 전화번호로 검색' })
+  @ApiOperation({ summary: '회원 전화번호로 검색' })
   @ApiNotFoundResponse({ description: '존재하지 않는 유저' })
   async findByTelNumber(@Param('telNumber') telNumber: string) {
     return await this.userService.findByTelNumber(telNumber);
