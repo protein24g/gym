@@ -16,7 +16,7 @@ export class User {
   oAuthId: string;
 
   @Column({ type: 'varchar', length: 50, nullable: true, unique: true })
-  email: string;
+  email?: string;
 
   @Column({ type: 'varchar', length: 255, nullable: true })
   password: string;

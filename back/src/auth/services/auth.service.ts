@@ -1,4 +1,4 @@
-import { ConflictException, ForbiddenException, Injectable, UnauthorizedException } from '@nestjs/common';
+import { ConflictException, ForbiddenException, Injectable, NotFoundException, UnauthorizedException } from '@nestjs/common';
 import * as argon2 from 'argon2';
 import { Repository } from 'typeorm';
 import { InjectRepository } from '@nestjs/typeorm';
@@ -14,6 +14,7 @@ import { User } from 'src/member/user/entities/user.entity';
 import { UserService } from 'src/member/user/user.service';
 import { TokenService } from './token.service';
 import { RoleType } from '../roles/enums/role.type.enum';
+import { Branch } from 'src/branches/entities/branch.entity';
 
 @Injectable()
 export class AuthService {
@@ -23,6 +24,8 @@ export class AuthService {
     private readonly userService: UserService,
     private readonly tokenService: TokenService,
     private readonly profileService: ProfileService,
+    @InjectRepository(Branch)
+    private readonly branchRepository: Repository<Branch>,
   ) {}
 
   async validateUser(signInDTO: SignInDTO): Promise<{
@@ -53,16 +56,27 @@ export class AuthService {
     if (telNumber) {
       throw new ConflictException('이미 존재하는 휴대폰 번호');
     }
-    
-    const user = this.userRepository.create({
+
+    if (signUpDTO.email) {
+      const email = await this.userService.findByEmail(signUpDTO.email);
+      if (email) {
+        throw new ConflictException('이미 존재하는 이메일');
+      }
+    }
+
+    const branch = await this.branchRepository.findOne({where: {id: signUpDTO.branchId}});
+    if (!branch) {
+      throw new NotFoundException('존재하지 않는 지점');
+    }
+
+    const user = await this.userRepository.save({
       ...signUpDTO,
+      branch,
       createdAt: Date(),
       // 사장 수동 생성
       //role: RoleType.OWNER,
       //password: 'testpw',
     });
-    
-    await this.userRepository.save(user);
 
     if (file) {
       await this.profileService.create(user.id, file);
@@ -84,11 +98,28 @@ export class AuthService {
     if (telNumber) {
       throw new ConflictException('이미 존재하는 휴대폰 번호');
     }
+
+    let email;
+    if (signUpDTO.email && signUpDTO.email.length > 0) {
+      email = await this.userService.findByEmail(signUpDTO.email);
+      if (email) {
+        throw new ConflictException('이미 존재하는 이메일');
+      }
+    }
+
+    const branch = await this.branchRepository.findOne({where: {id: signUpDTO.branchId}});
+    if (!branch) {
+      throw new NotFoundException('존재하지 않는 지점');
+    }
     
     const user = await this.userRepository.save({
       ...signUpDTO,
+      branch,
       createdAt: Date(),
       provider: provider ? provider : OAuthType.LOCAL,
+      // 사장 수동 생성
+      //role: RoleType.OWNER,
+      //password: 'testpw',
     });
 
     return {

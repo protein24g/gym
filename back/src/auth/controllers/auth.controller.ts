@@ -67,7 +67,7 @@ export class AuthController {
         return response.status(200).json({message: '로그인 성공', role: res.user.role});
       }
     } catch(error) {
-      return response.redirect(this.configService.get<string>('FRONT_URL') + 'oauth-signup');
+      return response.redirect(this.configService.get<string>('FRONT_URL') + 'auth/oauth-signup');
     }
   }
   
@@ -78,8 +78,10 @@ export class AuthController {
     summary: '회원가입',
   })
   @ApiCreatedResponse({description: '회원가입 성공'})
-  @ApiConflictResponse({description: '이미 가입된 정보'})
+  @ApiConflictResponse({description: '이미 존재하는 휴대폰 번호'})
+  @ApiConflictResponse({description: '이미 존재하는 이메일'})
   @ApiNotFoundResponse({description: '존재하지 않는 파일'})
+  @ApiNotFoundResponse({description: '존재하지 않는 지점'})
   @ApiInternalServerErrorResponse({description: '파일 저장 중 오류 발생'})
   async signUp(@Body() signUpDTO: SignUpDTO, @UploadedFile() file: Express.Multer.File, @Res() response: Response) {
     await this.authService.signUp(signUpDTO, file);

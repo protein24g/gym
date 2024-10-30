@@ -86,7 +86,7 @@ async kakaoCallback(@Query('code') code: string, @Res() response: Response) {
       sameSite: 'strict',
     });
 
-    return response.redirect(this.configService.get<string>('FRONT_URL') + 'oauth-signup');
+    return response.redirect(this.configService.get<string>('FRONT_URL') + 'auth/oauth-signup');
     }
   }
 
@@ -106,7 +106,7 @@ async kakaoCallback(@Query('code') code: string, @Res() response: Response) {
     return response.json({ success: isValid });
   }
 
-  @Post('signUp')
+  @Post('signup')
   @ApiOperation({
     summary: '카카오 회원가입',
     description: '카카오에서 받은 사용자 정보와 추가 정보를 합쳐서 회원가입 요청',
@@ -114,6 +114,8 @@ async kakaoCallback(@Query('code') code: string, @Res() response: Response) {
   @ApiNotFoundResponse({description: '존재하지 않는 유저'})
   @ApiConflictResponse({description: '이미 존재하는 OAuth 계정'})
   @ApiConflictResponse({description: '이미 존재하는 휴대폰 번호'})
+  @ApiConflictResponse({description: '이미 존재하는 이메일'})
+  @ApiNotFoundResponse({description: '존재하지 않는 지점'})
   async signUp(@Req() request: Request, @Body() body: OAuthSignUpDTO, @Res() response: Response) {
     const accessToken = request.cookies['accessToken'];
     if (!accessToken) {

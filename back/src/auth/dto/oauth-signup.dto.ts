@@ -3,7 +3,16 @@ import { IsNotEmpty, IsOptional, IsString, Matches } from 'class-validator';
 
 export class OAuthSignUpDTO {
   @ApiProperty({
-    type: String,
+    required: true,
+    type: 'number',
+    description: '지점 id',
+    example: '1'
+  })
+  @IsNotEmpty({ message: '지점을 선택하세요' })
+  branchId: number;
+  
+  @ApiProperty({
+    type: 'string',
     description: 'OAuth 고유 ID',
     example: '12345678910',
   })
@@ -12,16 +21,17 @@ export class OAuthSignUpDTO {
   oAuthId?: string;
 
   @ApiProperty({
-    type: String,
+    required: false,
+    type: 'string',
     description: '이메일',
     example: 'example@email.com',
   })
+  @IsOptional()
   @IsString({ message: '이메일은 문자열이어야 합니다.' })
-  @Matches(/^[a-zA-Z0-9+-\_.]+@[a-zA-Z0-9-]+\.[a-zA-Z0-9-.]+$/, { message: '이메일 형식이 유효하지 않습니다. (예: example@email.com)' })
-  email: string;
+  email?: string;
 
   @ApiProperty({
-    type: String,
+    type: 'string',
     description: '이름',
     example: '감동',
   })
@@ -30,7 +40,7 @@ export class OAuthSignUpDTO {
   name?: string;
 
   @ApiProperty({
-    type: String,
+    type: 'string',
     description: '프로필 주소',
     example: 'http://k.kakaocdn.net/dn/dy231d/wgu1321guPjm41N67as8/img_640x640.jpg',
   })
@@ -39,7 +49,7 @@ export class OAuthSignUpDTO {
 
   @ApiProperty({
     required: true,
-    type: String,
+    type: 'string',
     description: '연락처',
     example: '01011111111',
   })
@@ -50,7 +60,7 @@ export class OAuthSignUpDTO {
 
   @ApiProperty({
     required: true,
-    type: String,
+    type: 'string',
     description: '생년월일',
     example: '010203',
   })

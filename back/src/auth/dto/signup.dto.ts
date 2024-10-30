@@ -4,7 +4,16 @@ import { IsNotEmpty, IsString, Matches } from 'class-validator';
 export class SignUpDTO {
   @ApiProperty({
     required: true,
-    type: String,
+    type: 'number',
+    description: '지점 id',
+    example: '1'
+  })
+  @IsNotEmpty({ message: '지점을 선택하세요' })
+  branchId: number;
+
+  @ApiProperty({
+    required: true,
+    type: 'string',
     description: '이름',
     example: '감동',
   })
@@ -14,16 +23,15 @@ export class SignUpDTO {
 
   @ApiProperty({
     required: false,
-    type: String,
+    type: 'string',
     description: '이메일',
     example: 'example@email.com',
   })
-  @IsString({ message: '이메일은 문자열이어야 합니다.' })
   email?: string;
 
   @ApiProperty({
     required: true,
-    type: String,
+    type: 'string',
     description: '연락처',
     example: '01011111111',
   })
@@ -34,7 +42,7 @@ export class SignUpDTO {
 
   @ApiProperty({
     required: true,
-    type: String,
+    type: 'string',
     description: '생년월일',
     example: '010203',
   })

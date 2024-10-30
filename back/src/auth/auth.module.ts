@@ -16,15 +16,19 @@ import { HttpModule } from '@nestjs/axios';
 import { FileModule } from 'src/file/file.module';
 import { UserModule } from 'src/member/user/user.module';
 import { User } from 'src/member/user/entities/user.entity';
+import { Branch } from 'src/branches/entities/branch.entity';
+import { BranchesModule } from 'src/branches/branches.module';
 
 @Module({
   imports: [
     TypeOrmModule.forFeature([
       User,
+      Branch,
     ]),
     forwardRef(() => UserModule),
     forwardRef(() => HttpModule),
     forwardRef(() => FileModule),
+    forwardRef(() => BranchesModule),
     JwtModule.registerAsync({
       imports: [ConfigModule],
       inject: [ConfigService],

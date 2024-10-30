@@ -6,6 +6,7 @@ import { OAuthType } from 'src/auth/enums/oauth-type.enum';
 import axios from 'axios';
 import { UserPayload } from './interfaces/user-payload.interface';
 import { User } from './entities/user.entity';
+import { AuthPayload } from 'src/auth/interfaces/auth-payload.interface';
 
 @Injectable()
 export class UserService {
@@ -33,8 +34,39 @@ export class UserService {
     await this.userRepository.remove(user);
   }
 
-  async findAll(): Promise<UserPayload[]> {
-    const users = await this.userRepository.find({where: {role: RoleType.USER}, relations: ['branch']});
+  async findAll(payload: AuthPayload): Promise<UserPayload[]> {
+    let users: User[];
+    if (payload.role === RoleType.OWNER) { // 모든 지점 회원 검색
+      users = await this.userRepository.find({where: {role: RoleType.USER}, relations: ['branch']});
+      return users.map(user => ({
+        id: user.id,
+        email: user.email,
+        name: user.name,
+        telNumber: user.telNumber,
+        birth: user.birth,
+        createAt: user.createdAt,
+        role: user.role,
+        branchId: user.branch ? user.branch.id : null
+      }));
+    } else if (payload.role === RoleType.MANAGER || payload.role === RoleType.TRAINER) {
+      const user = await this.findById(payload.userId);
+      if (!user) {
+        throw new NotFoundException('존재하지 않는 유저');
+      }
+      
+      users = await this.userRepository.find({where: {role: RoleType.USER, branch: {id: user.branch.id}}, relations: ['branch']});
+      return users.map(user => ({
+        id: user.id,
+        email: user.email,
+        name: user.name,
+        telNumber: user.telNumber,
+        birth: user.birth,
+        createAt: user.createdAt,
+        role: user.role,
+        branchId: user.branch ? user.branch.id : null
+      }));
+    }
+
     if (users.length === 0) {
       throw new NotFoundException('존재하지 않는 유저');
     }
@@ -62,7 +94,7 @@ export class UserService {
       birth: user.birth,
       createAt: user.createdAt,
       role: user.role,
-      branchId: user.branch.id
+      branchId: user.branch ? user.branch.id : null
     }));
   }
 
@@ -78,7 +110,7 @@ export class UserService {
       birth: user.birth,
       createAt: user.createdAt,
       role: user.role,
-      branchId: user.branch.id
+      branchId: user.branch ? user.branch.id : null
     };
   }
 
@@ -94,7 +126,7 @@ export class UserService {
       birth: user.birth,
       createAt: user.createdAt,
       role: user.role,
-      branchId: user.branch.id
+      branchId: user.branch ? user.branch.id : null
     };
   }
 
@@ -110,12 +142,12 @@ export class UserService {
       birth: user.birth,
       createAt: user.createdAt,
       role: user.role,
-      branchId: user.branch.id
+      branchId: user.branch ? user.branch.id : null
     }
   }
 
   async findById(userId: number): Promise<User> {
-    return await this.userRepository.findOne({where: {id: userId}, relations: ['ptTrainer', 'profileImage']});
+    return await this.userRepository.findOne({where: {id: userId}, relations: ['ptTrainer', 'profileImage', 'branch']});
   }
 
   async findByOAuthId(oAuthId: string): Promise<User> {

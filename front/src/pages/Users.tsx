@@ -14,10 +14,10 @@ const Users: FC = () => {
         if (Array.isArray(response.data)) {
           setUserList(response.data); // 배열일 경우에만 상태 업데이트
         } else {
-          console.error('API 응답이 배열이 아닙니다:', response.data);
+          alert('API 응답이 배열이 아닙니다:' + response.data);
         }
       } catch (error) {
-        console.error('유저 목록을 불러오는 중 오류 발생:', error);
+        alert('유저 목록을 불러오는 중 오류 발생:' + error);
       }
     };
 

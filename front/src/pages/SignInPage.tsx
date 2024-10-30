@@ -1,4 +1,4 @@
-import { FC, useEffect, useState } from 'react';
+import { FC, useState } from 'react';
 import LogoImage from '../assets/logo.png';
 import { IoEyeOutline } from "react-icons/io5";
 import { IoEyeOffOutline } from "react-icons/io5";
@@ -14,7 +14,7 @@ const SignInPage: FC = () => {
   const [password, setPassword] = useState<string>('');
 
   const navigate = useNavigate();
-  const [auth, setAuth] = useRecoilState(authState);
+  const [, setAuth] = useRecoilState(authState);
 
   const signIn = async (e: React.FormEvent<HTMLFormElement>): Promise<void> => {
     e.preventDefault(); // 기본 폼 제출 방지
@@ -50,12 +50,6 @@ const SignInPage: FC = () => {
       }
     }
   }
-
-  useEffect(() => {
-    if (auth.isAuthenticated) {
-      navigate('/'); // 이미 로그인된 상태라면 홈으로 리다이렉트
-    }
-  }, []);
 
   return (
     <div className='flex min-h-screen justify-center items-center bg-custom-gray text-white'>

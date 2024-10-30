@@ -12,6 +12,7 @@ import { MypageModule } from './mypage/mypage.module';
 import { ServeStaticModule } from '@nestjs/serve-static';
 import { join } from 'path';  
 import { AttendanceModule } from './attendance/attendance.module';
+import { BranchesModule } from './branches/branches.module';
 
 @Module({
   imports: [
@@ -36,6 +37,7 @@ import { AttendanceModule } from './attendance/attendance.module';
     FileModule,
     MypageModule,
     AttendanceModule,
+    BranchesModule,
   ],
   controllers: [AppController],
   providers: [AppService],

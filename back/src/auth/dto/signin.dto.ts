@@ -3,7 +3,7 @@ import { IsNotEmpty, IsString, Matches, MinLength } from "class-validator";
 
 export class SignInDTO {
     @ApiProperty({
-    type: String,
+    type: 'string',
     description: '이메일',
     example: 'test@email.com',
     })
@@ -13,7 +13,7 @@ export class SignInDTO {
 
     @ApiProperty({
     required: true,
-    type: String,
+    type: 'string',
     description: '비밀번호',
     example: 'testpw',
     minimum: 6,

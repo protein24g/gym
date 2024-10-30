@@ -2,9 +2,11 @@ import { ChangeEvent, FC, useEffect, useState } from 'react';
 import { IoPersonCircleSharp } from "react-icons/io5";
 import axios from 'axios';
 import { FaCamera } from 'react-icons/fa';
-import { useRecoilValue } from 'recoil';
-import { authState } from '../recoil/AuthState';
-import { useNavigate } from 'react-router-dom';
+
+interface Branch {
+  id: number;
+  name: string;
+}
 
 const SignUpPage: FC = () => {
   const [name, setName] = useState<string>('');
@@ -14,16 +16,23 @@ const SignUpPage: FC = () => {
   const [profileImage, setProfileImage] = useState<File | null>(null);
   const [imagePreview, setImagePreview] = useState<string | null>(null); // 이미지 미리보기 상태
 
-  const auth = useRecoilValue(authState);
-  const navigate = useNavigate();
+  const [branchId, setBranchId] = useState<string | null>(null);
+  const [branchList, setBranchList] = useState<Branch[]>([]);
 
   const signUp = async (e: React.FormEvent<HTMLFormElement>): Promise<void> => {
     e.preventDefault(); // 기본 폼 제출 방지
+
     if (!confirm('가입 하시겠습니까?')) return;
     try {
       const formData = new FormData(); // FormData 객체 생성
+      if (branchId !== null) {
+        formData.append('branchId', branchId);
+      } else {
+        alert('지점을 선택하세요');
+        return;
+      }
       formData.append('name', name);
-      formData.append('email', email);
+      if (email) formData.append('email', email);
       formData.append('telNumber', telNumber);
       formData.append('birth', birth);
   
@@ -75,9 +84,16 @@ const SignUpPage: FC = () => {
   }
 
   useEffect(() => {
-    if (auth.isAuthenticated) {
-      navigate('/'); // 이미 로그인된 상태라면 홈으로 리다이렉트
-    }
+    const findAllBranches = async () => {
+      try {
+        const response = await axios.get<Branch[]>('http://localhost:3000/api/branches');
+        setBranchList(response.data); // 상태에 배열 저장
+      } catch (error) {
+        alert('지점 목록을 불러오는 중 오류 발생: ' + error);
+      }
+    };
+
+    findAllBranches();
   }, []);
 
   return (
@@ -86,6 +102,17 @@ const SignUpPage: FC = () => {
         {/* 회원가입 폼 */}
         <form onSubmit={signUp} className='p-10 shadow-2xl rounded'>
           <div className='text-2xl font-semibold mb-5 text-center'>회원가입</div>
+          {/* 지점 */}
+          <div className='my-3'>
+            <select className='bg-gray-500 text-sm rounded w-full p-2.5' name='branch' onChange={(e) => {setBranchId(e.target.value)}}>
+              <option>지점을 선택하세요</option>
+              {branchList && (
+                branchList.map((branch) => (
+                  <option key={branch.id} value={branch.id}>{branch.name}</option>
+                ))
+              )}
+            </select>
+          </div>
           {/* 프로필 이미지 */}
           <div className='my-3'>
             <div className='relative w-24 h-24 mx-auto'>

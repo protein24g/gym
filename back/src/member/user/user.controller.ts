@@ -18,8 +18,9 @@ export class UserController {
   @Roles(RoleType.OWNER, RoleType.MANAGER, RoleType.TRAINER)
   @ApiOperation({ summary: '회원 전체 검색' })
   @ApiNotFoundResponse({ description: '존재하지 않는 유저' })
-  async findAll() {
-    return await this.userService.findAll();
+  async findAll(@Req() request: Request) {
+    const user = request.user as AuthPayload;
+    return await this.userService.findAll(user);
   }
 
   @Get('name/:name')

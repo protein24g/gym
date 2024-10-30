@@ -1,11 +1,18 @@
 import { FC, useEffect, useState } from 'react';
 import axios from 'axios';
 
+interface Branch {
+  id: number;
+  name: string;
+}
+
 const OAuthSignUpPage: FC = () => {
   const [isLoading, setIsLoading] = useState(true);
   const [email, setEmail] = useState<string>('');
   const [telNumber, setTelNumber] = useState<string>('');
   const [birth, setBirth] = useState<string>('');
+  const [branchId, setBranchId] = useState<string | null>(null);
+  const [branchList, setBranchList] = useState<Branch[]>([]);
 
   useEffect(() => {
     const verifyToken = async () => {
@@ -30,15 +37,31 @@ const OAuthSignUpPage: FC = () => {
       }
     };
 
+    const findAllBranches = async () => {
+      try {
+        const response = await axios.get<Branch[]>('http://localhost:3000/api/branches');
+        setBranchList(response.data); // 상태에 배열 저장
+      } catch (error) {
+        alert('지점 목록을 불러오는 중 오류 발생: ' + error);
+      }
+    };
+
     verifyToken();
+    findAllBranches();
   }, []);
 
   const signUp = async (e: React.FormEvent<HTMLFormElement>): Promise<void> => {
     e.preventDefault(); // 기본 폼 제출 방지
     if (!confirm('가입 하시겠습니까?')) return;
+    if (branchId === null) {
+      alert('지점을 선택하세요');
+      return;
+    }
+
     try {
       const response = await axios.post('http://localhost:3000/api/kakao/oauth/signup',
         {
+          branchId,
           email,
           telNumber,
           birth   
@@ -67,12 +90,24 @@ const OAuthSignUpPage: FC = () => {
   if (isLoading) {
     return;
   }
+
   return (
     <div className='flex min-h-screen justify-center items-center bg-custom-gray text-white'>
       <div className='w-full sm:max-w-lg p-3'>
         {/* 회원가입 폼 */}
         <form onSubmit={signUp} className='p-10 shadow-2xl rounded'>
           <div className='text-2xl font-semibold mb-5 text-center text-yellow-400'>카카오 회원가입 추가정보</div>
+          {/* 지점 */}
+          <div className='my-3'>
+            <select className='bg-gray-500 text-sm rounded w-full p-2.5' name='branch' onChange={(e) => {setBranchId(e.target.value)}}>
+              <option>지점을 선택하세요</option>
+              {branchList && (
+                branchList.map((branch) => (
+                  <option key={branch.id} value={branch.id}>{branch.name}</option>
+                ))
+              )}
+            </select>
+          </div>
           {/* 이메일 */}
           <div className='my-3'>
             <label htmlFor='email'>이메일</label>
