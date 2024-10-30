@@ -8,12 +8,14 @@ import { FileInterceptor } from '@nestjs/platform-express';
 import { SignInDTO } from '../dto/signin.dto';
 import { SignUpDTO } from '../dto/signup.dto';
 import { JwtAuthGuard } from '../guards/jwt-auth.guard';
+import { ConfigService } from '@nestjs/config';
 
 @Controller('api/auth')
 @ApiTags('Auth')
 export class AuthController {
   constructor(
     private readonly authService: AuthService,
+    private readonly configService: ConfigService,
   ) {}
 
   @HttpCode(200)
@@ -37,30 +39,35 @@ export class AuthController {
     const res = await this.authService.validateUser(signInDTO);
     request.user = res.user;
     const payload = request.user as AuthPayload;
-    const token = await this.authService.signIn(payload);
+    
+    try {
+      const token = await this.authService.signIn(payload);
 
-    response.cookie('accessToken', token.accessToken,
-      {
-        httpOnly: true,
-        secure: process.env.isProduction === 'true',
-        maxAge: +process.env.ACCESS_TOKEN_EXPIRE_IN,
-        sameSite: 'strict',
+      response.cookie('accessToken', token.accessToken,
+        {
+          httpOnly: true,
+          secure: process.env.isProduction === 'true',
+          maxAge: +process.env.ACCESS_TOKEN_EXPIRE_IN,
+          sameSite: 'strict',
+        }
+      );
+
+      response.cookie('refreshToken', token.refreshToken,
+        {
+          httpOnly: true,
+          secure: process.env.isProduction === 'true',
+          maxAge: +process.env.REFRESH_TOKEN_EXPIRE_IN,
+          sameSite: 'strict',
+        }
+      );
+
+      if (res.resetPassword) {
+        return response.status(403).json({message: '초기화된 비밀번호입니다. 비밀번호를 변경하세요', role: res.user.role});
+      } else {
+        return response.status(200).json({message: '로그인 성공', role: res.user.role});
       }
-    );
-
-    response.cookie('refreshToken', token.refreshToken,
-      {
-        httpOnly: true,
-        secure: process.env.isProduction === 'true',
-        maxAge: +process.env.REFRESH_TOKEN_EXPIRE_IN,
-        sameSite: 'strict',
-      }
-    );
-
-    if (res.resetPassword) {
-      return response.status(403).json({message: '초기화된 비밀번호입니다. 비밀번호를 변경하세요', role: res.user.role});
-    } else {
-      return response.status(200).json({message: '로그인 성공', role: res.user.role});
+    } catch(error) {
+      return response.redirect(this.configService.get<string>('FRONT_URL') + 'oauth-signup');
     }
   }
   

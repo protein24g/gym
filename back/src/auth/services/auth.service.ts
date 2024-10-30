@@ -1,4 +1,4 @@
-import { ConflictException, Injectable, UnauthorizedException } from '@nestjs/common';
+import { ConflictException, ForbiddenException, Injectable, UnauthorizedException } from '@nestjs/common';
 import * as argon2 from 'argon2';
 import { Repository } from 'typeorm';
 import { InjectRepository } from '@nestjs/typeorm';
@@ -13,6 +13,7 @@ import { OAuthSignUpDTO } from '../dto/oauth-signup.dto';
 import { User } from 'src/member/user/entities/user.entity';
 import { UserService } from 'src/member/user/user.service';
 import { TokenService } from './token.service';
+import { RoleType } from '../roles/enums/role.type.enum';
 
 @Injectable()
 export class AuthService {
@@ -97,6 +98,10 @@ export class AuthService {
   }
 
   async signIn(payload: AuthPayload): Promise<TokenPayload> {
+    if (payload.role === RoleType.USER) {
+      throw new ForbiddenException('권한이 없습니다');
+    }
+
     const accessToken = this.tokenService.createAccessToken(payload);
     const refreshToken = this.tokenService.createRefreshToken(payload);
 
@@ -110,20 +115,14 @@ export class AuthService {
     const user = await this.tokenService.checkRefreshToken(payload.userId, refreshToken);
 
     if (user.provider === OAuthType.KAKAO) {
-      try {
-        const response = await axios.post('https://kapi.kakao.com/v1/user/logout', null,
-          {
-            headers: {
-              Authorization: `Bearer ${kakaoAccessToken}`,
-              'Content-Type': 'application/x-www-form-urlencoded',
-            }
+      await axios.post('https://kapi.kakao.com/v1/user/logout', null,
+        {
+          headers: {
+            Authorization: `Bearer ${kakaoAccessToken}`,
+            'Content-Type': 'application/x-www-form-urlencoded',
           }
-        );
-
-        console.log(response.status);
-      } catch(error) {
-        console.log(error.status);
-      }
+        }
+      );
     }
 
     await this.userRepository.update(user.id, { hashRefreshToken: null });

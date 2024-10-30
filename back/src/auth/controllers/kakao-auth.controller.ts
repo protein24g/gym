@@ -1,6 +1,6 @@
 import { Body, Controller, Get, Post, Query, Req, Res, UseGuards } from "@nestjs/common";
 import { KakaoAuthGuard } from "../guards/kakao-auth.guard";
-import { ApiConflictResponse, ApiNotFoundResponse, ApiOperation, ApiTags } from "@nestjs/swagger";
+import { ApiConflictResponse, ApiForbiddenResponse, ApiNotFoundResponse, ApiOperation, ApiTags } from "@nestjs/swagger";
 import { kakaoAuthService } from "../services/kakao-auth.service";
 import { Request, Response } from "express";
 import { UserService } from "src/member/user/user.service";
@@ -34,61 +34,59 @@ export class kakaoAuthController {
   async getAuthorize() {}
 
   @Get('callback')
-  @ApiOperation({
-    summary: '카카오 로그인 callback',
-    description: '카카오 인가 코드를 이용해 AccessToken 을 받고 토큰을 이용해 사용자 정보 요청 후 가입 여부에 따라 로그인, 추가 정보 입력 페이지로 redirect',
-  })
-  @ApiNotFoundResponse({description: '존재하지 않는 유저'})
-  async kakaoCallback(@Query('code') code: string, @Res() response: Response) {
-    const kakaoAccessToken = await this.kakaoAuthService.getKakaoAccessToken(code);
-    const oAuthPayload = await this.kakaoAuthService.getKakaoUserInfo(kakaoAccessToken);
+@ApiOperation({
+  summary: '카카오 로그인 callback',
+  description: '카카오 인가 코드를 이용해 AccessToken 을 받고 토큰을 이용해 사용자 정보 요청 후 가입 여부에 따라 로그인, 추가 정보 입력 페이지로 redirect',
+})
+@ApiNotFoundResponse({ description: '존재하지 않는 유저' })
+@ApiForbiddenResponse({ description: '권한이 없습니다' })
+async kakaoCallback(@Query('code') code: string, @Res() response: Response) {
+  const kakaoAccessToken = await this.kakaoAuthService.getKakaoAccessToken(code);
+  const oAuthPayload = await this.kakaoAuthService.getKakaoUserInfo(kakaoAccessToken);
 
-    const user = await this.userService.findByOAuthId(oAuthPayload.oAuthId);
-    if (user) {
-      const payload: AuthPayload = { userId: user.id, role: user.role };
+  const user = await this.userService.findByOAuthId(oAuthPayload.oAuthId);
+  if (user) {
+    const payload: AuthPayload = { userId: user.id, role: user.role };
+
+    try {
       const token = await this.authService.signIn(payload);
       
-      response.cookie('accessToken', token.accessToken,
-        {
-          httpOnly: true,
-          secure: process.env.isProduction === 'true',
-          maxAge: +process.env.ACCESS_TOKEN_EXPIRE_IN,
-          sameSite: 'strict',
-        }
-      );
+      response.cookie('accessToken', token.accessToken, {
+        httpOnly: true,
+        secure: process.env.isProduction === 'true',
+        maxAge: +process.env.ACCESS_TOKEN_EXPIRE_IN,
+        sameSite: 'strict',
+      });
 
-      response.cookie('kakaoAccessToken', kakaoAccessToken,
-        {
-          httpOnly: true,
-          secure: process.env.isProduction === 'true',
-          maxAge: +process.env.ACCESS_TOKEN_EXPIRE_IN,
-          sameSite: 'strict',
-        }
-      );
+      response.cookie('kakaoAccessToken', kakaoAccessToken, {
+        httpOnly: true,
+        secure: process.env.isProduction === 'true',
+        maxAge: +process.env.ACCESS_TOKEN_EXPIRE_IN,
+        sameSite: 'strict',
+      });
 
-      response.cookie('refreshToken', token.refreshToken,
-        {
-          httpOnly: true,
-          secure: process.env.isProduction === 'true',
-          maxAge: +process.env.ACCESS_TOKEN_EXPIRE_IN,
-          sameSite: 'strict',
-        }
-      );
+      response.cookie('refreshToken', token.refreshToken, {
+        httpOnly: true,
+        secure: process.env.isProduction === 'true',
+        maxAge: +process.env.ACCESS_TOKEN_EXPIRE_IN,
+        sameSite: 'strict',
+      });
 
-      return response.redirect(this.configService.get<string>('FRONT_URL') + 'dashboard');
-    } else {
-      const token = this.tokenService.createOAuthAccessToken(oAuthPayload);
+      return response.redirect(this.configService.get<string>('FRONT_URL'));
+    } catch (error) {
+      return response.redirect(this.configService.get<string>('FRONT_URL') + 'auth/signin');
+    }
+  } else {
+    const token = this.tokenService.createOAuthAccessToken(oAuthPayload);
 
-      response.cookie('accessToken', token,
-        {
-          httpOnly: true,
-          secure: process.env.isProduction === 'true',
-          maxAge: +process.env.ACCESS_TOKEN_EXPIRE_IN,
-          sameSite: 'strict',
-        }
-      );
-    
-      return response.redirect(this.configService.get<string>('FRONT_URL') + 'oauth-signup'); // 가입 안 된 사용자이기 때문에 기존 받은 정보와 함께 추가 정보 입력 페이지로 이동
+    response.cookie('accessToken', token, {
+      httpOnly: true,
+      secure: process.env.isProduction === 'true',
+      maxAge: +process.env.ACCESS_TOKEN_EXPIRE_IN,
+      sameSite: 'strict',
+    });
+
+    return response.redirect(this.configService.get<string>('FRONT_URL') + 'oauth-signup');
     }
   }
 
@@ -119,35 +117,20 @@ export class kakaoAuthController {
   async signUp(@Req() request: Request, @Body() body: OAuthSignUpDTO, @Res() response: Response) {
     const accessToken = request.cookies['accessToken'];
     if (!accessToken) {
-      return response.status(401).json({ success: false });
+      return response.status(401).json({ message: '잘못된 토큰입니다' });
     }
 
     let user: OAuthPayload;
     try {
       user = this.jwtService.decode(accessToken);
     } catch (error) {
-      return response.status(400).json({ message: '잘못된 토큰입니다.' });
+      return response.status(400).json({ message: '잘못된 토큰입니다' });
     }
     
-    const payload = await this.authService.oAuthSignUp({
+    await this.authService.oAuthSignUp({
       ...user,
       ...body
     }, OAuthType.KAKAO);
-    const token = await this.authService.signIn(payload);
-
-    response.cookie('accessToken', token.accessToken, {
-      httpOnly: true,
-      secure: process.env.isProduction === 'true',
-      maxAge: +process.env.ACCESS_TOKEN_EXPIRE_IN,
-      sameSite: 'strict',
-    });
-
-    response.cookie('refreshToken', token.refreshToken, {
-      httpOnly: true,
-      secure: process.env.isProduction === 'true',
-      maxAge: +process.env.ACCESS_TOKEN_EXPIRE_IN,
-      sameSite: 'strict',
-    });
 
     return response.status(201).json({message: '회원가입 성공'});
   }

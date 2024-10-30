@@ -50,7 +50,7 @@ const OAuthSignUpPage: FC = () => {
   
       if (response.status === 201) {
         alert(response.data.message);
-        window.location.href = 'http://localhost:5173/dashboard';
+        window.location.href = 'http://localhost:5173/auth/signin';
       }
     } catch (error) {
       if (axios.isAxiosError(error)) {
@@ -76,7 +76,7 @@ const OAuthSignUpPage: FC = () => {
           {/* 이메일 */}
           <div className='my-3'>
             <label htmlFor='email'>이메일</label>
-            <input className='p-2 w-full border text-black rounded' id='email' placeholder='이메일을 입력해 주세요' type='email' onChange={(e) => setEmail(e.target.value)} value={email}/>
+            <input className='p-2 w-full border text-black rounded' id='email' placeholder='이메일을 입력해 주세요' type='email' onChange={(e) => setEmail(e.target.value)} value={email} required/>
           </div>
           {/* 연락처 */}
           <div className='my-3'>
@@ -92,7 +92,7 @@ const OAuthSignUpPage: FC = () => {
               <label htmlFor='birth'>생년월일</label>
               <span className='text-red-500'>*</span>
             </div>
-            <input className='p-2 w-full border text-black rounded' placeholder='YYMMDD' type='text' onChange={(e) => setBirth(e.target.value)} value={birth}/>
+            <input className='p-2 w-full border text-black rounded' placeholder='YYMMDD' type='text' onChange={(e) => setBirth(e.target.value)} value={birth} required/>
           </div>
           {/* 회원가입 버튼 */}
           <div className='mt-10'>

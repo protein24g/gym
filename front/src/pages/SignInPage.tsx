@@ -52,7 +52,7 @@ const SignInPage: FC = () => {
 
   useEffect(() => {
     if (auth.isAuthenticated) {
-      navigate('/dashboard');
+      navigate('/');
     }
   }, [setAuth]);
 

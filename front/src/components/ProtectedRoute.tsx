@@ -4,7 +4,7 @@ import { authState } from "../recoil/AuthState";
 import { Navigate } from "react-router-dom";
 import axios from "axios";
 
-const ProtectedRoute: FC<{ children: ReactNode }> = ({ children }) => {
+const ProtectedRoute: FC<{ children: ReactNode; requiredRoles?: string[] }> = ({ children, requiredRoles }) => {
   const [auth, setAuth] = useRecoilState(authState);
   const [isLoading, setIsLoading] = useState(true); // 로딩 상태 관리
 
@@ -34,6 +34,11 @@ const ProtectedRoute: FC<{ children: ReactNode }> = ({ children }) => {
   if (!auth.isAuthenticated) {
     alert('로그인 후 이용하세요');
     return <Navigate to="/auth/signin" replace />; // 인증되지 않은 경우 리다이렉트
+  }
+
+  if (auth.role && requiredRoles && !requiredRoles.includes(auth.role)) {
+    alert('권한이 없습니다');
+    return <Navigate to="/" replace />; // 권한이 없는 경우 대시보드로 리다이렉트
   }
 
   return <>{children}</>; // 인증된 경우 자식 컴포넌트 렌더링
