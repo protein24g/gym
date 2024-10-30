@@ -46,7 +46,7 @@ const Header: FC = () => {
   }, []);
 
   return (
-    <div className="bg-white h-16 px-4 flex justify-between items-center">
+    <div className="bg-white h-16 px-4 flex justify-between items-center border-b-2 border-gray-300">
       <div className="flex flex-1 items-center">
         <RxHamburgerMenu className="cursor-pointer mr-4" onClick={toggleSidebar} />
         <div className="relative w-full">

@@ -13,9 +13,10 @@ import Dashboard from './components/Sidebar/Dashboard'
 import Trainers from './components/Sidebar/member_management/Trainers'
 import Users from './components/Sidebar/member_management/Users'
 import MyPage from './components/Sidebar/my-page/MyPage'
+import NotFound from './pages/NotFound'
 
 function App() {
-  const [isSidebarOpen, setSidebarOpen] = useState<boolean>(true);
+  const [isSidebarOpen, setSidebarOpen] = useState<boolean>(false);
 
   const toggleSidebar = (): void => {
     setSidebarOpen(!isSidebarOpen);
@@ -27,7 +28,7 @@ function App() {
         <SidebarContext.Provider value={{ isSidebarOpen, toggleSidebar }}>
           <Routes>
             <Route element={<ProtectedRoute><Layout /></ProtectedRoute>}>
-              <Route path='/dashboard' element={<Dashboard />} />
+              <Route path='/' element={<Dashboard />} />
               <Route path='/managers' element={<Managers />} />
               <Route path='/trainers' element={<Trainers />} />
               <Route path='/users' element={<Users />} />
@@ -36,6 +37,7 @@ function App() {
             <Route path='/auth/signin' element={<SignInPage />} />
             <Route path='/auth/signup' element={<SignUpPage />} />
             <Route path='/oauth-signup' element={<OAuthSignUpPage />} />
+            <Route path='*' element={<NotFound />} />
           </Routes>
         </SidebarContext.Provider>
       </BrowserRouter>

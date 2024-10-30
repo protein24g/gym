@@ -1,6 +1,6 @@
 import { MdOutlineSpaceDashboard } from "react-icons/md";
 import { ReactNode } from "react";
-import { UsersMenus, UsersMenuType } from "./users/UsersMenus";
+import { UsersMenus, UsersMenuType } from "./users/UserMenus";
 
 export interface SideBarMenuType {
   roles?: string[],
@@ -16,7 +16,7 @@ export const SidebarMenus: SideBarMenuType[] = [
     roles: ['ROLES_OWNER', 'ROLES_MANAGER', 'ROLES_TRAINER'],
     key: 'dashboard',
     name: '대시보드',
-    path: '/dashboard',
+    path: '/',
     icon: <MdOutlineSpaceDashboard className="w-6 h-6"/>,
   },
   {
