@@ -20,6 +20,7 @@ export class UserController {
   @ApiNotFoundResponse({ description: '존재하지 않는 유저' })
   async findAll(@Req() request: Request) {
     const user = request.user as AuthPayload;
+
     return await this.userService.findAll(user);
   }
 

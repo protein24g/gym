@@ -46,7 +46,8 @@ export class UserService {
         birth: user.birth,
         createAt: user.createdAt,
         role: user.role,
-        branchId: user.branch ? user.branch.id : null
+        branchId: user.branch ? user.branch.id : null,
+        branchName: user.branch ? user.branch.name : null
       }));
     } else if (payload.role === RoleType.MANAGER || payload.role === RoleType.TRAINER) {
       const user = await this.findById(payload.userId);
@@ -63,7 +64,8 @@ export class UserService {
         birth: user.birth,
         createAt: user.createdAt,
         role: user.role,
-        branchId: user.branch ? user.branch.id : null
+        branchId: user.branch ? user.branch.id : null,
+        branchName: user.branch ? user.branch.name : null
       }));
     }
 
@@ -79,7 +81,8 @@ export class UserService {
       birth: user.birth,
       createAt: user.createdAt,
       role: user.role,
-      branchId: user.branch ? user.branch.id : null
+      branchId: user.branch ? user.branch.id : null,
+      branchName: user.branch ? user.branch.name : null
     }));
   }
 
@@ -94,7 +97,8 @@ export class UserService {
       birth: user.birth,
       createAt: user.createdAt,
       role: user.role,
-      branchId: user.branch ? user.branch.id : null
+      branchId: user.branch ? user.branch.id : null,
+      branchName: user.branch ? user.branch.name : null
     }));
   }
 
@@ -110,7 +114,8 @@ export class UserService {
       birth: user.birth,
       createAt: user.createdAt,
       role: user.role,
-      branchId: user.branch ? user.branch.id : null
+      branchId: user.branch ? user.branch.id : null,
+      branchName: user.branch ? user.branch.name : null
     };
   }
 
@@ -126,7 +131,8 @@ export class UserService {
       birth: user.birth,
       createAt: user.createdAt,
       role: user.role,
-      branchId: user.branch ? user.branch.id : null
+      branchId: user.branch ? user.branch.id : null,
+      branchName: user.branch ? user.branch.name : null
     };
   }
 
@@ -142,7 +148,8 @@ export class UserService {
       birth: user.birth,
       createAt: user.createdAt,
       role: user.role,
-      branchId: user.branch ? user.branch.id : null
+      branchId: user.branch ? user.branch.id : null,
+      branchName: user.branch ? user.branch.name : null
     }
   }
 

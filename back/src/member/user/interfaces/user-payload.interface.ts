@@ -9,4 +9,5 @@ export interface UserPayload {
   createAt: Date;
   role: RoleType;
   branchId: number;
+  branchName: string;
 }

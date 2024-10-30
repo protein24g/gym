@@ -3,6 +3,7 @@ import axios from 'axios';
 
 const Users: FC = () => {
   const [userList, setUserList] = useState<any[]>([]); // any[]로 유저 타입 유연하게 처리
+  const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
     const findAllUsers = async () => {
@@ -17,14 +18,15 @@ const Users: FC = () => {
           alert('API 응답이 배열이 아닙니다:' + response.data);
         }
       } catch (error) {
-        alert('유저 목록을 불러오는 중 오류 발생:' + error);
+      } finally {
+        setIsLoading(false);
       }
     };
 
     findAllUsers();
   }, []);
 
-  return (
+  return !isLoading && (
     <div className="p-3 bg-white border-2">
       <h2 className="text-xl font-bold mb-4">회원 목록</h2>
       <div className="overflow-x-auto w-full h-full">
@@ -54,8 +56,8 @@ const Users: FC = () => {
                     {new Date(user.createAt).toLocaleString()}
                   </td>
                   <td className="border border-gray-300 px-4 py-2">{user.role}</td>
-                  <td className="border border-gray-300 px-4 py-2">
-                    {user.branchId || 'N/A'}
+                  <td className="border border-gray-300 px-4 py-2" id={user.branchId}>
+                    {user.branchName || 'N/A'}
                   </td>
                 </tr>
               ))

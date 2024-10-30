@@ -106,7 +106,8 @@ export class TrainerService {
       birth: user.birth,
       createAt: user.createdAt,
       role: user.role,
-      branchId: user.branch.id
+      branchId: user.branch ? user.branch.id : null,
+      branchName: user.branch ? user.branch.name : null
     }));
   }
 
