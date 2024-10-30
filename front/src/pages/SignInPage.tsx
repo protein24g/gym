@@ -53,9 +53,9 @@ const SignInPage: FC = () => {
 
   useEffect(() => {
     if (auth.isAuthenticated) {
-      navigate('/');
+      navigate('/'); // 이미 로그인된 상태라면 홈으로 리다이렉트
     }
-  }, [setAuth]);
+  }, []);
 
   return (
     <div className='flex min-h-screen justify-center items-center bg-custom-gray text-white'>

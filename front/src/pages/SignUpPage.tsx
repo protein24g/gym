@@ -1,7 +1,10 @@
-import { ChangeEvent, FC, useState } from 'react';
+import { ChangeEvent, FC, useEffect, useState } from 'react';
 import { IoPersonCircleSharp } from "react-icons/io5";
 import axios from 'axios';
 import { FaCamera } from 'react-icons/fa';
+import { useRecoilValue } from 'recoil';
+import { authState } from '../recoil/AuthState';
+import { useNavigate } from 'react-router-dom';
 
 const SignUpPage: FC = () => {
   const [name, setName] = useState<string>('');
@@ -10,6 +13,9 @@ const SignUpPage: FC = () => {
   const [birth, setBirth] = useState<string>('');
   const [profileImage, setProfileImage] = useState<File | null>(null);
   const [imagePreview, setImagePreview] = useState<string | null>(null); // 이미지 미리보기 상태
+
+  const auth = useRecoilValue(authState);
+  const navigate = useNavigate();
 
   const signUp = async (e: React.FormEvent<HTMLFormElement>): Promise<void> => {
     e.preventDefault(); // 기본 폼 제출 방지
@@ -67,6 +73,12 @@ const SignUpPage: FC = () => {
       setImagePreview(null); // 파일이 없으면 미리보기 제거
     }
   }
+
+  useEffect(() => {
+    if (auth.isAuthenticated) {
+      navigate('/'); // 이미 로그인된 상태라면 홈으로 리다이렉트
+    }
+  }, []);
 
   return (
     <div className='flex min-h-screen justify-center items-center bg-custom-gray text-white'>

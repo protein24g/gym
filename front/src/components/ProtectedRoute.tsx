@@ -1,12 +1,15 @@
 import { FC, ReactNode, useEffect, useState } from "react";
 import { useRecoilState } from "recoil";
 import { authState } from "../recoil/AuthState";
-import { Navigate } from "react-router-dom";
+import { Navigate, useLocation } from "react-router-dom";
 import axios from "axios";
 
-const ProtectedRoute: FC<{ children: ReactNode; requiredRoles?: string[] }> = ({ children, requiredRoles }) => {
+const ProtectedRoute: FC<{ children: ReactNode, requiredRoles?: string[] }> = ({ children, requiredRoles }) => {
   const [auth, setAuth] = useRecoilState(authState);
   const [isLoading, setIsLoading] = useState(true); // 로딩 상태 관리
+
+  const location = useLocation(); // useLocation 훅 사용
+  const { pathname } = location; // pathname 속성 추출
 
   useEffect(() => {
     const checkToken = async () => {
@@ -20,12 +23,12 @@ const ProtectedRoute: FC<{ children: ReactNode; requiredRoles?: string[] }> = ({
       } catch (error) {
         setAuth({ isAuthenticated: false, role: null });
       } finally {
-        setIsLoading(false); // 요청 완료 후 로딩 상태 해제
+        setIsLoading(false);
       }
     };
-    
-    checkToken(); // useEffect 내에서 비동기 함수 호출
-  }, [setAuth]);
+  
+    checkToken();
+  }, [pathname]);
 
   if (isLoading) {
     return; // 로딩 중일 때 표시할 내용
@@ -41,7 +44,7 @@ const ProtectedRoute: FC<{ children: ReactNode; requiredRoles?: string[] }> = ({
     return <Navigate to="/" replace />; // 권한이 없는 경우 대시보드로 리다이렉트
   }
 
-  return <>{children}</>; // 인증된 경우 자식 컴포넌트 렌더링
+  return (<>{children}</>) // 인증된 경우 자식 컴포넌트 렌더링
 }
 
 export default ProtectedRoute;

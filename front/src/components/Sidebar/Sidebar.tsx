@@ -1,12 +1,12 @@
 import { FC, useContext, useState } from "react"
 import { Link, useLocation } from "react-router-dom"
-import { SidebarContext } from "../context/SidebarContext";
 import { GoTriangleDown, GoTriangleUp } from "react-icons/go";
-import { SidebarMenus, SideBarMenuType } from "../components/Sidebar/menu/SidebarMenus";
 import { useRecoilValue } from "recoil";
-import { authState } from "../recoil/AuthState";
-import { UsersMenuType } from "../components/Sidebar/menu/users/UserMenus";
-import Logo from "../components/Logo/Logo";
+import { SidebarContext } from "../../context/SidebarContext";
+import { authState } from "../../recoil/AuthState";
+import { SidebarMenus, SideBarMenuType } from "./menu/SidebarMenus";
+import { UsersMenuType } from "./menu/users/UserMenus";
+import Logo from "../Logo/Logo";
 
 const Sidebar: FC = () => {
   const {isSidebarOpen, toggleSidebar} = useContext(SidebarContext);

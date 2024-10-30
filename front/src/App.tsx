@@ -1,19 +1,21 @@
 import { BrowserRouter, Route, Routes } from 'react-router-dom'
 import './App.css'
-import SignInPage from './pages/SignInPage'
-import SignUpPage from './pages/SignUpPage'
-import OAuthSignUpPage from './pages/OAuthSignUpPage'
-import { useState } from 'react'
-import { SidebarContext } from './context/SidebarContext'
-import ProtectedRoute from './components/ProtectedRoute'
-import { RecoilRoot } from 'recoil'
-import Managers from './pages/Managers'
-import Layout from './components/Layout/Layout'
-import NotFound from './pages/NotFound'
-import MyPage from './pages/MyPage'
-import Dashboard from './pages/Dashboard'
-import Trainers from './pages/Trainers'
-import Users from './pages/Users'
+import { useState } from 'react';
+import { RecoilRoot } from 'recoil';
+import { SidebarContext } from './context/SidebarContext';
+import ProtectedRoute from './components/ProtectedRoute';
+import Layout from './components/Layout/Layout';
+import Dashboard from './pages/sidebar/Dashboard';
+import Managers from './pages/sidebar/Managers';
+import Trainers from './pages/Trainers';
+import Users from './pages/Users';
+import MyPage from './pages/sidebar/MyPage';
+import SignInPage from './pages/SignInPage';
+import SignUpPage from './pages/SignUpPage';
+import OAuthSignUpPage from './pages/OAuthSignUpPage';
+import NotFound from './pages/NotFound';
+import AuthRoute from './components/AuthRoute';
+
 
 function App() {
   const [isSidebarOpen, setSidebarOpen] = useState<boolean>(false);
@@ -34,9 +36,11 @@ function App() {
               <Route path='/users' element={<Users />} />
               <Route path='/my-page' element={<MyPage />} />
             </Route>
-            <Route path='/auth/signin' element={<SignInPage />} />
-            <Route path='/auth/signup' element={<SignUpPage />} />
-            <Route path='/oauth-signup' element={<OAuthSignUpPage />} />
+            <Route path='/auth' element={<AuthRoute />}>
+              <Route path='signin' element={<SignInPage />} />
+              <Route path='signup' element={<SignUpPage />} />
+              <Route path='oauth-signup' element={<OAuthSignUpPage />} />
+            </Route>
             <Route path='*' element={<NotFound />} />
           </Routes>
         </SidebarContext.Provider>
