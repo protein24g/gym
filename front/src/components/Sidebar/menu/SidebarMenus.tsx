@@ -1,6 +1,8 @@
 import { MdOutlineSpaceDashboard } from "react-icons/md";
 import { ReactNode } from "react";
 import { UsersMenus, UsersMenuType } from "./users/UserMenus";
+import { FaUsers } from "react-icons/fa";
+import { ImProfile } from "react-icons/im";
 
 export interface SideBarMenuType {
   roles?: string[],
@@ -22,7 +24,7 @@ export const SidebarMenus: SideBarMenuType[] = [
   {
     key: 'memberManagement',
     name: '멤버 관리',
-    icon: <MdOutlineSpaceDashboard className="w-6 h-6"/>,
+    icon: <FaUsers className="w-6 h-6"/>,
     children: UsersMenus, // UsersMenus 배열을 하위 메뉴로 사용
   },
   {
@@ -30,6 +32,6 @@ export const SidebarMenus: SideBarMenuType[] = [
     key: 'myPage',
     name: '마이페이지',
     path: '/my-page',
-    icon: <MdOutlineSpaceDashboard className="w-6 h-6"/>,
+    icon: <ImProfile className="w-6 h-6"/>,
   },
 ];

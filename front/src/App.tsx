@@ -7,13 +7,13 @@ import { useState } from 'react'
 import { SidebarContext } from './context/SidebarContext'
 import ProtectedRoute from './components/ProtectedRoute'
 import { RecoilRoot } from 'recoil'
-import Managers from './components/Sidebar/member_management/Managers'
+import Managers from './pages/Managers'
 import Layout from './components/Layout/Layout'
-import Dashboard from './components/Sidebar/Dashboard'
-import Trainers from './components/Sidebar/member_management/Trainers'
-import Users from './components/Sidebar/member_management/Users'
-import MyPage from './components/Sidebar/my-page/MyPage'
 import NotFound from './pages/NotFound'
+import MyPage from './pages/MyPage'
+import Dashboard from './pages/Dashboard'
+import Trainers from './pages/Trainers'
+import Users from './pages/Users'
 
 function App() {
   const [isSidebarOpen, setSidebarOpen] = useState<boolean>(false);

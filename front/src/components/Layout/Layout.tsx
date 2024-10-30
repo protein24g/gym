@@ -1,6 +1,6 @@
 import { FC } from "react"
 import { Outlet } from "react-router-dom"
-import Sidebar from "../Sidebar/Sidebar"
+import Sidebar from "../../pages/Sidebar"
 import Header from "../Header/Header"
 
 const Layout: FC = () => {
@@ -9,7 +9,9 @@ const Layout: FC = () => {
       <Sidebar/>
       <div className="flex flex-1 flex-col">
         <Header/>
-        <Outlet/>
+        <div className="p-3">
+          <Outlet/>
+        </div>
       </div>
     </div>
   )
