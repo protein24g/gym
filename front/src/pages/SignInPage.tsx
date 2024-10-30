@@ -31,6 +31,7 @@ const SignInPage: FC = () => {
 
       if (response.status === 200) {
         setAuth({isAuthenticated: true, role: response.data.role});
+        navigate('/');
       }
     } catch (error) {
       if (axios.isAxiosError(error)) {

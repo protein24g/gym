@@ -27,7 +27,7 @@ function App() {
       <BrowserRouter>
         <SidebarContext.Provider value={{ isSidebarOpen, toggleSidebar }}>
           <Routes>
-            <Route element={<ProtectedRoute><Layout /></ProtectedRoute>}>
+            <Route element={<ProtectedRoute requiredRoles={["ROLES_OWNER", "ROLES_MANAGER", "ROLES_TRAINER"]}><Layout /></ProtectedRoute>}>
               <Route path='/' element={<Dashboard />} />
               <Route path='/managers' element={<Managers />} />
               <Route path='/trainers' element={<Trainers />} />
