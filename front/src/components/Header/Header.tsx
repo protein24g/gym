@@ -31,6 +31,9 @@ const Header: FC = () => {
       });
       
       if (response.status === 200) {
+        // 로컬 스토리지에서 인증 관련 데이터 제거
+        localStorage.removeItem('isAuthenticated');
+        localStorage.removeItem('role');
         setAuth({ isAuthenticated: false, role: null }); // 로그인 상태 초기화
         alert('로그아웃 성공');
         navigate('/auth/signin'); // 로그인 페이지로 리디렉션
