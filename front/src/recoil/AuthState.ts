@@ -8,14 +8,14 @@ interface AuthState {
 export const authState = atom<AuthState> ({
   key: 'authState',
   default: {
-    isAuthenticated: JSON.parse(localStorage.getItem('isAuthenticated') || 'false'),
-    role: JSON.parse(localStorage.getItem('role') || 'null')
+    isAuthenticated: JSON.parse(sessionStorage.getItem('isAuthenticated') || 'false'),
+    role: JSON.parse(sessionStorage.getItem('role') || 'null')
   },
   effects: [
     ({onSet}) => {
       onSet((newState) => {
-        localStorage.setItem('isAuthenticated',  JSON.stringify(newState.isAuthenticated));
-        localStorage.setItem('role', JSON.stringify(newState.role));
+        sessionStorage.setItem('isAuthenticated',  JSON.stringify(newState.isAuthenticated));
+        sessionStorage.setItem('role', JSON.stringify(newState.role));
       })
     }
   ]

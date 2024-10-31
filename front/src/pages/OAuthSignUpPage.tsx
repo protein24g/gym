@@ -27,13 +27,13 @@ const OAuthSignUpPage: FC = () => {
 
         if (!response.data.success) {
           alert('잘못된 접근입니다');
-          window.location.href = 'http://localhost:5173/signin';
+          window.location.href = 'http://localhost:5173/auth/signin';
         }
 
         setIsLoading(!isLoading);
       } catch (error) {
         alert('토큰 검증 중 오류 발생: ' + error);
-        window.location.href = 'http://localhost:5173/signin';
+        window.location.href = 'http://localhost:5173/auth/signin';
       }
     };
 
@@ -135,7 +135,7 @@ const OAuthSignUpPage: FC = () => {
           </div>
           <div className='my-3'>
             <span>이미 계정이 있으신가요?</span>
-            <a className='mx-3 text-blue-500 font-bold' href='/signin'>로그인</a>
+            <a className='mx-3 text-blue-500 font-bold' href='/auth/signin'>로그인</a>
           </div>
         </form>
       </div>
