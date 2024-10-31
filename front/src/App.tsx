@@ -14,8 +14,6 @@ import SignInPage from './pages/SignInPage';
 import SignUpPage from './pages/SignUpPage';
 import OAuthSignUpPage from './pages/OAuthSignUpPage';
 import NotFound from './pages/NotFound';
-import AuthRoute from './components/AuthRoute';
-
 
 function App() {
   const [isSidebarOpen, setSidebarOpen] = useState<boolean>(false);
@@ -36,12 +34,12 @@ function App() {
               <Route path='/users' element={<Users />} />
               <Route path='/my-page' element={<MyPage />} />
             </Route>
-            <Route path='/auth' element={<AuthRoute />}>
+            <Route path='auth'>
               <Route path='signin' element={<SignInPage />} />
               <Route path='signup' element={<SignUpPage />} />
               <Route path='oauth-signup' element={<OAuthSignUpPage />} />
+              <Route path='*' element={<NotFound />} />
             </Route>
-            <Route path='*' element={<NotFound />} />
           </Routes>
         </SidebarContext.Provider>
       </BrowserRouter>

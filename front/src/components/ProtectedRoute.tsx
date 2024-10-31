@@ -1,18 +1,20 @@
 import { FC, ReactNode, useEffect, useState } from "react";
 import { useRecoilState } from "recoil";
 import { authState } from "../recoil/AuthState";
-import { Navigate, useLocation } from "react-router-dom";
+import { Navigate } from "react-router-dom";
 import axios, { AxiosError } from "axios";
 
 const ProtectedRoute: FC<{ children: ReactNode, requiredRoles?: string[] }> = ({ children, requiredRoles }) => {
   const [auth, setAuth] = useRecoilState(authState);
   const [isLoading, setIsLoading] = useState(true);
 
-  const location = useLocation();
-  const { pathname } = location;
-
   useEffect(() => {
     const checkToken = async () => {
+      if (auth.isAuthenticated) {
+        setIsLoading(false);
+        return;
+      }
+
       try {
         const response = await axios.get('http://localhost:3000/api/auth/check-token', { withCredentials: true });
         if (response.status === 200) {
@@ -25,6 +27,8 @@ const ProtectedRoute: FC<{ children: ReactNode, requiredRoles?: string[] }> = ({
             const refreshResponse = await axios.post('http://localhost:3000/api/auth/refresh', {}, { withCredentials: true });
             if (refreshResponse.status === 200) {
               setAuth({ isAuthenticated: true, role: refreshResponse.data.role });
+            } else {
+              setAuth({ isAuthenticated: false, role: null });
             }
           } catch (refreshError) {
             setAuth({ isAuthenticated: false, role: null });
@@ -36,18 +40,24 @@ const ProtectedRoute: FC<{ children: ReactNode, requiredRoles?: string[] }> = ({
         setIsLoading(false);
       }
     };
-    checkToken();
-  }, [pathname]);
 
-  if (!auth.isAuthenticated && !isLoading) {
-    alert('로그인 후 이용하세요');
-    return <Navigate to="/auth/signin" replace />;
-  } else if (auth.role && requiredRoles && !requiredRoles.includes(auth.role)) {
-    alert('권한이 없습니다');
-    return <Navigate to="/" replace />;
+    checkToken();
+  }, [setAuth]);
+
+  if (isLoading) {
+    return;
   }
 
-  return <>{children}</>; // 인증된 경우 자식 컴포넌트 렌더링
+  if (auth.isAuthenticated && !isLoading) {
+    if (auth.role && requiredRoles && !requiredRoles.includes(auth.role)) {
+      alert('권한이 없습니다');
+      return <Navigate to="/" replace />;
+    }
+    return <>{children}</>;
+  }
+
+  alert('로그인 후 이용하세요');
+  return <Navigate to="/auth/signin" replace />;
 };
 
 export default ProtectedRoute;
