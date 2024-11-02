@@ -9,6 +9,7 @@ import { authState } from '../recoil/AuthState';
 import { useRecoilState } from 'recoil';
 
 const SignInPage: FC = () => {
+  const SESSION_DURATION = 15 * 60 * 1000; // 15분
   const [isPasswordVisible, setIsPasswordVisible] = useState<boolean>(false);
   const [email, setEmail] = useState<string>('');
   const [password, setPassword] = useState<string>('');
@@ -31,6 +32,7 @@ const SignInPage: FC = () => {
 
       if (response.status === 200) {
         setAuth({isAuthenticated: true, role: response.data.role});
+        sessionStorage.setItem('expiresAt', JSON.stringify(Date.now() + SESSION_DURATION));
         navigate('/');
       }
     } catch (error) {
@@ -45,6 +47,7 @@ const SignInPage: FC = () => {
         } else if (status === 403) {
           setAuth({isAuthenticated: true, role: error.response?.data.role});
           alert(error.response?.data.message);
+          sessionStorage.setItem('expiresAt', JSON.stringify(Date.now() + SESSION_DURATION));
           navigate('/my-page');
         }
       }

@@ -140,7 +140,7 @@ export class AuthController {
       }
     );
     
-    return response.json({ message: '토큰 재발급 성공' });
+    return response.json({ role: user.role });
   }
 
   @Get('check-token')
@@ -150,6 +150,6 @@ export class AuthController {
   })
   checkToken(@Req() request: Request, @Res() response: Response): Response<{ role: string }> {
     const user = request.user as AuthPayload;
-    return response.status(200).json({role: user.role});
+    return response.status(200).json({ role: user.role });
   }
 }

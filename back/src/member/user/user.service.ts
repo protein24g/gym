@@ -34,10 +34,21 @@ export class UserService {
     await this.userRepository.remove(user);
   }
 
-  async findAll(payload: AuthPayload): Promise<UserPayload[]> {
+  async findAll(payload: AuthPayload, page: string, size: string): Promise<UserPayload[]> {
     let users: User[];
+
+    const take = parseInt(size, 10);
+    const skip = (parseInt(page, 10) - 1) * take;
+
     if (payload.role === RoleType.OWNER) { // 모든 지점 회원 검색
-      users = await this.userRepository.find({where: {role: RoleType.USER}, relations: ['branch']});
+      users = await this.userRepository.find(
+        {
+          where: {role: RoleType.USER},
+          relations: ['branch'],
+          skip,
+          take,
+          order: {id: 'DESC'}
+        });
       return users.map(user => ({
         id: user.id,
         email: user.email,
@@ -55,7 +66,14 @@ export class UserService {
         throw new NotFoundException('존재하지 않는 유저');
       }
       
-      users = await this.userRepository.find({where: {role: RoleType.USER, branch: {id: user.branch.id}}, relations: ['branch']});
+      users = await this.userRepository.find(
+        {
+          where: {role: RoleType.USER, branch: {id: user.branch.id}},
+          relations: ['branch'],
+          skip,
+          take,
+          order: {id: 'DESC'}
+        });
       return users.map(user => ({
         id: user.id,
         email: user.email,
@@ -87,7 +105,11 @@ export class UserService {
   }
 
   async findByName(name: string): Promise<UserPayload[]> {
-    const users = await this.userRepository.find({where: {name, role: RoleType.USER}});
+    const users = await this.userRepository.find(
+      {
+        where: {name, role: RoleType.USER},
+        order: {id: 'DESC'}
+      });
 
     return users.map(user => ({
       id: user.id,
@@ -103,7 +125,10 @@ export class UserService {
   }
 
   async findByEmail(email: string): Promise<UserPayload> {
-    const user = await this.userRepository.findOne({where: {email, role: RoleType.USER}});
+    const user = await this.userRepository.findOne(
+      {
+        where: {email, role: RoleType.USER}
+      });
     if (!user) return;
 
     return {
@@ -120,7 +145,11 @@ export class UserService {
   }
 
   async findByTelNumber(telNumber: string): Promise<UserPayload> {
-    const user = await this.userRepository.findOne({where: {telNumber, role: RoleType.USER}, relations: ['branch']});
+    const user = await this.userRepository.findOne(
+      {
+        where: {telNumber, role: RoleType.USER},
+        relations: ['branch']
+      });
     if (!user) return;
     
     return {
@@ -137,7 +166,11 @@ export class UserService {
   }
 
   async findMyInfo(userId: number): Promise<UserPayload> {
-    const user = await this.userRepository.findOne({where: {id: userId}, relations: ['ptTrainer']});
+    const user = await this.userRepository.findOne(
+      {
+        where: {id: userId},
+        relations: ['ptTrainer']
+      });
     if (!user) return;
 
     return {

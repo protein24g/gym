@@ -1,4 +1,4 @@
-import { Controller, Delete, Get, Param, Req, UseGuards } from '@nestjs/common';
+import { Controller, Delete, Get, Param, Query, Req, UseGuards } from '@nestjs/common';
 import { UserService } from './user.service';
 import { ApiNotFoundResponse, ApiOkResponse, ApiOperation, ApiTags } from '@nestjs/swagger';
 import { Request } from 'express';
@@ -18,10 +18,10 @@ export class UserController {
   @Roles(RoleType.OWNER, RoleType.MANAGER, RoleType.TRAINER)
   @ApiOperation({ summary: '회원 전체 검색' })
   @ApiNotFoundResponse({ description: '존재하지 않는 유저' })
-  async findAll(@Req() request: Request) {
+  async findAll(@Req() request: Request, @Query('page') page: string, @Query('size') size: string) {
     const user = request.user as AuthPayload;
 
-    return await this.userService.findAll(user);
+    return await this.userService.findAll(user, (page ? page : '1'), (size ? size : '10'));
   }
 
   @Get('name/:name')
