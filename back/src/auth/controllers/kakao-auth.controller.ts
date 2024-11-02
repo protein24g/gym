@@ -1,6 +1,6 @@
 import { Body, Controller, Get, Post, Query, Req, Res, UseGuards } from "@nestjs/common";
 import { KakaoAuthGuard } from "../guards/kakao-auth.guard";
-import { ApiConflictResponse, ApiForbiddenResponse, ApiNotFoundResponse, ApiOperation, ApiTags } from "@nestjs/swagger";
+import { ApiConflictResponse, ApiForbiddenResponse, ApiNotFoundResponse, ApiOperation, ApiTags, ApiUnauthorizedResponse } from "@nestjs/swagger";
 import { kakaoAuthService } from "../services/kakao-auth.service";
 import { Request, Response } from "express";
 import { UserService } from "src/member/user/user.service";
@@ -9,7 +9,6 @@ import { OAuthType } from "../enums/oauth-type.enum";
 import { TokenService } from "../services/token.service";
 import { AuthPayload } from "../interfaces/auth-payload.interface";
 import { JwtService } from "@nestjs/jwt";
-import { OAuthPayload } from "../interfaces/oauth-payload.interface";
 import { OAuthSignUpDTO } from "../dto/oauth-signup.dto";
 import { ConfigService } from "@nestjs/config";
 
@@ -95,15 +94,16 @@ async kakaoCallback(@Query('code') code: string, @Res() response: Response) {
     summary: '카카오 회원가입 추가정보 입력 페이지 접속 토큰 검증',
     description: '추가정보 입력 페이지 접속시 기존에 받은 기본 정보를 담은 토큰 검증',
   })
+  @ApiUnauthorizedResponse({description: '잘못된 토큰입니다'})
   verifyToken(@Req() request: Request, @Res() response: Response) {
     const accessToken = request.cookies['accessToken'];
-    
-    if (!accessToken) {
-      return response.status(401).json({ success: false });
-    }
   
-    const isValid = this.tokenService.checkOAuthAccessToken(accessToken);
-    return response.json({ success: isValid });
+    try {
+      this.tokenService.checkOAuthAccessToken(accessToken);
+      return response.status(200).json();
+    } catch(error) {
+      return response.status(error.status).json({ message: error.response.message });
+    }
   }
 
   @Post('signup')
@@ -112,6 +112,7 @@ async kakaoCallback(@Query('code') code: string, @Res() response: Response) {
     description: '카카오에서 받은 사용자 정보와 추가 정보를 합쳐서 회원가입 요청',
   })
   @ApiNotFoundResponse({description: '존재하지 않는 유저'})
+  @ApiUnauthorizedResponse({description: '잘못된 토큰입니다'})
   @ApiConflictResponse({description: '이미 존재하는 OAuth 계정'})
   @ApiConflictResponse({description: '이미 존재하는 휴대폰 번호'})
   @ApiConflictResponse({description: '이미 존재하는 이메일'})
@@ -122,18 +123,16 @@ async kakaoCallback(@Query('code') code: string, @Res() response: Response) {
       return response.status(401).json({ message: '잘못된 토큰입니다' });
     }
 
-    let user: OAuthPayload;
     try {
-      user = this.jwtService.decode(accessToken);
+      const user = this.jwtService.decode(accessToken);
+      await this.authService.oAuthSignUp({
+        ...user,
+        ...body
+      }, OAuthType.KAKAO);
+  
+      return response.status(201).json({message: '회원가입 성공'});
     } catch (error) {
-      return response.status(400).json({ message: '잘못된 토큰입니다' });
+      return response.status(401).json({ message: error.response.message });
     }
-    
-    await this.authService.oAuthSignUp({
-      ...user,
-      ...body
-    }, OAuthType.KAKAO);
-
-    return response.status(201).json({message: '회원가입 성공'});
   }
 }

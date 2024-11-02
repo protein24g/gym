@@ -1,5 +1,5 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { IsNotEmpty, IsString, Matches } from 'class-validator';
+import { IsNotEmpty, IsOptional, IsString, Matches } from 'class-validator';
 
 export class SignUpDTO {
   @ApiProperty({
@@ -27,6 +27,8 @@ export class SignUpDTO {
     description: '이메일',
     example: 'example@email.com',
   })
+  @IsOptional()
+  @IsString({ message: '이메일은 문자열이어야 합니다.' })
   email?: string;
 
   @ApiProperty({

@@ -15,7 +15,6 @@ import { UserService } from 'src/member/user/user.service';
 import { TokenService } from './token.service';
 import { RoleType } from '../roles/enums/role.type.enum';
 import { Branch } from 'src/branches/entities/branch.entity';
-import { UserPayload } from 'src/member/user/interfaces/user-payload.interface';
 
 @Injectable()
 export class AuthService {
@@ -53,13 +52,13 @@ export class AuthService {
   }
 
   async signUp(signUpDTO: SignUpDTO, file: Express.Multer.File): Promise<AuthPayload> {
-    const telNumber = await this.userService.findByTelNumber(signUpDTO.telNumber);
+    const telNumber = await this.userService.checkTelNumberExists(signUpDTO.telNumber);
     if (telNumber) {
       throw new ConflictException('이미 존재하는 휴대폰 번호');
     }
 
     if (signUpDTO.email) {
-      const email = await this.userService.findByEmail(signUpDTO.email);
+      const email = await this.userService.checkEmailExists(signUpDTO.email);
       if (email) {
         throw new ConflictException('이미 존재하는 이메일');
       }
@@ -90,20 +89,20 @@ export class AuthService {
   }
 
   async oAuthSignUp(signUpDTO: OAuthSignUpDTO, provider: OAuthType): Promise<AuthPayload> {
-    const oAuthId = await this.userService.findByOAuthId(signUpDTO.oAuthId);
+    const oAuthId = await this.userService.checkOAuthIdExists(signUpDTO.oAuthId);
     if (oAuthId) {
       throw new ConflictException('이미 존재하는 OAuth 계정');
     }
 
-    const telNumber = await this.userService.findByTelNumber(signUpDTO.telNumber);
+    const telNumber = await this.userService.checkTelNumberExists(signUpDTO.telNumber);
     if (telNumber) {
       throw new ConflictException('이미 존재하는 휴대폰 번호');
     }
 
-    let email: UserPayload;
-    if (signUpDTO.email && signUpDTO.email.length > 0) {
-      email = await this.userService.findByEmail(signUpDTO.email);
-      if (email) {
+    if (signUpDTO.email) {
+      const isEmail = await this.userService.checkEmailExists(signUpDTO.email);
+
+      if (isEmail) {
         throw new ConflictException('이미 존재하는 이메일');
       }
     }

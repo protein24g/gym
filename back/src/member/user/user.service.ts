@@ -124,10 +124,17 @@ export class UserService {
     }));
   }
 
+  async checkEmailExists(email: string): Promise<boolean> {
+    const user = await this.userRepository.findOne({where: {email}});
+    if (user) return true;
+    return false;
+  }
+
   async findByEmail(email: string): Promise<UserPayload> {
     const user = await this.userRepository.findOne(
       {
-        where: {email, role: RoleType.USER}
+        where: {email, role: RoleType.USER},
+        order: {id: 'DESC'}
       });
     if (!user) return;
 
@@ -142,6 +149,12 @@ export class UserService {
       branchId: user.branch ? user.branch.id : null,
       branchName: user.branch ? user.branch.name : null
     };
+  }
+
+  async checkTelNumberExists(telNumber: string): Promise<boolean> {
+    const user = await this.userRepository.findOne({where: {telNumber}});
+    if (user) return true;
+    return false;
   }
 
   async findByTelNumber(telNumber: string): Promise<UserPayload> {
@@ -188,6 +201,12 @@ export class UserService {
 
   async findById(userId: number): Promise<User> {
     return await this.userRepository.findOne({where: {id: userId}, relations: ['ptTrainer', 'profileImage', 'branch']});
+  }
+  
+  async checkOAuthIdExists(oAuthId: string): Promise<boolean> {
+    const user = await this.userRepository.findOne({where: {oAuthId}});
+    if (user) return true;
+    return false
   }
 
   async findByOAuthId(oAuthId: string): Promise<User> {

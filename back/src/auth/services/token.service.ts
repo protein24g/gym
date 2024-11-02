@@ -59,12 +59,15 @@ export class TokenService {
     return user;
   }
 
-  checkOAuthAccessToken(accessToken: string): boolean {
+  checkOAuthAccessToken(accessToken: string): void {
+    if (!accessToken) {
+      throw new UnauthorizedException('잘못된 토큰입니다');
+    }
+
     try {
-      const token = this.jwtService.verify(accessToken, {secret: this.configService.get<string>('KAKAO_JWT_SECRET')});
-      return (!!token);
+      this.jwtService.verify(accessToken, {secret: this.configService.get<string>('KAKAO_JWT_SECRET')});
     } catch(error) {
-      return false;
+      throw new UnauthorizedException('잘못된 토큰입니다');
     }
   }
 }

@@ -1,5 +1,5 @@
 import { FC, useEffect, useState } from 'react';
-import axios from 'axios';
+import axios, { AxiosError } from 'axios';
 
 interface Branch {
   id: number;
@@ -17,22 +17,14 @@ const OAuthSignUpPage: FC = () => {
   useEffect(() => {
     const verifyToken = async () => {
       try {
-        const response = await axios.post(
-          'http://localhost:3000/api/kakao/oauth/verify-token',
-          {},
-          { 
-            withCredentials: true,
-          }
-        );
+        const response = await axios.post('http://localhost:3000/api/kakao/oauth/verify-token', {}, { withCredentials: true });
 
-        if (!response.data.success) {
-          alert('잘못된 접근입니다');
-          window.location.href = 'http://localhost:5173/auth/signin';
+        if (response.status === 200) {
+          setIsLoading(false);
         }
-
-        setIsLoading(!isLoading);
       } catch (error) {
-        alert('토큰 검증 중 오류 발생: ' + error);
+        const axiosError = error as AxiosError;
+        alert(axiosError.message === 'Request failed with status code 401' ? '잘못된 토큰입니다' : '알 수 없는 오류');
         window.location.href = 'http://localhost:5173/auth/signin';
       }
     };
@@ -60,15 +52,8 @@ const OAuthSignUpPage: FC = () => {
 
     try {
       const response = await axios.post('http://localhost:3000/api/kakao/oauth/signup',
-        {
-          branchId,
-          email,
-          telNumber,
-          birth   
-        },
-        {
-          withCredentials: true,
-        }
+        { branchId, email, telNumber, birth },
+        { withCredentials: true }
       );
   
       if (response.status === 201) {
