@@ -1,5 +1,5 @@
 import { FC, useState } from 'react';
-import LogoImage from '../assets/logo.png';
+import LogoImage1 from '../assets/logoImage-1.png';
 import { IoEyeOutline } from "react-icons/io5";
 import { IoEyeOffOutline } from "react-icons/io5";
 import { RiKakaoTalkFill } from 'react-icons/ri';
@@ -7,6 +7,7 @@ import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
 import { authState } from '../recoil/AuthState';
 import { useRecoilState } from 'recoil';
+import { FaUserLock } from 'react-icons/fa';
 
 const SignInPage: FC = () => {
   const SESSION_DURATION = 15 * 60 * 1000; // 15분
@@ -58,11 +59,14 @@ const SignInPage: FC = () => {
     <div className='flex min-h-screen justify-center items-center bg-custom-gray text-white'>
       <div className='w-full sm:max-w-lg p-3'>
         {/* 회원가입 폼 */}
-        <form onSubmit={signIn} className='p-10 shadow-2xl rounded'>
+        <form onSubmit={signIn} className='p-10 shadow-2xl'>
           {/* 사이트 로고 */}
-          <div className='my-2'>
-            <img src={LogoImage} className='mx-auto max-w-xs'/>
+          <img src={LogoImage1} className='mx-auto max-w-72'/>
+          <div className='flex items-center gap-2'>
+            <FaUserLock className='w-6 h-6'/>
+            <h1 className='text-2xl font-bold'>로그인</h1>
           </div>
+          <hr className='border border-gray-400 my-3'></hr>
           {/* 이메일 */}
           <div className='my-3'>
             <div className='mb-2'>
@@ -92,19 +96,18 @@ const SignInPage: FC = () => {
           <div className='my-3'>
             <button className='p-2 w-full bg-blue-500 font-bold text-white hover:bg-blue-600 rounded border border-transparent' type='submit'>로그인</button>
           </div>
-          
           <div className='my-2 grid grid-cols-3 items-center'>
-               <hr className='broder-gray-400'/>
-               <p className='text-center'>OR</p>
-               <hr className='broder-gray-400'/>
-             </div>
-             <button className='flex justify-center p-2 rounded border border-transparent w-full bg-yellow-300 font-bold text-black hover:bg-yellow-200' onClick={() => {window.location.href = 'http://localhost:3000/api/kakao/oauth/authorize';}} type='button'>
-               <RiKakaoTalkFill className='relative top-1 right-1'/>카카오로 시작하기
-             </button>
-            <div className='my-3'>
-              <span>계정이 없으신가요?</span>
-              <a className='mx-3 text-blue-500 font-bold' href='http://localhost:5173/auth/signup'>회원가입</a>
-            </div>
+            <hr className='border border-gray-400'/>
+            <p className='text-center'>OR</p>
+            <hr className='border border-gray-400'/>
+          </div>
+          <button className='flex justify-center p-2 rounded border border-transparent w-full bg-yellow-300 font-bold text-black hover:bg-yellow-200' onClick={() => {window.location.href = 'http://localhost:3000/api/kakao/oauth/authorize';}} type='button'>
+            <RiKakaoTalkFill className='relative right-2 w-6 h-6'/>카카오계정으로 시작하기
+          </button>
+          <div className='my-3'>
+            <span>계정이 없으신가요?</span>
+            <a className='mx-3 text-blue-500 font-bold' href='http://localhost:5173/auth/signup'>회원가입</a>
+          </div>
         </form>
       </div>
     </div>

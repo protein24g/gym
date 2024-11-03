@@ -35,7 +35,7 @@ const Layout: FC<{ roles: string[] }> = ({ roles }) => {
     };
 
     checkAuthorization();
-  }, [auth, roles, navigate]);
+  }, [auth, navigate]);
 
   if (isLoading) {
     return;

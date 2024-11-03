@@ -1,5 +1,5 @@
 import { FC, useContext, useState } from "react"
-import { Link, useLocation } from "react-router-dom"
+import { Link, useLocation, useNavigate } from "react-router-dom"
 import { GoTriangleDown, GoTriangleUp } from "react-icons/go";
 import { useRecoilValue } from "recoil";
 import { SidebarContext } from "../../context/SidebarContext";
@@ -11,6 +11,7 @@ import Logo from "../Logo/Logo";
 const Sidebar: FC = () => {
   const {isSidebarOpen, toggleSidebar} = useContext(SidebarContext);
   const [openMenus, setOpenMenus] = useState<Set<string>>(new Set());
+  const navidate = useNavigate();
 
   const auth = useRecoilValue(authState);
 
@@ -65,7 +66,7 @@ const Sidebar: FC = () => {
       )}
       <div className={`w-72 h-screen bg-custom-gray text-white ${isSidebarOpen ? 'fixed z-50 lg:relative' : 'hidden'}`}>
         <div className="flex flex-col h-full justify-between">
-          <div className="p-6">
+          <div className="p-6" onClick={() => {navidate('/')}}>
             <Logo />
           </div>
           <hr className="border-gray-500"></hr>

@@ -1,5 +1,7 @@
 import { FC, useEffect, useState } from 'react';
 import axios, { AxiosError } from 'axios';
+import LogoImage1 from '../assets/logoImage-1.png';
+import { FaUserPlus } from 'react-icons/fa';
 
 interface Branch {
   id: number;
@@ -45,11 +47,10 @@ const OAuthSignUpPage: FC = () => {
   const signUp = async (e: React.FormEvent<HTMLFormElement>): Promise<void> => {
     e.preventDefault(); // 기본 폼 제출 방지
     if (!confirm('가입 하시겠습니까?')) return;
-    if (branchId === null) {
+    if (branchId === null || isNaN(Number(branchId))) {
       alert('지점을 선택하세요');
       return;
     }
-
     try {
       const response = await axios.post('http://localhost:3000/api/kakao/oauth/signup',
         { branchId, email, telNumber, birth },
@@ -80,22 +81,30 @@ const OAuthSignUpPage: FC = () => {
     <div className='flex min-h-screen justify-center items-center bg-custom-gray text-white'>
       <div className='w-full sm:max-w-lg p-3'>
         {/* 회원가입 폼 */}
-        <form onSubmit={signUp} className='p-10 shadow-2xl rounded'>
-          <div className='text-2xl font-semibold mb-5 text-center text-yellow-400'>카카오 회원가입 추가정보</div>
+        <form onSubmit={signUp} className='px-10 py-4 shadow-2xl'>
+          {/* 사이트 로고 */}
+          <img src={LogoImage1} className='mx-auto max-w-72'/>
+          <div className='flex items-center gap-2'>
+            <FaUserPlus className='w-6 h-6'/>
+            <h1 className='text-2xl font-bold text-yellow-500'>카카오계정 회원가입</h1>
+          </div>
+          <hr className='border border-gray-400 my-3'></hr>
           {/* 지점 */}
           <div className='my-3'>
-            <select className='bg-gray-500 text-sm rounded w-full p-2.5' name='branch' onChange={(e) => {setBranchId(e.target.value)}}>
-              <option>지점을 선택하세요</option>
+            <select className='bg-transparent text-white text-sm border rounded w-full p-2.5' name='branch' onChange={(e) => {setBranchId(e.target.value)}}>
+              <option className='text-black'>지점을 선택하세요</option>
               {branchList && (
                 branchList.map((branch) => (
-                  <option key={branch.id} value={branch.id}>{branch.name}</option>
+                  <option className='text-black' key={branch.id} value={branch.id}>{branch.name}</option>
                 ))
               )}
             </select>
           </div>
           {/* 이메일 */}
           <div className='my-3'>
-            <label htmlFor='email'>이메일</label>
+            <div className='mb-2'>
+              <label htmlFor='email'>이메일</label>
+            </div>
             <input className='p-2 w-full border text-black rounded' id='email' placeholder='이메일을 입력해 주세요' type='email' onChange={(e) => setEmail(e.target.value)} value={email}/>
           </div>
           {/* 연락처 */}
