@@ -3,7 +3,7 @@ import axios from 'axios';
 import queryString from 'query-string';
 import { useLocation } from 'react-router-dom';
 import { authState } from '../../recoil/AuthState';
-import { useRecoilState } from 'recoil';
+import { useRecoilValue } from 'recoil';
 
 interface User {
   birth: string,
@@ -19,7 +19,7 @@ interface User {
 
 const Users: FC = () => {
   const [userList, setUserList] = useState<User[]>([]);
-  const [auth] = useRecoilState(authState);
+  const auth = useRecoilValue(authState);
   const location = useLocation();
   const [isLoading, setIsLoading] = useState(true);
 
@@ -32,10 +32,8 @@ const Users: FC = () => {
           withCredentials: true,
         });
   
-        if (Array.isArray(response.data)) {
-          setUserList(response.data); // 배열일 경우에만 상태 업데이트
-        } else {
-          alert('API 응답이 배열이 아닙니다:' + response.data);
+        if (response.data) {
+          setUserList(response.data.users); // 배열일 경우에만 상태 업데이트
         }
       } catch (error) {
         return;
@@ -62,15 +60,14 @@ const Users: FC = () => {
   }
 
   return (
-    <div className="p-3 bg-white border-2">
-      <h2 className="text-xl font-bold">회원 목록</h2>
+    <div className="m-4 p-3 bg-white border-2">
+      <h2 className="text-2xl m-2 font-bold">회원 목록</h2>
+        {
+        }
       <div className="overflow-x-auto w-full h-full">
         <table className="table-auto my-3 border-gray-300 w-full h-full whitespace-nowrap text-center">
           <thead>
             <tr className="bg-gray-100">
-              <th className="border border-gray-300 px-4 py-2">
-                <input type="checkbox" />
-              </th>
               <th className="border border-gray-300 px-4 py-2">ID</th>
               <th className="border border-gray-300 px-4 py-2">이메일</th>
               <th className="border border-gray-300 px-4 py-2">이름</th>
@@ -79,8 +76,7 @@ const Users: FC = () => {
               <th className="border border-gray-300 px-4 py-2">가입일</th>
               {auth.role && auth.role === "ROLES_OWNER" && (
                 <>
-                  <th className="border border-gray-300 px-4 py-2">권한</th>
-                  <th className="border border-gray-300 px-4 py-2">지점 ID</th>
+                  <th className="border border-gray-300 px-4 py-2">지점</th>
                 </>
               )}
             </tr>
@@ -89,9 +85,6 @@ const Users: FC = () => {
             {userList.length > 0 ? (
               userList.map((user) => (
                 <tr key={user.id} className="hover:bg-gray-50">
-                  <td className="border border-gray-300 px-4 py-2">
-                    <input type="checkbox" />
-                  </td>
                   <td className="border border-gray-300 px-4 py-2">{user.id}</td>
                   <td className="border border-gray-300 px-4 py-2">{user.email}</td>
                   <td className="border border-gray-300 px-4 py-2">{user.name}</td>
@@ -102,9 +95,8 @@ const Users: FC = () => {
                   </td>
                   {auth.role && auth.role === "ROLES_OWNER" && (
                     <>
-                      <td className="border border-gray-300 px-4 py-2">{user.role}</td>
                       <td className="border border-gray-300 px-4 py-2" id={JSON.stringify(user.branchId)}>
-                        {user.branchName || 'N/A'}
+                        {user.branchName}
                       </td>
                     </>
                   )}

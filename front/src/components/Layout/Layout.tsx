@@ -45,7 +45,7 @@ const Layout: FC<{ roles: string[] }> = ({ roles }) => {
       <Sidebar />
       <div className="flex flex-1 flex-col overflow-auto">
         <Header />
-        <div className="p-3 overflow-auto">
+        <div className="overflow-auto">
           <Outlet />
         </div>
       </div>

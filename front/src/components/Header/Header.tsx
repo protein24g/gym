@@ -4,15 +4,12 @@ import { SidebarContext } from "../../context/SidebarContext";
 import { CgProfile } from "react-icons/cg";
 import axios from "axios";
 import { Link, useNavigate } from "react-router-dom";
-import { useRecoilState } from "recoil";
-import { authState } from "../../recoil/AuthState";
 import Logo from "../Logo/Logo";
 
 const Header: FC = () => {
   const navigate = useNavigate();
   const { toggleSidebar } = useContext(SidebarContext);
   const [imageSrc, setImageSrc] = useState<string | undefined>(undefined);
-  const [, setAuth] = useRecoilState(authState);
 
   const getMyProfileImage = async () => {
     const response = await axios.get('http://localhost:3000/api/mypage/profile/image', {
@@ -50,14 +47,14 @@ const Header: FC = () => {
 
   return (
     <div className="bg-white h-16 px-4 flex justify-between items-center border-b-2 border-gray-300">
-      <div className="flex flex-1 items-center">
-        <RxHamburgerMenu className="cursor-pointer mr-4" onClick={toggleSidebar} />
+      <div className="flex flex-1 items-center py-4">
+        <RxHamburgerMenu className="cursor-pointer mr-4 w-6 h-6 my-2" onClick={toggleSidebar} />
         <div className="cursor-pointer lg:hidden" onClick={() => {navigate('/')}}>
           <Logo />
         </div>
       </div>
       <div className="group">
-        {imageSrc ? <img src={imageSrc} alt="Profile" className="w-10 h-10 rounded-full" /> : <CgProfile className="w-10 h-10 rounded-full"/>}
+        {imageSrc ? <img src={imageSrc} alt="Profile" className="w-8 h-8 rounded-full" /> : <CgProfile className="w-10 h-10 rounded-full"/>}
         <ul className="absolute w-40 right-0 border bg-white hidden group-hover:block">
           <li className="p-3 hover:bg-gray-300">
             <Link to={'my-page'}>마이페이지</Link>

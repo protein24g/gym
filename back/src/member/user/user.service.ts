@@ -34,14 +34,15 @@ export class UserService {
     await this.userRepository.remove(user);
   }
 
-  async findAll(payload: AuthPayload, page: string, size: string): Promise<UserPayload[]> {
+  async findAll(payload: AuthPayload, page: string, size: string): Promise<{users: UserPayload[], totalCount: number}> {
     let users: User[];
 
-    const take = parseInt(size, 10);
-    const skip = (parseInt(page, 10) - 1) * take;
+    const take = (size ? parseInt(size, 10) : null);
+    const skip = (page ? (parseInt(page, 10) - 1) * take : null);
 
+    let total: number;
     if (payload.role === RoleType.OWNER) { // 모든 지점 회원 검색
-      users = await this.userRepository.find(
+      [users, total] = await this.userRepository.findAndCount(
         {
           where: {role: RoleType.USER},
           relations: ['branch'],
@@ -49,24 +50,27 @@ export class UserService {
           take,
           order: {id: 'DESC'}
         });
-      return users.map(user => ({
-        id: user.id,
-        email: user.email,
-        name: user.name,
-        telNumber: user.telNumber,
-        birth: user.birth,
-        createAt: user.createdAt,
-        role: user.role,
-        branchId: user.branch ? user.branch.id : null,
-        branchName: user.branch ? user.branch.name : null
-      }));
+      return {
+        users: users.map(user => ({
+          id: user.id,
+          email: user.email,
+          name: user.name,
+          telNumber: user.telNumber,
+          birth: user.birth,
+          createAt: user.createdAt,
+          role: user.role,
+          branchId: user.branch ? user.branch.id : null,
+          branchName: user.branch ? user.branch.name : null
+        })),
+        totalCount: total
+      };
     } else if (payload.role === RoleType.MANAGER || payload.role === RoleType.TRAINER) {
       const user = await this.findById(payload.userId);
       if (!user) {
         throw new NotFoundException('존재하지 않는 유저');
       }
       
-      users = await this.userRepository.find(
+      [users, total] = await this.userRepository.findAndCount(
         {
           where: {role: RoleType.USER, branch: {id: user.branch.id}},
           relations: ['branch'],
@@ -74,34 +78,21 @@ export class UserService {
           take,
           order: {id: 'DESC'}
         });
-      return users.map(user => ({
-        id: user.id,
-        email: user.email,
-        name: user.name,
-        telNumber: user.telNumber,
-        birth: user.birth,
-        createAt: user.createdAt,
-        role: user.role,
-        branchId: user.branch ? user.branch.id : null,
-        branchName: user.branch ? user.branch.name : null
-      }));
+      return {
+        users: users.map(user => ({
+          id: user.id,
+          email: user.email,
+          name: user.name,
+          telNumber: user.telNumber,
+          birth: user.birth,
+          createAt: user.createdAt,
+          role: user.role,
+          branchId: user.branch ? user.branch.id : null,
+          branchName: user.branch ? user.branch.name : null
+        })),
+        totalCount: total
+      }
     }
-
-    if (users.length === 0) {
-      throw new NotFoundException('존재하지 않는 유저');
-    }
-
-    return users.map(user => ({
-      id: user.id,
-      email: user.email,
-      name: user.name,
-      telNumber: user.telNumber,
-      birth: user.birth,
-      createAt: user.createdAt,
-      role: user.role,
-      branchId: user.branch ? user.branch.id : null,
-      branchName: user.branch ? user.branch.name : null
-    }));
   }
 
   async findByName(name: string): Promise<UserPayload[]> {

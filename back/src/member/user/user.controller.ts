@@ -21,7 +21,7 @@ export class UserController {
   async findAll(@Req() request: Request, @Query('page') page: string, @Query('size') size: string) {
     const user = request.user as AuthPayload;
 
-    return await this.userService.findAll(user, (page ? page : '1'), (size ? size : '10'));
+    return await this.userService.findAll(user, page, size);
   }
 
   @Get('name/:name')
