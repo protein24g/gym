@@ -15,11 +15,11 @@ export class User {
   @Column({ type: 'varchar', length: 50, nullable: true, unique: true })
   oAuthId: string;
 
-  @Column({ type: 'varchar', length: 50, nullable: true, unique: true })
-  email?: string;
+  @Column({ type: 'varchar', length: 50, nullable: false, unique: true })
+  email: string;
 
   @Column({ type: 'varchar', length: 255, nullable: true })
-  password: string;
+  password?: string;
 
   @Column({ type: 'varchar', length: 20, nullable: false })
   name: string;
@@ -57,14 +57,6 @@ export class User {
 
   @OneToMany(() => Attendance, attendance => attendance.user)
   attendances: Attendance[];
-
-  @BeforeInsert()
-  @BeforeUpdate()
-  async hashPassword() {
-    if (this.password) {
-      this.password = await argon2.hash(this.password);
-    }
-  }
 
   @Column({type: "text", nullable: true})
   hashRefreshToken: string;

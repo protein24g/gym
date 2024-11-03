@@ -1,5 +1,5 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { IsNotEmpty, IsOptional, IsString, Matches } from 'class-validator';
+import { IsNotEmpty, IsOptional, IsString, Matches, MinLength } from 'class-validator';
 
 export class OAuthSignUpDTO {
   @ApiProperty({
@@ -21,14 +21,14 @@ export class OAuthSignUpDTO {
   oAuthId?: string;
 
   @ApiProperty({
-    required: false,
+    required: true,
     type: 'string',
     description: '이메일',
-    example: 'example@email.com',
+    example: 'test@email.com',
   })
-  @IsOptional()
-  @IsString({ message: '이메일은 문자열이어야 합니다.' })
-  email?: string;
+  @IsString({ message: '이메일은 문자여야 합니다.' })
+  @Matches(/^[a-zA-Z0-9+-\_.]+@[a-zA-Z0-9-]+\.[a-zA-Z0-9-.]+$/, { message: '이메일 형식이 유효하지 않습니다. {예: test@email.com}'})
+  email: string;
 
   @ApiProperty({
     type: 'string',

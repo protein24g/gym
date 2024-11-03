@@ -11,6 +11,7 @@ import { FaUserLock } from 'react-icons/fa';
 
 const SignInPage: FC = () => {
   const SESSION_DURATION = 15 * 60 * 1000; // 15분
+  
   const [isPasswordVisible, setIsPasswordVisible] = useState<boolean>(false);
   const [email, setEmail] = useState<string>('');
   const [password, setPassword] = useState<string>('');
@@ -53,7 +54,7 @@ const SignInPage: FC = () => {
         }
       }
     }
-  }
+  } 
 
   return (
     <div className='flex min-h-screen justify-center items-center bg-custom-gray text-white'>

@@ -13,9 +13,11 @@ import OAuthSignUpPage from './pages/OAuthSignUpPage';
 import NotFound from './pages/NotFound';
 import Trainers from './pages/sidebar/Trainers';
 import Users from './pages/sidebar/Users';
+import OAuthCallback from './pages/OAuthCallback';
 
 function App() {
   const [isSidebarOpen, setSidebarOpen] = useState<boolean>(false);
+  const role = sessionStorage.getItem('role');
 
   const toggleSidebar = (): void => {
     setSidebarOpen(!isSidebarOpen);
@@ -26,24 +28,32 @@ function App() {
       <BrowserRouter>
         <SidebarContext.Provider value={{ isSidebarOpen, toggleSidebar }}>
           <Routes>
-            <Route element={<Layout roles={["ROLES_OWNER", "ROLES_MANAGER", "ROLES_TRAINER"]} />}>
-              <Route path='/' element={<Dashboard />} />
-              <Route path='/my-page' element={<MyPage />} />
-              <Route path='/users' element={<Users />} />
-            </Route>
-            {/* Trainers 페이지에 대한 권한 설정 */}
-            <Route element={<Layout roles={["ROLES_OWNER", "ROLES_MANAGER"]} />}>
-              <Route path='/trainers' element={<Trainers />} />
-            </Route>
-            {/* Users 페이지에 대한 권한 설정 */}
-            <Route element={<Layout roles={["ROLES_OWNER"]} />}>
-              <Route path='/managers' element={<Managers />} />
-            </Route>
+            {role && JSON.parse(role) === "ROLES_USER" ? (
+              <Route path='/' element={<MyPage />} />
+            ) : (
+              <>
+                <Route element={<Layout roles={["ROLES_OWNER", "ROLES_MANAGER", "ROLES_TRAINER"]} />}>
+                  <Route path='/' element={<Dashboard />} />
+                  <Route path='/my-page' element={<MyPage />} />
+                  <Route path='/users' element={<Users />} />
+                </Route>
+                {/* Trainers 페이지에 대한 권한 설정 */}
+                <Route element={<Layout roles={["ROLES_OWNER", "ROLES_MANAGER"]} />}>
+                  <Route path='/trainers' element={<Trainers />} />
+                </Route>
+                {/* Users 페이지에 대한 권한 설정 */}
+                <Route element={<Layout roles={["ROLES_OWNER"]} />}>
+                  <Route path='/managers' element={<Managers />} />
+                </Route>
+              </>
+            )}
+            
             {/* 기타 페이지 */}
             <Route path='auth'>
               <Route path='signin' element={<SignInPage />} />
               <Route path='signup' element={<SignUpPage />} />
               <Route path='oauth-signup' element={<OAuthSignUpPage />} />
+              <Route path='oauth-callback' element={<OAuthCallback />} />
               <Route path='*' element={<NotFound />} />
             </Route>
           </Routes>

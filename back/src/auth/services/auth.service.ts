@@ -69,6 +69,10 @@ export class AuthService {
       throw new NotFoundException('존재하지 않는 지점');
     }
 
+    if (signUpDTO.password) {
+      signUpDTO.password = await argon2.hash(signUpDTO.password);
+    }
+
     const user = await this.userRepository.save({
       ...signUpDTO,
       branch,
@@ -111,7 +115,7 @@ export class AuthService {
     if (!branch) {
       throw new NotFoundException('존재하지 않는 지점');
     }
-    
+
     const user = await this.userRepository.save({
       ...signUpDTO,
       branch,
@@ -129,10 +133,6 @@ export class AuthService {
   }
 
   async signIn(payload: AuthPayload): Promise<TokenPayload> {
-    if (payload.role === RoleType.USER) {
-      throw new ForbiddenException('권한이 없습니다');
-    }
-
     const accessToken = this.tokenService.createAccessToken(payload);
     const refreshToken = this.tokenService.createRefreshToken(payload);
 
@@ -142,19 +142,8 @@ export class AuthService {
     return { accessToken, refreshToken };
   }
 
-  async signOut(payload: AuthPayload, kakaoAccessToken: string, refreshToken: string) {
+  async signOut(payload: AuthPayload, refreshToken: string) {
     const user = await this.tokenService.checkRefreshToken(payload.userId, refreshToken);
-
-    if (user.provider === OAuthType.KAKAO) {
-      await axios.post('https://kapi.kakao.com/v1/user/logout', null,
-        {
-          headers: {
-            Authorization: `Bearer ${kakaoAccessToken}`,
-            'Content-Type': 'application/x-www-form-urlencoded',
-          }
-        }
-      );
-    }
 
     await this.userRepository.update(user.id, { hashRefreshToken: null });
   }

@@ -19,11 +19,8 @@ const OAuthSignUpPage: FC = () => {
   useEffect(() => {
     const verifyToken = async () => {
       try {
-        const response = await axios.post('http://localhost:3000/api/kakao/oauth/verify-token', {}, { withCredentials: true });
+        await axios.post('http://localhost:3000/api/kakao/oauth/verify-token', {}, { withCredentials: true });
 
-        if (response.status === 200) {
-          setIsLoading(false);
-        }
       } catch (error) {
         const axiosError = error as AxiosError;
         alert(axiosError.message === 'Request failed with status code 401' ? '잘못된 토큰입니다' : '알 수 없는 오류');
@@ -35,6 +32,8 @@ const OAuthSignUpPage: FC = () => {
       try {
         const response = await axios.get<Branch[]>('http://localhost:3000/api/branches');
         setBranchList(response.data); // 상태에 배열 저장
+
+        setIsLoading(false);
       } catch (error) {
         alert('지점 목록을 불러오는 중 오류 발생: ' + error);
       }
@@ -58,8 +57,8 @@ const OAuthSignUpPage: FC = () => {
       );
   
       if (response.status === 201) {
-        alert(response.data.message);
-        window.location.href = 'http://localhost:5173/auth/signin';
+        alert('회원가입 성공');
+        window.location.href = 'http://localhost:5173/auth/oauth-callback';
       }
     } catch (error) {
       if (axios.isAxiosError(error)) {
@@ -104,7 +103,8 @@ const OAuthSignUpPage: FC = () => {
           <div className='my-3'>
             <div className='mb-2'>
               <label htmlFor='email'>이메일</label>
-            </div>
+              <span className='text-red-500'>*</span>
+              </div>
             <input className='p-2 w-full border text-black rounded' id='email' placeholder='이메일을 입력해 주세요' type='email' onChange={(e) => setEmail(e.target.value)} value={email}/>
           </div>
           {/* 연락처 */}

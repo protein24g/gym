@@ -47,34 +47,23 @@ async kakaoCallback(@Query('code') code: string, @Res() response: Response) {
   if (user) {
     const payload: AuthPayload = { userId: user.id, role: user.role };
 
-    try {
-      const token = await this.authService.signIn(payload);
-      
-      response.cookie('accessToken', token.accessToken, {
-        httpOnly: true,
-        secure: process.env.isProduction === 'true',
-        maxAge: +process.env.ACCESS_TOKEN_EXPIRE_IN,
-        sameSite: 'strict',
-      });
+    const token = await this.authService.signIn(payload);
+    
+    response.cookie('accessToken', token.accessToken, {
+      httpOnly: true,
+      secure: process.env.isProduction === 'true',
+      maxAge: +process.env.ACCESS_TOKEN_EXPIRE_IN,
+      sameSite: 'strict',
+    });
 
-      response.cookie('kakaoAccessToken', kakaoAccessToken, {
-        httpOnly: true,
-        secure: process.env.isProduction === 'true',
-        maxAge: +process.env.ACCESS_TOKEN_EXPIRE_IN,
-        sameSite: 'strict',
-      });
+    response.cookie('refreshToken', token.refreshToken, {
+      httpOnly: true,
+      secure: process.env.isProduction === 'true',
+      maxAge: +process.env.ACCESS_TOKEN_EXPIRE_IN,
+      sameSite: 'strict',
+    });
 
-      response.cookie('refreshToken', token.refreshToken, {
-        httpOnly: true,
-        secure: process.env.isProduction === 'true',
-        maxAge: +process.env.ACCESS_TOKEN_EXPIRE_IN,
-        sameSite: 'strict',
-      });
-
-      return response.redirect(this.configService.get<string>('FRONT_URL'));
-    } catch (error) {
-      return response.redirect(this.configService.get<string>('FRONT_URL') + 'auth/signin');
-    }
+    return response.redirect(this.configService.get<string>('FRONT_URL') + 'auth/oauth-callback');
   } else {
     const token = this.tokenService.createOAuthAccessToken(oAuthPayload);
 
@@ -124,13 +113,30 @@ async kakaoCallback(@Query('code') code: string, @Res() response: Response) {
     }
 
     try {
-      const user = this.jwtService.decode(accessToken);
-      await this.authService.oAuthSignUp({
-        ...user,
+
+      const decoded = this.jwtService.decode(accessToken);
+      const payload: AuthPayload = await this.authService.oAuthSignUp({                                                                    
+        ...decoded,
         ...body
       }, OAuthType.KAKAO);
-  
-      return response.status(201).json({message: '회원가입 성공'});
+
+      const token = await this.authService.signIn(payload);
+      
+      response.cookie('accessToken', token.accessToken, {
+        httpOnly: true,
+        secure: process.env.isProduction === 'true',
+        maxAge: +process.env.ACCESS_TOKEN_EXPIRE_IN,
+        sameSite: 'strict',
+      });
+
+      response.cookie('refreshToken', token.refreshToken, {
+        httpOnly: true,
+        secure: process.env.isProduction === 'true',
+        maxAge: +process.env.ACCESS_TOKEN_EXPIRE_IN,
+        sameSite: 'strict',
+      });
+
+      return response.status(201).json(payload);
     } catch (error) {
       return response.status(401).json({ message: error.response.message });
     }

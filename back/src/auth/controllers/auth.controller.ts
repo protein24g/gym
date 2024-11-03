@@ -100,11 +100,9 @@ export class AuthController {
   @ApiNotFoundResponse({description: '유효하지 않은 사용자'})
   async signOut(@Req() request: Request, @Res() response: Response) {
     const user = request.user as AuthPayload;
-    const kakaoAccessToken = request.cookies['kakaoAccessToken'];
     const refreshToken = request.cookies['refreshToken'];
-    await this.authService.signOut(user, kakaoAccessToken, refreshToken);
+    await this.authService.signOut(user, refreshToken);
     response.clearCookie('accessToken', { httpOnly: true, secure: true, sameSite: 'strict' });
-    response.clearCookie('kakaoAccessToken', { httpOnly: true, secure: true, sameSite: 'strict' });
     response.clearCookie('refreshToken', { httpOnly: true, secure: true, sameSite: 'strict' });
   
     return response.json({ message: '로그아웃 성공'});

@@ -19,7 +19,6 @@ const Layout: FC<{ roles: string[] }> = ({ roles }) => {
         alert('로그인 후 이용하세요');
         navigate('/auth/signin');
       } else if (!res.isAuthorized) {
-        alert('권한이 없습니다');
         navigate('/');
       } else if (res.isExpires) {
         alert('토큰이 만료되었습니다');

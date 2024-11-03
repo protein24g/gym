@@ -1,6 +1,6 @@
 import { ChangeEvent, FC, useEffect, useState } from 'react';
 import LogoImage1 from '../assets/logoImage-1.png';
-import { IoPersonCircleSharp } from "react-icons/io5";
+import { IoEyeOffOutline, IoEyeOutline, IoPersonCircleSharp } from "react-icons/io5";
 import axios from 'axios';
 import { FaCamera, FaUserPlus } from 'react-icons/fa';
 
@@ -12,10 +12,12 @@ interface Branch {
 const SignUpPage: FC = () => {
   const [name, setName] = useState<string>('');
   const [email, setEmail] = useState<string>('');
+  const [password, setPassword] = useState<string>('');
   const [telNumber, setTelNumber] = useState<string>('');
   const [birth, setBirth] = useState<string>('');
   const [profileImage, setProfileImage] = useState<File | null>(null);
   const [imagePreview, setImagePreview] = useState<string | null>(null); // 이미지 미리보기 상태
+  const [isPasswordVisible, setIsPasswordVisible] = useState<boolean>(false);
 
   const [branchId, setBranchId] = useState<string | null>(null);
   const [branchList, setBranchList] = useState<Branch[]>([]);
@@ -33,7 +35,8 @@ const SignUpPage: FC = () => {
         return;
       }
       formData.append('name', name);
-      if (email) formData.append('email', email);
+      formData.append('email', email);
+      formData.append('password', password);
       formData.append('telNumber', telNumber);
       formData.append('birth', birth);
   
@@ -146,8 +149,22 @@ const SignUpPage: FC = () => {
           <div className='my-3'>
             <div className='mb-2'>
               <label htmlFor='email'>이메일</label>
+              <span className='text-red-500'>*</span>
             </div>
-            <input className='p-2 w-full border text-black rounded' id='email' placeholder='이메일을 입력해 주세요' type='email' onChange={(e) => setEmail(e.target.value)} value={email}/>
+            <input className='p-2 w-full border text-black rounded' id='email' placeholder='이메일을 입력해 주세요' type='email' onChange={(e) => setEmail(e.target.value)} value={email} required/>
+          </div>
+          {/* 비밀번호 */}
+          <div className='my-3 relative'>
+            <div className='mb-2'>
+              <label htmlFor='password'>비밀번호</label>
+              <span className='text-red-500'>*</span>
+            </div>
+            <input className='p-2 w-full border text-black rounded' placeholder='비밀번호를 입력해주세요' id='password' type={isPasswordVisible ? 'text' : 'password'} onChange={(e) => setPassword(e.target.value)} value={password} required/>
+            {isPasswordVisible ? 
+              <IoEyeOutline className='absolute right-4 bottom-2 w-6 h-6 text-black cursor-pointer' onClick={() => {setIsPasswordVisible(!isPasswordVisible)}}/>
+            :
+              <IoEyeOffOutline className='absolute right-4 bottom-2 w-6 h-6 text-black cursor-pointer' onClick={() => {setIsPasswordVisible(!isPasswordVisible)}}/>
+            }
           </div>
           {/* 연락처 */}
           <div className='my-3'>
