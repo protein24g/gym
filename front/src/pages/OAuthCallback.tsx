@@ -14,13 +14,10 @@ const OAuthCallback: FC = () => {
     const checkToken = async () => {
       const role = sessionStorage.getItem('role');
       if (role) navigate('/');
-
       try {
         const response = await axios.get('http://localhost:3000/api/auth/check-token', {withCredentials: true});
-        console.log(response);
 
         if (response.status === 200) {
-          console.log('200');
           setAuth({isAuthenticated: true, role: response.data.role});
           sessionStorage.setItem('expiresAt', JSON.stringify(Date.now() + SESSION_DURATION));
           location.reload();

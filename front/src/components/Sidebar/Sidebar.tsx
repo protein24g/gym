@@ -66,7 +66,7 @@ const Sidebar: FC = () => {
       )}
       <div className={`w-72 h-screen bg-custom-gray text-white ${isSidebarOpen ? 'fixed z-50 lg:relative' : 'hidden'}`}>
         <div className="flex flex-col h-full justify-between">
-          <div className="p-6" onClick={() => {navidate('/')}}>
+          <div className="p-4 border-b-2 border-gray-500" onClick={() => {navidate('/')}}>
             <Logo />
           </div>
           <hr className="border-gray-500"></hr>

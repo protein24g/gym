@@ -1,7 +1,7 @@
 import { FC, useEffect, useState } from 'react';
-import axios from 'axios';
+import axios, { AxiosError } from 'axios';
 import queryString from 'query-string';
-import { Link, useLocation } from 'react-router-dom';
+import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { authState } from '../../recoil/AuthState';
 import { useRecoilValue } from 'recoil';
 
@@ -18,9 +18,10 @@ interface User {
 }
 
 const Users: FC = () => {
-  const [userList, setUserList] = useState<User[]>([]);
+  const [userList, setUserList] = useState<User[] | null>(null);
   const auth = useRecoilValue(authState);
   const location = useLocation();
+  const navigate = useNavigate();
   const [isLoading, setIsLoading] = useState(true);
 
   const [page, setPage] = useState<number>(0);
@@ -31,58 +32,78 @@ const Users: FC = () => {
   const [startPageNum, setStartPageNum] = useState<number>(0);
   const [endPageNum, setEndPageNum] = useState<number>(0);
 
-  useEffect(() => {
-    const findAllUsers = async () => {
-      try {
-        const queryParams = queryString.parse(location.search);
-        const calcPage = isNaN(Number(queryParams.page)) ? 1 : Number(queryParams.page);
-        setPage(calcPage);
-        const calcSize = isNaN(Number(queryParams.size)) ? 10 : Number(queryParams.size);
-        setSize(calcSize);
-        const response = await axios.get('http://localhost:3000/api/users', {
-          params: {
-            page: calcPage,
-            size: calcSize
-          },
-          withCredentials: true,
-        });
-  
-        if (response.data) {
+  const [sizeSelect, setSizeSelect] = useState<number | null>(null);
+
+  const [searchSelect, setSearchSelect] = useState<string>('name');
+  const [searchKeyword, setSearchKeyword] = useState<string>('');
+  const [, setEnter] = useState<boolean>(false);
+
+  const findAllUsers = async () => {
+    const queryParams = queryString.parse(location.search);
+    const calcPage = isNaN(Number(queryParams.page)) ? 1 : Number(queryParams.page);
+    setPage(calcPage);
+    const calcSize = (sizeSelect ? sizeSelect : isNaN(Number(queryParams.size)) ? 10 : Number(queryParams.size));
+    setSize(calcSize);
+
+    const params: { page: number, size: number, select?: string, keyword?: string } = {
+      page: calcPage,
+      size: calcSize
+    }
+
+    if (searchKeyword.trim().length !== 0) {
+      params.select = searchSelect;
+      params.keyword = searchKeyword;
+    }
+
+    try {
+      const response = await axios.get('http://localhost:3000/api/users', {
+        params,
+        withCredentials: true,
+      });
+      if (response.data) {
+        if (!response.data.totalCount) { // 휴대폰으로 회원 검색
+          setUserList([response.data]);
+        } else { // 이름으로 회원 검색
           const totalCount = response.data.totalCount;
           setTotalCount(totalCount);
           setUserList(response.data.users);
-
+          
           const calcTotalPage = Math.ceil(totalCount / calcSize);
           setTotalPage(calcTotalPage);
 
-          const calcPageGroup = Math.ceil(calcPage / calcSize);
+          const calcPageGroup = Math.ceil(calcPage / 5);
           setPageGroup(calcPageGroup);
 
-          const calcStartPageNum = (calcPageGroup - 1) * calcSize + 1;
+          const calcStartPageNum = (calcPageGroup - 1) * 5 + 1;
           setStartPageNum(calcStartPageNum);
 
-          const calcEndPageNum = Math.min(calcPageGroup * calcSize, calcTotalPage);
+          const calcEndPageNum = Math.min(calcPageGroup * 5, calcTotalPage);
           setEndPageNum(calcEndPageNum);
         }
-      } catch (error) {
-        return;
       }
-      setIsLoading(false);
-    };
-    
+    } catch (error) {
+      const axiosError = error as AxiosError;
+      alert((axiosError.response?.data as {message: string}).message);
+      setSearchKeyword('');
+    }
+    setIsLoading(false);
+  };
+
+  useEffect(() => {
     findAllUsers();
-  }, [location.search])
+  }, [location.search, sizeSelect, setEnter])
 
   const pagination = () => {
-    let arr = []
+    let ary = []
     for (let i = startPageNum; i <= endPageNum; i++) {
-      arr.push(
-        <Link to={`/users?page=${i}&size=${size}`} key={i} className={`px-4 py-2 rounded-lg ${(page) === i ? 'bg-black text-white' : 'hover:bg-gray-100'}`}>
+      ary.push(
+        <Link to={`/users?page=${i}&size=${size}`} key={i} className={`px-3 lg:px-4 lg:py-2 rounded-lg flex items-center ${(page) === i ? 'bg-black text-white' : 'hover:bg-gray-100'}`}>
           {i}
         </Link>
       )
     }
-    return arr;
+
+    return ary;
   }
 
   if (isLoading) {
@@ -100,18 +121,32 @@ const Users: FC = () => {
   }
 
   return (
-    <div className="m-4 p-3 bg-white border-2 text-sm">
-      <h2 className="text-2xl m-2 font-bold">회원 목록</h2>
-        {
-        }
+    <div className="m-4 p-4 bg-white border-2 text-sm">
+      <div className='flex justify-between mb-4'>
+        <span className="text-lg xl:text-2xl my-2 font-bold">회원 목록</span>
+        <select className='px-2 border rounded' onChange={(e) => {setSizeSelect(parseInt(e.target.value))}}>
+          <option value={10}>10개씩 보기</option>
+          <option value={20}>20개씩 보기</option>
+          <option value={30}>30개씩 보기</option>
+          <option value={50}>50개씩 보기</option>
+          <option value={100}>100개씩 보기</option>
+        </select>
+      </div>
+      <div className='flex'>
+        <select className='border p-2' onChange={(e) => {setSearchSelect(e.target.value)}}>
+          <option value={'name'}>이름</option>
+          <option value={'telNumber'}>휴대폰</option>
+        </select>
+        <input className='border px-2' type='text' value={searchKeyword} onKeyDown={(e) => {if (e.key === 'Enter') {navigate('/users', {replace: true}); findAllUsers()}}} onChange={(e) => {setSearchKeyword(e.target.value)}} placeholder='검색어를 입력하세요'></input>
+      </div>
       <div className="overflow-x-auto w-full h-full">
         <table className="table-auto my-3 border-gray-300 w-full h-full whitespace-nowrap text-center">
           <thead>
             <tr className="bg-gray-100">
               <th className="border border-gray-300 px-4 py-2">ID</th>
-              <th className="border border-gray-300 px-4 py-2">이메일</th>
               <th className="border border-gray-300 px-4 py-2">이름</th>
-              <th className="border border-gray-300 px-4 py-2">전화번호</th>
+              <th className="border border-gray-300 px-4 py-2">이메일</th>
+              <th className="border border-gray-300 px-4 py-2">휴대폰</th>
               <th className="border border-gray-300 px-4 py-2">생년월일</th>
               <th className="border border-gray-300 px-4 py-2">가입일</th>
               {auth.role && auth.role === "ROLES_OWNER" && (
@@ -122,16 +157,16 @@ const Users: FC = () => {
             </tr>
           </thead>
           <tbody>
-            {userList.length > 0 ? (
+            {userList && userList.length > 0 ? (
               userList.map((user) => (
                 <tr key={user.id} className="hover:bg-gray-50">
                   <td className="border border-gray-300 px-4 py-2">{user.id}</td>
-                  <td className="border border-gray-300 px-4 py-2">{user.email}</td>
                   <td className="border border-gray-300 px-4 py-2">{user.name}</td>
+                  <td className="border border-gray-300 px-4 py-2">{user.email}</td>
                   <td className="border border-gray-300 px-4 py-2">{user.telNumber}</td>
                   <td className="border border-gray-300 px-4 py-2">{user.birth}</td>
                   <td className="border border-gray-300 px-4 py-2">
-                    {new Date(user.createAt).toLocaleString()}
+                    {user.createAt ? new Date(user.createAt).toLocaleString() : ''}
                   </td>
                   {auth.role && auth.role === "ROLES_OWNER" && (
                     <>
@@ -156,17 +191,21 @@ const Users: FC = () => {
         </table>
       </div>
       <div className='flex justify-center my-3'>
-        <ul className='flex gap-2'>
-        {(page - 1) <= 0 ? (
-          <span className="px-4 py-2 rounded-lg text-gray-500 cursor-not-allowed">＜ PREVIOUS</span>
-        ) : (
-          <Link to={`/users?page=${page - 1}&size=${size}`} className="px-4 py-2 rounded-lg hover:bg-gray-200">＜ PREVIOUS</Link>
-        )}
-        {pagination()}
-        {(page + 1) > totalPage ? (
-          <span className="px-4 py-2 rounded-lg text-gray-500 cursor-not-allowed">NEXT ＞</span>
-        ) : (
-          <Link to={`/users?page=${page + 1}&size=${size}`} className="px-4 py-2 rounded-lg hover:bg-gray-200">NEXT ＞</Link>
+        <ul className='flex'>
+        {(userList && userList.length > 1) && (
+          <>
+            {(page - 1) <= 0 ? (
+              <span className="p-2 rounded-lg cursor-not-allowed font-bold text-gray-300">＜</span>
+            ) : (
+              <Link to={`/users?page=${page - 1}&size=${size}`} className="p-2 rounded-lg hover:bg-gray-200 font-bold text-gray-500">＜</Link>
+            )}
+            {pagination()}
+            {(page + 1) > totalPage && !(startPageNum === 0 && endPageNum === 0) ? (
+              <span className="p-2 rounded-lg cursor-not-allowed font-bold text-gray-300">＞</span>
+            ) : (
+              <Link to={`/users?page=${page + 1}&size=${size}`} className="p-2 rounded-lg hover:bg-gray-200 font-bold text-gray-500">＞</Link>
+            )}
+          </>
         )}
         </ul>
       </div>
