@@ -1,7 +1,7 @@
 import { FC, useEffect, useState } from 'react';
 import axios from 'axios';
 import queryString from 'query-string';
-import { useLocation } from 'react-router-dom';
+import { Link, useLocation } from 'react-router-dom';
 import { authState } from '../../recoil/AuthState';
 import { useRecoilValue } from 'recoil';
 
@@ -23,27 +23,67 @@ const Users: FC = () => {
   const location = useLocation();
   const [isLoading, setIsLoading] = useState(true);
 
+  const [page, setPage] = useState<number>(0);
+  const [size, setSize] = useState<number>(0);
+  const [, setTotalCount] = useState<number>(0);
+  const [totalPage, setTotalPage] = useState<number>(0);
+  const [, setPageGroup] = useState<number>(0);
+  const [startPageNum, setStartPageNum] = useState<number>(0);
+  const [endPageNum, setEndPageNum] = useState<number>(0);
+
   useEffect(() => {
     const findAllUsers = async () => {
       try {
         const queryParams = queryString.parse(location.search);
+        const calcPage = isNaN(Number(queryParams.page)) ? 1 : Number(queryParams.page);
+        setPage(calcPage);
+        const calcSize = isNaN(Number(queryParams.size)) ? 10 : Number(queryParams.size);
+        setSize(calcSize);
         const response = await axios.get('http://localhost:3000/api/users', {
-          params: queryParams,
+          params: {
+            page: calcPage,
+            size: calcSize
+          },
           withCredentials: true,
         });
   
         if (response.data) {
-          setUserList(response.data.users); // 배열일 경우에만 상태 업데이트
+          const totalCount = response.data.totalCount;
+          setTotalCount(totalCount);
+          setUserList(response.data.users);
+
+          const calcTotalPage = Math.ceil(totalCount / calcSize);
+          setTotalPage(calcTotalPage);
+
+          const calcPageGroup = Math.ceil(calcPage / calcSize);
+          setPageGroup(calcPageGroup);
+
+          const calcStartPageNum = (calcPageGroup - 1) * calcSize + 1;
+          setStartPageNum(calcStartPageNum);
+
+          const calcEndPageNum = Math.min(calcPageGroup * calcSize, calcTotalPage);
+          setEndPageNum(calcEndPageNum);
         }
       } catch (error) {
         return;
       }
-
       setIsLoading(false);
     };
     
     findAllUsers();
-  }, [])
+  }, [location.search])
+
+  const pagination = () => {
+    let arr = []
+    for (let i = startPageNum; i <= endPageNum; i++) {
+      arr.push(
+        <Link to={`/users?page=${i}&size=${size}`} key={i} className={`px-4 py-2 rounded-lg ${(page) === i ? 'bg-black text-white' : 'hover:bg-gray-100'}`}>
+          {i}
+        </Link>
+      )
+    }
+    return arr;
+  }
 
   if (isLoading) {
     return (
@@ -60,7 +100,7 @@ const Users: FC = () => {
   }
 
   return (
-    <div className="m-4 p-3 bg-white border-2">
+    <div className="m-4 p-3 bg-white border-2 text-sm">
       <h2 className="text-2xl m-2 font-bold">회원 목록</h2>
         {
         }
@@ -106,7 +146,7 @@ const Users: FC = () => {
               <tr>
                 <td
                   className="border border-gray-300 px-4 py-2 text-center"
-                  colSpan={9} // 열 개수를 9로 수정
+                  colSpan={9}
                 >
                   회원이 없습니다
                 </td>
@@ -115,7 +155,21 @@ const Users: FC = () => {
           </tbody>
         </table>
       </div>
-      <div className='flex justify-center my-3'>페이징</div>
+      <div className='flex justify-center my-3'>
+        <ul className='flex gap-2'>
+        {(page - 1) <= 0 ? (
+          <span className="px-4 py-2 rounded-lg text-gray-500 cursor-not-allowed">＜ PREVIOUS</span>
+        ) : (
+          <Link to={`/users?page=${page - 1}&size=${size}`} className="px-4 py-2 rounded-lg hover:bg-gray-200">＜ PREVIOUS</Link>
+        )}
+        {pagination()}
+        {(page + 1) > totalPage ? (
+          <span className="px-4 py-2 rounded-lg text-gray-500 cursor-not-allowed">NEXT ＞</span>
+        ) : (
+          <Link to={`/users?page=${page + 1}&size=${size}`} className="px-4 py-2 rounded-lg hover:bg-gray-200">NEXT ＞</Link>
+        )}
+        </ul>
+      </div>
     </div>
   );
 };
