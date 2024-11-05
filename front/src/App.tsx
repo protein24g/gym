@@ -3,17 +3,17 @@ import './App.css';
 import { useState } from 'react';
 import { RecoilRoot } from 'recoil';
 import { SidebarContext } from './context/SidebarContext';
-import Layout from './components/Layout/Layout';
-import Dashboard from './pages/sidebar/Dashboard';
-import Managers from './pages/sidebar/Managers';
+import Layout from './components/layout/Layout';
 import MyPage from './pages/sidebar/MyPage';
 import SignInPage from './pages/SignInPage';
 import SignUpPage from './pages/SignUpPage';
 import OAuthSignUpPage from './pages/OAuthSignUpPage';
 import NotFound from './pages/NotFound';
-import Trainers from './pages/sidebar/Trainers';
-import Users from './pages/sidebar/Users';
 import OAuthCallback from './pages/OAuthCallback';
+import UsersPage from './pages/sidebar/UsersPage';
+import DashboardPage from './pages/sidebar/DashboardPage';
+import TrainersPage from './pages/sidebar/TrainersPage';
+import ManagersPage from './pages/sidebar/ManagersPage';
 
 function App() {
   const [isSidebarOpen, setSidebarOpen] = useState<boolean>(false);
@@ -33,17 +33,17 @@ function App() {
             ) : (
               <>
                 <Route element={<Layout roles={["ROLES_OWNER", "ROLES_MANAGER", "ROLES_TRAINER"]} />}>
-                  <Route path='/' element={<Dashboard />} />
+                  <Route path='/' element={<DashboardPage />} />
                   <Route path='/my-page' element={<MyPage />} />
-                  <Route path='/users' element={<Users />} />
+                  <Route path='/users' element={<UsersPage />} />
                 </Route>
                 {/* Trainers 페이지에 대한 권한 설정 */}
                 <Route element={<Layout roles={["ROLES_OWNER", "ROLES_MANAGER"]} />}>
-                  <Route path='/trainers' element={<Trainers />} />
+                  <Route path='/trainers' element={<TrainersPage />} />
                 </Route>
                 {/* Users 페이지에 대한 권한 설정 */}
                 <Route element={<Layout roles={["ROLES_OWNER"]} />}>
-                  <Route path='/managers' element={<Managers />} />
+                  <Route path='/managers' element={<ManagersPage />} />
                 </Route>
               </>
             )}

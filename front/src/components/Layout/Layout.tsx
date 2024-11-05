@@ -1,6 +1,6 @@
 import { FC, useEffect, useState } from 'react';
 import { Outlet, useNavigate } from 'react-router-dom';
-import Header from '../Header/Header';
+import Header from '../header/Header';
 import Sidebar from '../Sidebar/Sidebar';
 import { useAuth } from '../../hooks/useAuth';
 import { checkToken } from '../../hooks/checkToken';

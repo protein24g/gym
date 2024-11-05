@@ -1,6 +1,6 @@
 import { FC } from "react"
 
-const Dashboard: FC = () => {
+const DashboardPage: FC = () => {
   return (
     <div>
       대시보드  
@@ -8,4 +8,4 @@ const Dashboard: FC = () => {
   )
 }
 
-export default Dashboard
+export default DashboardPage

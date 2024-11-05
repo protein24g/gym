@@ -1,7 +1,6 @@
 import { Branch } from "src/branches/entities/branch.entity";
-import { BeforeInsert, BeforeUpdate, Column, CreateDateColumn, Entity, JoinColumn, ManyToOne, OneToMany, OneToOne, PrimaryGeneratedColumn } from "typeorm";
+import { Column, CreateDateColumn, Entity, JoinColumn, ManyToOne, OneToMany, OneToOne, PrimaryGeneratedColumn } from "typeorm";
 import { Trainer } from "src/member/trainer/entities/trainer.entity";
-import * as argon2 from "argon2";
 import { File } from "src/file/entities/file.entity";
 import { OAuthType } from "src/auth/enums/oauth-type.enum";
 import { RoleType } from "src/auth/roles/enums/role.type.enum";
@@ -19,7 +18,7 @@ export class User {
   email: string;
 
   @Column({ type: 'varchar', length: 255, nullable: true })
-  password?: string;
+  password: string;
 
   @Column({ type: 'varchar', length: 20, nullable: false })
   name: string;

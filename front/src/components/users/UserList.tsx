@@ -1,7 +1,6 @@
 import { FC, useEffect, useState } from 'react';
 import axios, { AxiosError } from 'axios';
-import queryString from 'query-string';
-import { Link, useLocation, useNavigate } from 'react-router-dom';
+import { useLocation, useNavigate } from 'react-router-dom';
 import { authState } from '../../recoil/AuthState';
 import { useRecoilValue } from 'recoil';
 
@@ -17,20 +16,21 @@ interface User {
   telNumber: string
 }
 
-const Users: FC = () => {
+const UserList: FC = () => {
   const [userList, setUserList] = useState<User[] | null>(null);
   const auth = useRecoilValue(authState);
   const location = useLocation();
   const navigate = useNavigate();
   const [isLoading, setIsLoading] = useState(true);
 
-  const [page, setPage] = useState<number>(0);
-  const [size, setSize] = useState<number>(0);
+  const [page, setPage] = useState<number>(1);
+  const [size, setSize] = useState<number>(10);
   const [, setTotalCount] = useState<number>(0);
   const [totalPage, setTotalPage] = useState<number>(0);
   const [, setPageGroup] = useState<number>(0);
   const [startPageNum, setStartPageNum] = useState<number>(0);
   const [endPageNum, setEndPageNum] = useState<number>(0);
+  const [pageBtn, setPageBtn] = useState<boolean>(false);
 
   const [sizeSelect, setSizeSelect] = useState<number | null>(null);
 
@@ -39,10 +39,9 @@ const Users: FC = () => {
   const [, setEnter] = useState<boolean>(false);
 
   const findAllUsers = async () => {
-    const queryParams = queryString.parse(location.search);
-    const calcPage = isNaN(Number(queryParams.page)) ? 1 : Number(queryParams.page);
+    const calcPage = page ? page : 1;
     setPage(calcPage);
-    const calcSize = (sizeSelect ? sizeSelect : isNaN(Number(queryParams.size)) ? 10 : Number(queryParams.size));
+    const calcSize = sizeSelect ? sizeSelect : size;
     setSize(calcSize);
 
     const params: { page: number, size: number, select?: string, keyword?: string } = {
@@ -91,15 +90,15 @@ const Users: FC = () => {
 
   useEffect(() => {
     findAllUsers();
-  }, [location.search, sizeSelect, setEnter])
+  }, [location.search, sizeSelect, setEnter, pageBtn])
 
   const pagination = () => {
     let ary = []
     for (let i = startPageNum; i <= endPageNum; i++) {
       ary.push(
-        <Link to={`/users?page=${i}&size=${size}`} key={i} className={`px-3 lg:px-4 lg:py-2 rounded-lg flex items-center ${(page) === i ? 'bg-black text-white' : 'hover:bg-gray-100'}`}>
+        <div key={i} className={`px-3 lg:px-4 lg:py-2 rounded-lg flex items-center ${(page) === i ? 'bg-black text-white' : 'hover:bg-gray-100'}`} onClick={() => {setPage(i); setPageBtn(!pageBtn);}}>
           {i}
-        </Link>
+        </div>
       )
     }
 
@@ -192,18 +191,18 @@ const Users: FC = () => {
       </div>
       <div className='flex justify-center my-3'>
         <ul className='flex'>
-        {(userList && userList.length > 1) && (
+        {(userList && userList.length > 0) && (
           <>
             {(page - 1) <= 0 ? (
               <span className="p-2 rounded-lg cursor-not-allowed font-bold text-gray-300">＜</span>
             ) : (
-              <Link to={`/users?page=${page - 1}&size=${size}`} className="p-2 rounded-lg hover:bg-gray-200 font-bold text-gray-500">＜</Link>
+              <span className="p-2 rounded-lg hover:bg-gray-200 font-bold text-gray-500" onClick={() => {setPage(page - 1); setPageBtn(!pageBtn)}}>＜</span>
             )}
             {pagination()}
-            {(page + 1) > totalPage && !(startPageNum === 0 && endPageNum === 0) ? (
+            {(page + 1) > totalPage ? (
               <span className="p-2 rounded-lg cursor-not-allowed font-bold text-gray-300">＞</span>
             ) : (
-              <Link to={`/users?page=${page + 1}&size=${size}`} className="p-2 rounded-lg hover:bg-gray-200 font-bold text-gray-500">＞</Link>
+              <span className="p-2 rounded-lg hover:bg-gray-200 font-bold text-gray-500" onClick={() => {setPage(page + 1); setPageBtn(!pageBtn)}}>＞</span>
             )}
           </>
         )}
@@ -213,4 +212,4 @@ const Users: FC = () => {
   );
 };
 
-export default Users;
+export default UserList;

@@ -1,6 +1,6 @@
 import { FC } from "react"
 
-const Trainers: FC = () => {
+const TrainersPage: FC = () => {
   return (
     <div>
       트레이너
@@ -8,4 +8,4 @@ const Trainers: FC = () => {
   )
 }
 
-export default Trainers
+export default TrainersPage

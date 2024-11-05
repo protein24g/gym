@@ -1,6 +1,6 @@
 import { FC } from "react"
 
-const Managers: FC = () => {
+const ManagersPage: FC = () => {
   return (
     <div>
       점장
@@ -8,4 +8,4 @@ const Managers: FC = () => {
   )
 }
 
-export default Managers
+export default ManagersPage
