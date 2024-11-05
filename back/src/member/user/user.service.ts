@@ -7,12 +7,15 @@ import axios from 'axios';
 import { UserPayload } from './interfaces/user-payload.interface';
 import { User } from './entities/user.entity';
 import { AuthPayload } from 'src/auth/interfaces/auth-payload.interface';
+import { UserInfoPayload } from './interfaces/user-info-payload.interface';
+import { ConfigService } from '@nestjs/config';
 
 @Injectable()
 export class UserService {
   constructor(
     @InjectRepository(User)
     private readonly userRepository: Repository<User>,
+    private readonly configService: ConfigService,
   ) {}
 
   async delete(userId: number, kakaoAccessToken: string): Promise<void> {
@@ -191,6 +194,33 @@ export class UserService {
       role: user.role,
       branchId: user.branch ? user.branch.id : null,
       branchName: user.branch ? user.branch.name : null
+    }
+  }
+
+  async findUserById(userId: number): Promise<UserInfoPayload> {
+    const user = await this.userRepository.findOne({where: {id: userId}, relations: ['ptTrainer', 'profileImage', 'branch']});
+
+    if (!user) {
+      throw new NotFoundException('존재하지 않는 유저');
+    }
+    
+    return {
+      id: user.id,
+      email: user.email,
+      name: user.name,
+      telNumber: user.telNumber,
+      birth: user.birth,
+      createAt: user.createdAt,
+      role: user.role,
+      branchId: user.branch ? user.branch.id : null,
+      branchName: user.branch ? user.branch.name : null,
+      profileImageUrl: user.profileImage ?
+        this.configService.get<string>('BACK_URL') + 'uploads/' + user.profileImage.fileName
+        : 
+        user.oAuthProfileUrl ?
+        user.oAuthProfileUrl
+        :
+        null,
     }
   }
 

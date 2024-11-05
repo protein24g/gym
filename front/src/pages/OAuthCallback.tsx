@@ -22,7 +22,7 @@ const OAuthCallback: FC = () => {
           sessionStorage.setItem('expiresAt', JSON.stringify(Date.now() + SESSION_DURATION));
           location.reload();
         }
-      } catch(error) {
+      } catch (error) {
         alert('잘못된 토큰입니다');
         navigate('/auth/signin');
       }

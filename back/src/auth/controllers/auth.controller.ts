@@ -101,10 +101,14 @@ export class AuthController {
   async signOut(@Req() request: Request, @Res() response: Response) {
     const user = request.user as AuthPayload;
     const refreshToken = request.cookies['refreshToken'];
-    await this.authService.signOut(user, refreshToken);
-    response.clearCookie('accessToken', { httpOnly: true, secure: true, sameSite: 'strict' });
-    response.clearCookie('refreshToken', { httpOnly: true, secure: true, sameSite: 'strict' });
-  
+    try {
+      await this.authService.signOut(user, refreshToken);
+    } catch {
+    } finally {
+      response.clearCookie('accessToken', { httpOnly: true, secure: true, sameSite: 'strict' });
+      response.clearCookie('refreshToken', { httpOnly: true, secure: true, sameSite: 'strict' });
+    
+    }
     return response.json({ message: '로그아웃 성공'});
   }
 

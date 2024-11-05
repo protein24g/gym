@@ -4,6 +4,7 @@ import { useLocation, useNavigate } from 'react-router-dom';
 import { authState } from '../../recoil/AuthState';
 import { useRecoilValue } from 'recoil';
 import Loading from '../loading/Loading';
+import Card from '../ui/Card';
 
 interface User {
   birth: string,
@@ -111,7 +112,7 @@ const UserList: FC = () => {
   }
 
   return (
-    <div className="m-4 p-4 bg-white border-2 text-sm">
+    <Card>
       <div className='flex justify-between mb-4'>
         <span className="text-lg xl:text-2xl my-2 font-bold">회원 목록</span>
         <select className='px-2 border rounded' onChange={(e) => {setSizeSelect(parseInt(e.target.value))}}>
@@ -149,7 +150,7 @@ const UserList: FC = () => {
           <tbody>
             {userList && userList.length > 0 ? (
               userList.map((user) => (
-                <tr key={user.id} className="hover:bg-gray-50">
+                <tr key={user.id} className="hover:bg-gray-50" onClick={() => {window.open(`/userinfo/${user.id}`, '_blank', 'width=600,height=400,top=100,left=100')}}>
                   <td className="border border-gray-300 px-4 py-2">{user.id}</td>
                   <td className="border border-gray-300 px-4 py-2">{user.name}</td>
                   <td className="border border-gray-300 px-4 py-2">{user.email}</td>
@@ -199,7 +200,7 @@ const UserList: FC = () => {
         )}
         </ul>
       </div>
-    </div>
+    </Card>
   );
 };
 

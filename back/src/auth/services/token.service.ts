@@ -66,7 +66,7 @@ export class TokenService {
 
     try {
       this.jwtService.verify(accessToken, {secret: this.configService.get<string>('KAKAO_JWT_SECRET')});
-    } catch(error) {
+    } catch (error) {
       throw new UnauthorizedException('잘못된 토큰입니다');
     }
   }

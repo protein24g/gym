@@ -36,6 +36,9 @@ const Header: FC = () => {
         navigate('/auth/signin'); // 로그인 페이지로 리디렉션
       }
     } catch (error) {
+      sessionStorage.removeItem('isAuthenticated');
+      sessionStorage.removeItem('role');
+      sessionStorage.removeItem('expiresAt');
       alert('로그아웃 실패: ' + error);
       navigate('/auth/signin');
     }
@@ -54,6 +57,7 @@ const Header: FC = () => {
         </div>
       </div>
       <div className="group">
+        {imageSrc}
         {imageSrc ? <img src={imageSrc} alt="Profile" className="w-8 h-8 rounded-full" /> : <CgProfile className="w-10 h-10 rounded-full"/>}
         <ul className="absolute w-40 right-0 border bg-white hidden group-hover:block">
           <li className="p-3 hover:bg-gray-300">

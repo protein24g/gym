@@ -90,7 +90,7 @@ async kakaoCallback(@Query('code') code: string, @Res() response: Response) {
     try {
       this.tokenService.checkOAuthAccessToken(accessToken);
       return response.status(200).json();
-    } catch(error) {
+    } catch (error) {
       return response.status(error.status).json({ message: error.response.message });
     }
   }

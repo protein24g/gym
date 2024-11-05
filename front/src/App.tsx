@@ -10,10 +10,11 @@ import SignUpPage from './pages/SignUpPage';
 import OAuthSignUpPage from './pages/OAuthSignUpPage';
 import NotFound from './pages/NotFound';
 import OAuthCallback from './pages/OAuthCallback';
-import UsersPage from './pages/sidebar/UsersPage';
 import DashboardPage from './pages/sidebar/DashboardPage';
 import TrainersPage from './pages/sidebar/TrainersPage';
 import ManagersPage from './pages/sidebar/ManagersPage';
+import UsersPage from './pages/sidebar/users/UsersPage';
+import UserInfoPage from './pages/sidebar/users/UserInfoPage';
 
 function App() {
   const [isSidebarOpen, setSidebarOpen] = useState<boolean>(false);
@@ -45,6 +46,7 @@ function App() {
                 <Route element={<Layout roles={["ROLES_OWNER"]} />}>
                   <Route path='/managers' element={<ManagersPage />} />
                 </Route>
+                <Route path='/userinfo/:userId' element={<UserInfoPage roles={["ROLES_OWNER", "ROLES_MANAGER", "ROLES_TRAINER"]}/>} />
               </>
             )}
             

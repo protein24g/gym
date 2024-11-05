@@ -1,7 +1,7 @@
-import { Controller, Delete, Get, Query, Req, UseGuards } from '@nestjs/common';
+import { Controller, Delete, Get, Param, Query, Req, Res, UseGuards } from '@nestjs/common';
 import { UserService } from './user.service';
 import { ApiNotFoundResponse, ApiOkResponse, ApiOperation, ApiTags } from '@nestjs/swagger';
-import { Request } from 'express';
+import { Request, Response } from 'express';
 import { AuthPayload } from 'src/auth/interfaces/auth-payload.interface';
 import { JwtAuthGuard } from 'src/auth/guards/jwt-auth.guard';
 import { RoleGuard } from 'src/auth/roles/guards/role.guard';
@@ -27,6 +27,15 @@ export class UserController {
     const user = request.user as AuthPayload;
 
     return await this.userService.findAll(user, page, size, select, keyword);
+  }
+
+  @Get('id/:userId')
+  @Roles(RoleType.OWNER, RoleType.MANAGER, RoleType.TRAINER)
+  @ApiOperation({ summary: '고유 ID로 회원 검색' })
+  @ApiNotFoundResponse({ description: '존재하지 않는 유저' })
+  async findByName(@Param('userId') userId: string, @Res() response: Response) {
+      const user = await this.userService.findUserById(parseInt(userId));
+      return response.status(200).json({user});
   }
 
   @Get('me')
