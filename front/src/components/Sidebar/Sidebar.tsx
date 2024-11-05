@@ -7,8 +7,9 @@ import { authState } from "../../recoil/AuthState";
 import { SidebarMenus, SideBarMenuType } from "./menu/SidebarMenus";
 import { UsersMenuType } from "./menu/users/UserMenus";
 import Logo from "../Logo/Logo";
+import logoImageWhite2 from "../../assets/logoImage-2.png";
 
-const Sidebar: FC = () => {
+const Sidebar: FC<{isUser: boolean}> = ({isUser}) => {
   const {isSidebarOpen, toggleSidebar} = useContext(SidebarContext);
   const [openMenus, setOpenMenus] = useState<Set<string>>(new Set());
   const navidate = useNavigate();
@@ -66,29 +67,35 @@ const Sidebar: FC = () => {
       )}
       <div className={`w-72 h-screen bg-custom-gray text-white ${isSidebarOpen ? 'fixed z-50 lg:relative' : 'hidden'}`}>
         <div className="flex flex-col h-full justify-between">
-          <div className="p-4 border-b-2 border-gray-500" onClick={() => {navidate('/')}}>
+          <div className="flex justify-center p-4 border-b-2 border-gray-500" onClick={() => {navidate('/')}}>
+            {isUser ?
+            <img src={`${logoImageWhite2}`} className="w-36"/>
+            :
             <Logo />
+            }
           </div>
           <hr className="border-gray-500"></hr>
           <div className="flex-1 p-6">
             <ul>
               {SidebarMenus.map((menu) => (
-                <li key={menu.key}>
-                  {SidebarLink(menu)}
-                  {menu.children && (
-                    openMenus.has(menu.key) && (
-                      <ul className={`${pathname === menu.path ? 'bg-gray-500' : ''}`}>
-                        {menu.children.map((children) =>
-                          (auth.role && children.roles.includes(auth.role) && (
-                            <li key={children.key} className="w-full">
-                              {DropdownLink(children)}
-                            </li>
-                          ))
-                        )}
-                      </ul>
-                    )
-                  )}
-                </li>
+                auth.role && menu.roles && menu.roles.includes(auth.role) && (
+                  <li key={menu.key}>
+                    {SidebarLink(menu)}
+                    {menu.children && (
+                      openMenus.has(menu.key) && (
+                        <ul className={`${pathname === menu.path ? 'bg-gray-500' : ''}`}>
+                          {menu.children.map((children) =>
+                            (auth.role && children.roles.includes(auth.role) && (
+                              <li key={children.key} className="w-full">
+                                {DropdownLink(children)}
+                              </li>
+                            ))
+                          )}
+                        </ul>
+                      )
+                    )}
+                  </li>
+                )
               ))}
             </ul>
           </div>

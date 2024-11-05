@@ -30,7 +30,10 @@ function App() {
         <SidebarContext.Provider value={{ isSidebarOpen, toggleSidebar }}>
           <Routes>
             {role && JSON.parse(role) === "ROLES_USER" ? (
-              <Route path='/' element={<MyPage />} />
+              <Route element={<Layout roles={["ROLES_USER"]} />}>
+                <Route path='/' element={<MyPage />} />
+                <Route path='/my-page' element={<MyPage />} />
+              </Route>
             ) : (
               <>
                 <Route element={<Layout roles={["ROLES_OWNER", "ROLES_MANAGER", "ROLES_TRAINER"]} />}>
@@ -56,8 +59,8 @@ function App() {
               <Route path='signup' element={<SignUpPage />} />
               <Route path='oauth-signup' element={<OAuthSignUpPage />} />
               <Route path='oauth-callback' element={<OAuthCallback />} />
-              <Route path='*' element={<NotFound />} />
             </Route>
+            <Route path='*' element={<NotFound />} />
           </Routes>
         </SidebarContext.Provider>
       </BrowserRouter>

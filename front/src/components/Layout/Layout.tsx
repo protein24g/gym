@@ -42,9 +42,9 @@ const Layout: FC<{ roles: string[] }> = ({ roles }) => {
 
   return (
     <div className="flex h-screen bg-slate-100">
-      <Sidebar />
+      <Sidebar isUser={roles.includes('ROLES_USER')} />
       <div className="flex flex-1 flex-col overflow-auto">
-        <Header />
+        <Header isUser={roles.includes('ROLES_USER')}/>
         <div className="overflow-auto">
           <Outlet />
         </div>
