@@ -23,7 +23,6 @@ const UserInfo: FC = () => {
   const [userData, setUserData] = useState<UserInfoPayload>();
 
   const findUserByUserId = async () => {
-    console.log(param.userId);
     if (!param.userId) {
       alert('존재하지 않는 유저');
       navigate('/');
@@ -37,7 +36,6 @@ const UserInfo: FC = () => {
       }
     } catch (error) {
       const axiosError = error as AxiosError;
-      console.log(axiosError);
       if (axiosError.response?.status === 404) {
         alert('존재하지 않는 유저');
       }
@@ -56,7 +54,7 @@ const UserInfo: FC = () => {
             <img src={(userData.profileImageUrl ? userData.profileImageUrl : '')} alt="Profile" className="w-44 h-24 mb-4" />
             :
             <CgProfile className="w-10 h-10" />
-          }
+            }
             <h2 className="text-2xl font-bold">{userData.name}</h2>
             <p className="text-gray-600">{userData.email}</p>
             <p className="text-gray-600">{userData.telNumber}</p>

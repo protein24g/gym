@@ -4,4 +4,5 @@ export interface TrainerPayload {
   introduction: string;
   qualifications: string[];
   careerDetails: string[];
+  profileImageUrl: string | null;
 }

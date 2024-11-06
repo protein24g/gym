@@ -9,6 +9,7 @@ import { UserService } from '../user/user.service';
 import { AuthPayload } from 'src/auth/interfaces/auth-payload.interface';
 import { UserPayload } from '../user/interfaces/user-payload.interface';
 import { TrainerPayload } from './interfaces/trainer-payload.interface';
+import { ConfigService } from '@nestjs/config';
 
 @Injectable()
 export class TrainerService {
@@ -18,6 +19,7 @@ export class TrainerService {
     @InjectRepository(User)
     private readonly userRepository: Repository<User>,
     private readonly userService: UserService,
+    private readonly configService: ConfigService,
   ) {}
 
   async create(payload: AuthPayload, userId: number): Promise<void> {
@@ -71,18 +73,25 @@ export class TrainerService {
     });
   }
 
-  async findAll(): Promise<TrainerPayload[]> {
-    const trainer = await this.trainerRepository.find({relations: ['user']});
+  async findAll(user: AuthPayload, page: string, size: string, keyword: string | null): Promise<TrainerPayload[]> {
+    const trainer = await this.trainerRepository.find({relations: ['user']}); // 사장 or 매니저 전체 조회 또는 해당 지점만 조회 하도록 구조 변경하기
     if (!trainer) {
       throw new NotFoundException('존재하지 않는 트레이너');
     }
-
+    
     return trainer.map(trainer => ({
-      id: trainer.id,
+      id: trainer.user.id,
       name: trainer.user.name,
       introduction: trainer.introduction,
       qualifications: trainer.qualifications,
       careerDetails: trainer.careerDetails,
+      profileImageUrl: trainer.user.profileImage ?
+      this.configService.get<string>('BACK_URL') + 'uploads/' + trainer.user.profileImage.fileName
+      : 
+      trainer.user.oAuthProfileUrl ?
+      trainer.user.oAuthProfileUrl
+      :
+      null,
     }));
   }
 

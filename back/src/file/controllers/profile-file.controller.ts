@@ -1,4 +1,4 @@
-import { Controller, Patch, Req, UploadedFile, UseGuards, UseInterceptors } from "@nestjs/common";
+import { Controller, Get, Patch, Req, UploadedFile, UseGuards, UseInterceptors } from "@nestjs/common";
 import { FileInterceptor } from "@nestjs/platform-express";
 import { ApiInternalServerErrorResponse, ApiNotFoundResponse, ApiOkResponse, ApiOperation, ApiTags } from "@nestjs/swagger";
 import { JwtAuthGuard } from "src/auth/guards/jwt-auth.guard";
@@ -12,6 +12,17 @@ export class ProfileController {
   constructor(
     private readonly profileService: ProfileService,
   ) {}
+
+  @Get(':id')
+  @UseGuards(JwtAuthGuard)
+  @ApiOperation({
+    summary: '특정 고유 ID 프로필 사진 조회',
+  })
+  @ApiNotFoundResponse({description: '존재하지 않는 유저'})
+  async findOne(@Req() request: Request) {
+    const user = request.user as AuthPayload
+    await this.profileService.findOne(user.userId);
+  }
 
   @Patch()
   @UseGuards(JwtAuthGuard)

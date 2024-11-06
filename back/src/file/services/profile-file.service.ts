@@ -2,6 +2,10 @@ import { forwardRef, Inject, Injectable, NotFoundException } from "@nestjs/commo
 import { FileService } from "./file.service";
 import { FileType } from "../enums/file-type.enum";
 
+interface ProfilePayload {
+  fileName: string | null;
+}
+
 @Injectable()
 export class ProfileService {
   constructor(
@@ -15,6 +19,11 @@ export class ProfileService {
     }
 
     await this.fileService.create(userId, file, FileType.PROFILE, '/' + FileType.PROFILE.toLocaleLowerCase() + '/');
+  }
+
+  async findOne(userId: number): Promise<ProfilePayload | null> {
+    const file = await this.fileService.findById(userId);
+    return (file ? {fileName: file.fileName} : null)
   }
 
   async update(userId: number, updateFile: Express.Multer.File): Promise<void> {

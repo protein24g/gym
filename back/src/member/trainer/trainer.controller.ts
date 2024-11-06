@@ -1,4 +1,4 @@
-import { Body, Controller, Delete, Get, Post, Req, UseGuards } from '@nestjs/common';
+import { Body, Controller, Delete, Get, Post, Query, Req, UseGuards } from '@nestjs/common';
 import { TrainerService } from './trainer.service';
 import { RoleGuard } from 'src/auth/roles/guards/role.guard';
 import { RoleType } from 'src/auth/roles/enums/role.type.enum';
@@ -69,8 +69,14 @@ export class TrainerController {
   })
   @ApiOkResponse({description: '트레이너 목록 조회 성공'})
   @ApiNotFoundResponse({description: '존재하지 않는 트레이너'})
-  async findAll() {
-    return await this.trainerService.findAll();
+  async findAll(
+    @Req() request: Request,
+    @Query('page') page: string,
+    @Query('size') size: string,
+    @Query('keyword') keyword?: string | null
+  ) {
+    const user = request.user as AuthPayload;
+    return await this.trainerService.findAll(user, page, size, keyword);
   }
 
   @Get('users')
