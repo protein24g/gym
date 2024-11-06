@@ -10,7 +10,7 @@ import { useRecoilState } from 'recoil';
 import { FaUserLock } from 'react-icons/fa';
 
 const SignInPage: FC = () => {
-  const SESSION_DURATION = 15 * 60 * 1000; // 15분
+  const SESSION_DURATION = 60 * 60 * 1000; // 1h
   
   const [isPasswordVisible, setIsPasswordVisible] = useState<boolean>(false);
   const [email, setEmail] = useState<string>('');

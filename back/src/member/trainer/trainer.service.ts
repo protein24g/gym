@@ -74,25 +74,38 @@ export class TrainerService {
   }
 
   async findAll(user: AuthPayload, page: string, size: string, keyword: string | null): Promise<TrainerPayload[]> {
-    const trainer = await this.trainerRepository.find({relations: ['user']}); // 사장 or 매니저 전체 조회 또는 해당 지점만 조회 하도록 구조 변경하기
-    if (!trainer) {
+    const trainers = await this.trainerRepository.find({
+      relations: ['user', 'ptUsers'], // ptUsers 관계 추가
+    });
+  
+    if (!trainers.length) {
       throw new NotFoundException('존재하지 않는 트레이너');
     }
-    
-    return trainer.map(trainer => ({
-      id: trainer.user.id,
-      name: trainer.user.name,
-      introduction: trainer.introduction,
-      qualifications: trainer.qualifications,
-      careerDetails: trainer.careerDetails,
-      profileImageUrl: trainer.user.profileImage ?
-      this.configService.get<string>('BACK_URL') + 'uploads/' + trainer.user.profileImage.fileName
-      : 
-      trainer.user.oAuthProfileUrl ?
-      trainer.user.oAuthProfileUrl
-      :
-      null,
-    }));
+  
+    return Promise.all(
+      trainers.map(async (trainer) => {
+        // user.id로 user 데이터 조회
+        const user = await this.userRepository.findOne({
+          where: { id: trainer.user.id },
+          relations: ['profileImage'], // profileImage와 함께 가져오기
+        });
+  
+        // profileImageUrl 결정
+        const profileImageUrl = user?.profileImage
+          ? this.configService.get<string>('BACK_URL') + 'uploads/' + user.profileImage.fileName
+          : user?.oAuthProfileUrl || null;
+  
+        return {
+          id: trainer.user.id,
+          name: trainer.user.name,
+          introduction: trainer.introduction,
+          qualifications: trainer.qualifications,
+          careerDetails: trainer.careerDetails,
+          profileImageUrl: profileImageUrl,
+          studentsCount: trainer.ptUsers.length, // ptUsers 배열의 길이를 studentsCount로 설정
+        };
+      })
+    );
   }
 
   async findAllPtUsers(userId: number): Promise<UserPayload[]> {

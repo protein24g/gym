@@ -86,6 +86,7 @@ const UserList: FC = () => {
       const axiosError = error as AxiosError;
       alert((axiosError.response?.data as {message: string}).message);
       setSearchKeyword('');
+      navigate('/');
     }
     setIsLoading(false);
   };

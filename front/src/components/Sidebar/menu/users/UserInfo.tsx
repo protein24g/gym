@@ -36,9 +36,9 @@ const UserInfo: FC = () => {
       }
     } catch (error) {
       const axiosError = error as AxiosError;
-      if (axiosError.response?.status === 404) {
-        alert('존재하지 않는 유저');
-      }
+      const data = axiosError.response?.data as {message: string};
+      alert(data.message);
+      navigate('/');
     }
   }
 

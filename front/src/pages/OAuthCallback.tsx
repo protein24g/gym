@@ -5,7 +5,7 @@ import { authState } from "../recoil/AuthState"
 import { useNavigate } from "react-router-dom"
 
 const OAuthCallback: FC = () => {
-  const SESSION_DURATION = 15 * 60 * 1000; // 15분
+  const SESSION_DURATION = 60 * 60 * 1000; // 1h
 
   const navigate = useNavigate();
   const [, setAuth] = useRecoilState(authState);

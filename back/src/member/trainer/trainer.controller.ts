@@ -63,7 +63,7 @@ export class TrainerController {
   }
 
   @Get()
-  @Roles(RoleType.MANAGER)
+  @Roles(RoleType.OWNER, RoleType.MANAGER)
   @ApiOperation({
     summary: '트레이너 목록'
   })
@@ -80,7 +80,7 @@ export class TrainerController {
   }
 
   @Get('users')
-  @Roles(RoleType.MANAGER, RoleType.TRAINER)
+  @Roles(RoleType.TRAINER)
   @ApiOperation({
     summary: '트레이너가 관리하는 PT수업 회원 목록'
   })

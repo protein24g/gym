@@ -5,4 +5,5 @@ export interface TrainerPayload {
   qualifications: string[];
   careerDetails: string[];
   profileImageUrl: string | null;
+  studentsCount: number;
 }

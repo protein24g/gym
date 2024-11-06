@@ -8,6 +8,8 @@ import { useRecoilState } from 'recoil';
 import { authState } from '../../recoil/AuthState';
 
 const Layout: FC<{ roles: string[] }> = ({ roles }) => {
+  const SESSION_DURATION = 60 * 60 * 1000; // 1h
+
   const navigate = useNavigate();
   const [auth, setAuth] = useRecoilState(authState);
   const [isLoading, setIsLoading] = useState<boolean>(true);
@@ -15,8 +17,11 @@ const Layout: FC<{ roles: string[] }> = ({ roles }) => {
   useEffect(() => {
     const checkAuthorization = async () => {
       const res = useAuth(auth, roles);
-      if (!res.isLogin) {
+        if (!res.isLogin || !sessionStorage.getItem('expiresAt')) {
         alert('로그인 후 이용하세요');
+        sessionStorage.removeItem('isAuthenticated');
+        sessionStorage.removeItem('role');
+        sessionStorage.removeItem('expiresAt');
         navigate('/auth/signin');
       } else if (!res.isAuthorized) {
         navigate('/');
@@ -24,9 +29,14 @@ const Layout: FC<{ roles: string[] }> = ({ roles }) => {
         alert('토큰이 만료되었습니다');
         const resCheck = await checkToken(setAuth);
         if(resCheck) {
-          location.reload();
+          sessionStorage.setItem('expiresAt', JSON.stringify(Date.now() + SESSION_DURATION));
+          navigate('/');
         } else {
+          sessionStorage.removeItem('isAuthenticated');
+          sessionStorage.removeItem('role');
+          sessionStorage.removeItem('expiresAt');
           navigate('/auth/signin');
+          return;
         }
       }
 

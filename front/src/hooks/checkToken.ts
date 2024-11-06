@@ -3,7 +3,7 @@ import { SetStateAction } from "react";
 import { AuthState } from "../recoil/AuthState";
 
 export const checkToken = async (setAuth: (value: SetStateAction<AuthState>) => void): Promise<boolean> => {
-  const SESSION_DURATION = 15 * 60 * 1000; // 15분
+  const SESSION_DURATION = 60 * 60 * 1000; // 1h
 
   try {
     const response = await axios.get('http://localhost:3000/api/auth/check-token', { withCredentials: true });
