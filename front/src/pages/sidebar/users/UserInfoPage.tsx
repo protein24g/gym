@@ -38,10 +38,8 @@ const UserInfoPage: FC<{ roles: string[] }> = ({ roles }) => {
     checkAuthorization();
   }, []);
 
-  if (isLoading) {
-    return <Loading />;
-  }
-
+  if (isLoading) return <Loading />;
+  
   return (
     <div className="bg-slate-100 p-2 h-screen">
       <UserInfo />

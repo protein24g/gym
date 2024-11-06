@@ -11,10 +11,11 @@ import OAuthSignUpPage from './pages/OAuthSignUpPage';
 import NotFound from './pages/NotFound';
 import OAuthCallback from './pages/OAuthCallback';
 import DashboardPage from './pages/sidebar/DashboardPage';
-import TrainersPage from './pages/sidebar/TrainersPage';
 import ManagersPage from './pages/sidebar/ManagersPage';
 import UsersPage from './pages/sidebar/users/UsersPage';
 import UserInfoPage from './pages/sidebar/users/UserInfoPage';
+import TrainersPage from './pages/sidebar/trainers/TrainersPage';
+import StudentsPage from './pages/students/StudentsPage';
 
 function App() {
   const [isSidebarOpen, setSidebarOpen] = useState<boolean>(false);
@@ -48,6 +49,10 @@ function App() {
                 {/* Users 페이지에 대한 권한 설정 */}
                 <Route element={<Layout roles={["ROLES_OWNER"]} />}>
                   <Route path='/managers' element={<ManagersPage />} />
+                </Route>
+                {/* Students 페이지에 대한 권한 설정 */}
+                <Route element={<Layout roles={["ROLES_TRAINER"]} />}>
+                  <Route path='/students' element={<StudentsPage />} />
                 </Route>
                 <Route path='/userinfo/:userId' element={<UserInfoPage roles={["ROLES_OWNER", "ROLES_MANAGER", "ROLES_TRAINER"]}/>} />
               </>

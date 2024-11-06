@@ -19,7 +19,7 @@ interface User {
 }
 
 const UserList: FC = () => {
-  const [userList, setUserList] = useState<User[] | null>(null);
+  const [userList, setUserList] = useState<User[]>([]);
   const auth = useRecoilValue(authState);
   const location = useLocation();
   const navigate = useNavigate();
@@ -128,7 +128,7 @@ const UserList: FC = () => {
           <option value={'name'}>이름</option>
           <option value={'telNumber'}>휴대폰</option>
         </select>
-        <input className='border px-2' type='text' value={searchKeyword} onKeyDown={(e) => {if (e.key === 'Enter') {navigate('/users', {replace: true}); findAllUsers()}}} onChange={(e) => {setSearchKeyword(e.target.value)}} placeholder='검색어를 입력하세요'></input>
+        <input className='border px-2' type='text' value={searchKeyword} onKeyDown={(e) => {if (e.key === 'Enter') {findAllUsers()}}} onChange={(e) => {setSearchKeyword(e.target.value)}} placeholder='검색어를 입력하세요'></input>
       </div>
       <div className="overflow-x-auto w-full h-full">
         <table className="table-auto my-3 border-gray-300 w-full h-full whitespace-nowrap text-center">
@@ -148,7 +148,7 @@ const UserList: FC = () => {
             </tr>
           </thead>
           <tbody>
-            {userList && userList.length > 0 ? (
+            {userList.length > 0 ? (
               userList.map((user) => (
                 <tr key={user.id} className="hover:bg-gray-50" onClick={() => {window.open(`/userinfo/${user.id}`, '_blank', 'width=600,height=400,top=100,left=100')}}>
                   <td className="border border-gray-300 px-4 py-2">{user.id}</td>

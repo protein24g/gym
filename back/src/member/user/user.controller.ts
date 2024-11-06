@@ -34,8 +34,8 @@ export class UserController {
   @ApiOperation({ summary: '고유 ID로 회원 검색' })
   @ApiNotFoundResponse({ description: '존재하지 않는 유저' })
   async findByName(@Param('userId') userId: string, @Res() response: Response) {
-      const user = await this.userService.findUserById(parseInt(userId));
-      return response.status(200).json({user});
+    const user = await this.userService.findUserById(parseInt(userId));
+    return response.status(200).json({user});
   }
 
   @Get('me')
