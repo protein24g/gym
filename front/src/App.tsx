@@ -18,7 +18,7 @@ import TrainersPage from './pages/sidebar/trainers/TrainersPage';
 import StudentsPage from './pages/students/StudentsPage';
 
 function App() {
-  const [isSidebarOpen, setSidebarOpen] = useState<boolean>(false);
+  const [isSidebarOpen, setSidebarOpen] = useState<boolean>(true);
   const role = sessionStorage.getItem('role');
 
   const toggleSidebar = (): void => {
