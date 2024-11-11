@@ -5,19 +5,24 @@ import axios from "axios";
 import { Link, useNavigate } from "react-router-dom";
 import Logo from "../Logo/Logo";
 
+interface ProfileInfo {
+  name: string;
+  profileImageUrl: string | null;
+}
+
 const Header: FC<{isUser: boolean}> = ({isUser}) => {
   const navigate = useNavigate();
   const { toggleSidebar } = useContext(SidebarContext);
-  const [imageSrc, setImageSrc] = useState<string | undefined>(undefined);
+  const [profile, setProfile] = useState<ProfileInfo>();
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
 
   const getMyProfileImage = async () => {
-    const response = await axios.get('http://localhost:3000/api/mypage/profile/image', {
+    const response = await axios.get('http://localhost:3000/api/mypage/profile', {
       withCredentials: true,
     });
 
     if (response.status === 200) {
-      setImageSrc(response.data);
+      setProfile(response.data);
     }
   };
 
@@ -60,12 +65,14 @@ const Header: FC<{isUser: boolean}> = ({isUser}) => {
           }
         </div>
       </div>
+      <span className="font-bold">{profile?.name}</span>
+      <span className="mr-4">님 어서오세요.</span>
       <div onClick={() => {setIsDropdownOpen(!isDropdownOpen)}}>
         <div className="relative w-10 h-10 overflow-hidden rounded-full bg-gray-300">
-          {imageSrc ?
-            <img src={imageSrc} alt="Profile" className="w-full h-full" />
+          {profile?.profileImageUrl ?
+            <img src={profile.profileImageUrl} alt="Profile" className="w-full h-full" />
             :
-            <svg className="absolute w-12 h-12 text-gray-200 -left-1" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><path fill-rule="evenodd" d="M10 9a3 3 0 100-6 3 3 0 000 6zm-7 9a7 7 0 1114 0H3z" clip-rule="evenodd"></path></svg>
+            <svg className="absolute w-12 h-12 text-gray-200 -left-1" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><path fillRule="evenodd" d="M10 9a3 3 0 100-6 3 3 0 000 6zm-7 9a7 7 0 1114 0H3z" clipRule="evenodd"></path></svg>
           }
         </div>
       </div>

@@ -16,5 +16,6 @@ import { Branch } from 'src/branches/entities/branch.entity';
   ],
   controllers: [AttendanceController],
   providers: [AttendanceService],
+  exports: [AttendanceService]
 })
 export class AttendanceModule {}

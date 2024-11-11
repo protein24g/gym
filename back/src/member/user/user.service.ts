@@ -1,6 +1,6 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Like, Repository } from 'typeorm';
+import { Between, Like, Repository } from 'typeorm';
 import { RoleType } from 'src/auth/roles/enums/role.type.enum';
 import { OAuthType } from 'src/auth/enums/oauth-type.enum';
 import axios from 'axios';
@@ -17,6 +17,61 @@ export class UserService {
     private readonly userRepository: Repository<User>,
     private readonly configService: ConfigService,
   ) {}
+
+  async getDailyUserRegisters(payload: AuthPayload): Promise<{ name: string; count: number }[]> {
+    const now = new Date();
+
+    // 30일 전 날짜 계산
+    const startDate = new Date(now);
+    startDate.setDate(now.getDate() - 30);  // 30일 전으로 설정
+    startDate.setHours(0, 0, 0, 0); // 자정으로 설정
+
+    // 현재 날짜 끝 시간 설정 (23:59:59)
+    const endDate = new Date(now);
+    endDate.setHours(23, 59, 59, 999); // 23:59:59로 설정
+
+    // `startDate`와 `endDate`를 Between으로 사용하여 쿼리 실행
+    const res = await this.userRepository.find({
+      where: {
+        createdAt: Between(startDate, endDate),
+      },
+      order: { id: 'asc'}
+    });
+
+    const dateDict: Record<string, number> = {};
+    for (let i = 0; i < 30; i++) {
+      const date = new Date(startDate);
+      date.setDate(startDate.getDate() + i);
+      const dateKey = String(date.getFullYear()) + String((date.getMonth() + 1)).padStart(2, '0') + String(date.getDate()).padStart(2, '0');
+      dateDict[dateKey] = 0;
+    }
+
+    res.forEach((user) => {
+      dateDict[String(user.createdAt.getFullYear()) + String((user.createdAt.getMonth() + 1)).padStart(2, '0') + String(user.createdAt.getDate()).padStart(2, '0')]++;
+    })
+
+    // dateDict를 { name: string, count: number }[] 형식으로 변환
+    const chartData = Object.keys(dateDict).map((dateKey) => ({
+      name: dateKey, // 날짜 (예: '20241015')
+      count: dateDict[dateKey], // 해당 날짜의 사용자 수
+    }));
+
+    return chartData;
+  }
+
+  async getUserConut(payload: AuthPayload): Promise<number> {
+    if (payload.role === RoleType.OWNER) {
+      return await this.userRepository.count();
+    } else {
+      const user = await this.findById(payload.userId);
+
+      if (!user) {
+        throw new NotFoundException('존재하지 않는 유저');
+      }
+
+      return await this.userRepository.count({where: {branch: {id: user.branch.id}}});
+    }
+  }
 
   async delete(userId: number, kakaoAccessToken: string): Promise<void> {
     const user = await this.findById(userId);

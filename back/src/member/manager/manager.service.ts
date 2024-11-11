@@ -33,7 +33,7 @@ export class ManagerService {
       throw new ConflictException('이미 권한이 부여된 유저')
     }
 
-    await this.userRepository.update({id: user.id}, {role: RoleType.MANAGER, password: await argon2.hash(user.birth)});
+    await this.userRepository.update({id: user.id}, {role: RoleType.MANAGER});
   }
 
   async findAll() {

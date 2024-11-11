@@ -1,14 +1,15 @@
 import { FC } from "react"
 
-const Box: FC<{icon: React.ReactNode, num: string, describe: string}> = ({icon, num, describe}) => {
+const Box: FC<{icon: React.ReactNode, count: number, describe: string}> = ({icon, count, describe}) => {
   return (
-    <div className="mb-0 flex flex-col justify-between m-4 p-4 xl:px-8 bg-white rounded-lg border">
-      <div className="flex justify-between">
-        <p className="text-gray-400 font-bold">{describe}</p>
+    <div className="flex h-24 bg-white border-2">
+      <div className="border-2 bg-blue-500"></div>
+      <div className="flex flex-1 justify-between items-center px-4">
+        <div>
+          <p className="text-gray-400 font-bold">{describe}</p>
+          <p className="text-black text-2xl font-bold">{count}</p>
+        </div>
         <div>{icon}</div>
-      </div>
-      <div>
-        <p className="text-black text-2xl font-bold">{num}</p>
       </div>
     </div>
   )

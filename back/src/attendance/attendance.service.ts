@@ -4,6 +4,7 @@ import { UserService } from 'src/member/user/user.service';
 import { Attendance } from './entities/attendance.entity';
 import { Between, Repository } from 'typeorm';
 import { Branch } from 'src/branches/entities/branch.entity';
+import { AuthPayload } from 'src/auth/interfaces/auth-payload.interface';
 
 @Injectable()
 export class AttendanceService {
@@ -14,6 +15,10 @@ export class AttendanceService {
     @InjectRepository(Branch)
     private readonly branchRepository: Repository<Branch>,
   ) {}
+
+  async getTodayAttendanceCount(payload: AuthPayload): Promise<number> {
+    return await this.attendanceRepository.count();
+  }
 
   async checkIn(telNumber: string): Promise<void> {
     const user = await this.userService.findByTelNumber(telNumber);

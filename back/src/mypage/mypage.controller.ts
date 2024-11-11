@@ -11,9 +11,9 @@ export class MypageController {
     private readonly mypageService: MypageService,
   ) {}
 
-  @Get('profile/image')
+  @Get('profile')
   async getMyProfileImage(@Req() request: Request) {
     const user = request.user as AuthPayload;
-    return await this.mypageService.getMyProfileImage(user.userId);
+    return await this.mypageService.getMyProfile(user.userId);
   }
 }

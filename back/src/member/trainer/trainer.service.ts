@@ -22,6 +22,20 @@ export class TrainerService {
     private readonly configService: ConfigService,
   ) {}
 
+  async getTrainerCount(payload: AuthPayload): Promise<number> {
+    if (payload.role === RoleType.OWNER) {
+    return await this.trainerRepository.count();
+    } else {
+      const user = await this.userService.findById(payload.userId);
+
+      if (!user) {
+        throw new NotFoundException('존재하지 않는 유저');
+      }
+
+      return await this.trainerRepository.count({where: {user: {branch: {id: user.branch.id}}}});
+    }
+  }
+
   async create(payload: AuthPayload, userId: number): Promise<void> {
     const user = await this.userService.findById(userId);
     if (!user) {
@@ -46,7 +60,7 @@ export class TrainerService {
       });
     }
 
-    await this.userRepository.update({id: user.id}, {role: RoleType.TRAINER, password: await argon2.hash(user.birth)});
+    await this.userRepository.update({id: user.id}, {role: RoleType.TRAINER});
   }
 
   async createUser(trainerId: number, userId: number): Promise<void> {
@@ -73,7 +87,7 @@ export class TrainerService {
     });
   }
 
-  async findAll(user: AuthPayload, page: string, size: string, keyword: string | null): Promise<TrainerPayload[]> {
+  async findAll(payload: AuthPayload, page: string, size: string, keyword: string | null): Promise<TrainerPayload[]> {
     const trainers = await this.trainerRepository.find({
       relations: ['user', 'ptUsers'], // ptUsers 관계 추가
     });

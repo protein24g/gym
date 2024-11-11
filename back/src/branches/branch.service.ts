@@ -5,7 +5,7 @@ import { Repository } from 'typeorm';
 import { BranchDTO } from './dto/branch.dto';
 
 @Injectable()
-export class BranchesService {
+export class BranchService {
   constructor(
     @InjectRepository(Branch)
     private readonly branchRepository: Repository<Branch>,
@@ -20,5 +20,9 @@ export class BranchesService {
         name: branch.name
       }
     })
+  }
+
+  async getBranchCount(): Promise<number> {
+    return await this.branchRepository.count();
   }
 }

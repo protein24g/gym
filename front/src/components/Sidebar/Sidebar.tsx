@@ -65,7 +65,7 @@ const Sidebar: FC<{isUser: boolean}> = ({isUser}) => {
       {isSidebarOpen && (
         <div className="fixed inset-0 z-40 bg-black bg-opacity-50 lg:relative" onClick={toggleSidebar}></div>
       )}
-      <div className={`w-72 h-screen bg-custom-gray text-white ${isSidebarOpen ? 'fixed z-50 lg:relative' : 'hidden'}`}>
+      <div className={`w-64 h-screen bg-custom-gray text-white ${isSidebarOpen ? 'fixed z-50 lg:relative' : 'hidden'}`}>
         <div className="flex flex-col h-full justify-between">
           <div className="flex justify-center p-4 border-b-2 border-gray-500" onClick={() => {navidate('/')}}>
             {isUser ?

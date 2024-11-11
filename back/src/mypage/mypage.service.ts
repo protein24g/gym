@@ -8,20 +8,24 @@ export class MypageService {
     private readonly userService: UserService,
   ) {}
 
-  async getMyProfileImage(userId: number): Promise<string | null> {
+  async getMyProfile(userId: number): Promise<ProfileInfo> {
     const user = await this.userService.findById(userId);
     if (!user) {
       throw new NotFoundException('존재하지 않는 유저');
     }
 
-    return (user.provider === OAuthType.KAKAO ?
-      user.oAuthProfileUrl
-      :
-      (user.profileImage !== null ?
-        `http://localhost:3000/uploads/${user.profileImage.fileName}`
+
+    return {
+      name: user.name,
+      profileImageUrl: (user.provider === OAuthType.KAKAO ?
+        user.oAuthProfileUrl
         :
-        null
+        (user.profileImage !== null ?
+          `http://localhost:3000/uploads/${user.profileImage.fileName}`
+          :
+          null
+        )
       )
-    );
+    }
   }
 }

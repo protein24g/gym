@@ -17,7 +17,7 @@ import { FileModule } from 'src/file/file.module';
 import { UserModule } from 'src/member/user/user.module';
 import { User } from 'src/member/user/entities/user.entity';
 import { Branch } from 'src/branches/entities/branch.entity';
-import { BranchesModule } from 'src/branches/branches.module';
+import { BranchModule } from 'src/branches/branch.module';
 
 @Module({
   imports: [
@@ -28,7 +28,7 @@ import { BranchesModule } from 'src/branches/branches.module';
     forwardRef(() => UserModule),
     forwardRef(() => HttpModule),
     forwardRef(() => FileModule),
-    forwardRef(() => BranchesModule),
+    forwardRef(() => BranchModule),
     JwtModule.registerAsync({
       imports: [ConfigModule],
       inject: [ConfigService],

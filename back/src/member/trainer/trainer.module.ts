@@ -18,5 +18,6 @@ import { User } from '../user/entities/user.entity';
   ],
   controllers: [TrainerController],
   providers: [TrainerService],
+  exports: [TrainerService]
 })
 export class TrainerModule {}
