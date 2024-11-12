@@ -61,7 +61,7 @@ export class UserService {
 
   async getUserConut(payload: AuthPayload): Promise<number> {
     if (payload.role === RoleType.OWNER) {
-      return await this.userRepository.count();
+      return await this.userRepository.count({where: {role: RoleType.USER}});
     } else {
       const user = await this.findById(payload.userId);
 
@@ -69,7 +69,7 @@ export class UserService {
         throw new NotFoundException('존재하지 않는 유저');
       }
 
-      return await this.userRepository.count({where: {branch: {id: user.branch.id}}});
+      return await this.userRepository.count({where: {branch: {id: user.branch.id}, role: RoleType.USER}});
     }
   }
 
