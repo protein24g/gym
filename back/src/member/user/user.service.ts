@@ -19,11 +19,13 @@ export class UserService {
   ) {}
 
   async getDailyUserRegisters(payload: AuthPayload): Promise<{ name: string; count: number }[]> {
+    // 오늘 날짜 자정
     const now = new Date();
+    now.setHours(0, 0, 0, 0);
 
     // 30일 전 날짜 계산
     const startDate = new Date(now);
-    startDate.setDate(now.getDate() - 30);  // 30일 전으로 설정
+    startDate.setDate(now.getDate() - 29);  // 30일간의 데이터를 포함하려면 -29로 설정
     startDate.setHours(0, 0, 0, 0); // 자정으로 설정
 
     // 현재 날짜 끝 시간 설정 (23:59:59)

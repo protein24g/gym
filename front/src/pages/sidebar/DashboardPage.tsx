@@ -3,7 +3,6 @@ import Box from "../../components/ui/Box"
 import { FaCheck, FaUsers } from "react-icons/fa"
 import { PiNetwork } from "react-icons/pi"
 import { RiUserSettingsLine } from "react-icons/ri"
-import Card from "../../components/ui/Card"
 import { XAxis, YAxis, Tooltip, ResponsiveContainer, BarChart, Bar, AreaChart, Area } from 'recharts';
 import Loading from "../../components/loading/Loading"
 import axios, { AxiosError } from "axios"
@@ -44,7 +43,7 @@ const DashboardPage: FC = () => {
       const axiosError = error as AxiosError;
       const data = axiosError.response?.data as {message: string};
       alert(data.message);
-      navigate('/');
+      navigate('/auth/signin');
     }
   }
 
@@ -56,57 +55,57 @@ const DashboardPage: FC = () => {
 
   return (
     <div className="p-4">
-      <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-2 lg:grid-cols-4 text-white gap-8 px-4">
-        {auth && auth.role === 'ROLES_OWNER' && (
-          <Box icon={<PiNetwork className="w-12 h-12 p-2 bg-gray-500 rounded-full"/>} count={branchCount} describe={'지점'}/>
-        )}
-        <Box icon={<FaUsers className="w-12 h-12 p-2 bg-blue-500 rounded-full"/>} count={userCount} describe={'전체 회원'}/>
-        <Box icon={<RiUserSettingsLine className="w-12 h-12 p-2 bg-blue-500 rounded-full"/>} count={trainerCount} describe={'트레이너'}/>
-        <Box icon={<FaCheck className="w-12 h-12 p-2 bg-green-500 rounded-full"/>} count={todayAttendanceCount} describe={'출석'}/>
-      </div>
-      <div className="grid grid-cols-1 lg:grid-cols-3">
-        <div className={`${(auth && auth.role === 'ROLES_OWNER') ? 'col-span-2' : 'col-span-full'}`}>
-          <Card>
-            <div className="p-4 bg-white rounded shadow-md">
-              <h2 className="text-lg font-semibold text-center mb-4">일별 회원 등록 현황</h2>
-              <ResponsiveContainer width="100%" height={300}>
-                <AreaChart data={dailyUserRegisters} margin={{
-                    top: 0,
-                    right: 0,
-                    left: -35,
-                    bottom: 0,
-                  }}>
-                  <XAxis dataKey='name' tick={false} />
-                  <YAxis />
-                  <Tooltip />
-                  <Area type="monotone" dataKey="count" fillOpacity={0.1} dot={{r: 3}}/>
-                </AreaChart>
-              </ResponsiveContainer>
-            </div>
-          </Card>
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <div className="grid grid-cols-1 sm:grid-cols-2 text-white gap-4">
+          {auth && auth.role === 'ROLES_OWNER' && (
+            <Box icon={<PiNetwork className="w-12 h-12 p-2 bg-gray-500 rounded-full"/>} count={branchCount} describe={'지점'}/>
+          )}
+          <Box icon={<FaUsers className="w-12 h-12 p-2 bg-blue-500 rounded-full"/>} count={userCount} describe={'전체 회원'}/>
+          <Box icon={<RiUserSettingsLine className="w-12 h-12 p-2 bg-blue-500 rounded-full"/>} count={trainerCount} describe={'트레이너'}/>
+          <Box icon={<FaCheck className="w-12 h-12 p-2 bg-green-500 rounded-full"/>} count={todayAttendanceCount} describe={'출석'}/>
         </div>
         {(auth && auth.role === 'ROLES_OWNER') && (
-          <div className="'col-span-2'">
-            <Card>
-            <div className="p-4 bg-white rounded shadow-md">
-              <h2 className="text-lg font-semibold text-center mb-4">지점별 회원 수</h2>
-              <ResponsiveContainer width="100%" height={300}>
+          <div className="bg-white border-2">
+            <div>
+              <h2 className="text-lg font-semibold p-4 bg-blue-100 text-blue-600">지점별 회원 현황</h2>
+            </div>
+            <div className="bg-white h-60">
+              <ResponsiveContainer width='100%' height='100%'>
                 <BarChart data={branchUserCount} margin={{
-                    top: 0,
-                    right: 0,
-                    left: -35,
+                    top: 30,
+                    right: 30,
+                    left: -10,
                     bottom: 0,
                   }}>
                   <XAxis dataKey="name" />
                   <YAxis />
                   <Tooltip />
-                  <Bar dataKey="count" fill="#8884d8"/>
+                  <Bar dataKey="count" fill="#4E73DF" />
                 </BarChart>
               </ResponsiveContainer>
             </div>
-          </Card>
           </div>
-        )}  
+        )} 
+      </div>
+      <div className={`my-4 bg-white border-2 ${(auth && auth.role === 'ROLES_OWNER') ? 'col-span-2' : 'col-span-full'}`}>
+        <div>
+          <h2 className="text-lg font-semibold p-4 bg-blue-100 text-blue-600">일별 회원 등록 현황</h2>
+        </div>
+        <div className="h-80">
+          <ResponsiveContainer width='100%' height='100%'>
+            <AreaChart data={dailyUserRegisters} margin={{
+                top: 30,
+                right: 30,
+                left: -10,
+                bottom: 0,
+              }}>
+              <XAxis dataKey='name' tick={false} />
+              <YAxis />
+              <Tooltip />
+              <Area type="monotone" dataKey="count" fill="#4E73DF" dot={{r: 2}}/>
+            </AreaChart>
+          </ResponsiveContainer>
+        </div>
       </div>
     </div>
   )
