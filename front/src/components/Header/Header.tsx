@@ -67,7 +67,7 @@ const Header: FC<{isUser: boolean}> = ({isUser}) => {
       </div>
       <div className='hidden md:block'>
         <span className="font-bold">{profile?.name}</span>
-        <span className="mr-4">님 어서오세요.</span>
+        <span className="mr-4">님 어서오세요</span>
       </div>
       <div onClick={() => {setIsDropdownOpen(!isDropdownOpen)}}>
         <div className="relative w-10 h-10 overflow-hidden rounded-full bg-gray-300">
