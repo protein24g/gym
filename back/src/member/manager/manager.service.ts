@@ -5,7 +5,6 @@ import { Repository } from 'typeorm';
 import { User } from '../user/entities/user.entity';
 import { AuthPayload } from 'src/auth/interfaces/auth-payload.interface';
 import { RoleType } from 'src/auth/roles/enums/role.type.enum';
-import * as argon2 from 'argon2';
 
 @Injectable()
 export class ManagerService {
@@ -36,20 +35,18 @@ export class ManagerService {
     await this.userRepository.update({id: user.id}, {role: RoleType.MANAGER});
   }
 
-  async findAll() {
-    const manager = await this.userRepository.find({where: {role: RoleType.MANAGER}});
+  async findAll(): Promise<ManagerInfo[]> {
+    const manager = await this.userRepository.find({where: {role: RoleType.MANAGER}, relations: ['branch'], order: {branch: {id: 'ASC'}}});
     if (!manager) {
       throw new NotFoundException('존재하지 않는 매니저');
     }
 
     return manager.map(manager => ({
-      id: manager.id,
       email: manager.email,
       name: manager.name,
       telNumber: manager.telNumber,
-      birth: manager.birth,
-      createAt: manager.createdAt,
-      role: manager.role,
+      branchName: manager.branch.name,
+      address: manager.branch.address + manager.branch.addressDetail
     }));
   }
 
