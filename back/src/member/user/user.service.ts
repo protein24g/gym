@@ -18,7 +18,7 @@ export class UserService {
     private readonly configService: ConfigService,
   ) {}
 
-  async getDailyUserRegisters(payload: AuthPayload): Promise<{ name: string; count: number }[]> {
+  async getDailyUserRegisters(): Promise<{ name: string; count: number }[]> {
     // 오늘 날짜 자정
     const now = new Date();
     now.setHours(0, 0, 0, 0);
@@ -36,6 +36,7 @@ export class UserService {
     const res = await this.userRepository.find({
       where: {
         createdAt: Between(startDate, endDate),
+        role: RoleType.USER
       },
       order: { id: 'asc'}
     });
