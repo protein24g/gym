@@ -11,12 +11,6 @@ import { useNavigate } from "react-router-dom"
 import { useRecoilValue } from "recoil"
 import { authState } from "../../recoil/AuthState"
 
-const chartData = [
-  { name: '1지점', user: 65 },
-  { name: '2지점', user: 59 },
-  { name: '3지점', user: 80 },
-];
-
 const DashboardPage: FC = () => {
   const [isLoading, setIsLoading] = useState<boolean>(true);
 
@@ -27,6 +21,7 @@ const DashboardPage: FC = () => {
   const [trainerCount, setTrainerCount] = useState<number>(0);
   const [todayAttendanceCount, setTodayAttendanceCount] = useState<number>(0);
   const [dailyUserRegisters, setDailyUserRegisters] = useState<{name: string, count: number}[]>();
+  const [branchUserCount, setBranchUserCount] = useState<{name: string, count: number}[]>();
 
   const navigate = useNavigate();
 
@@ -40,13 +35,11 @@ const DashboardPage: FC = () => {
         setTrainerCount(response.data.trainerCount);
         setTodayAttendanceCount(response.data.todayAttendanceCount);
         setDailyUserRegisters(response.data.dailyUserRegisters);
+        setBranchUserCount(response.data.branchUserCount);
         
-        console.log(response.data.dailyUserRegisters);
-
         setIsLoading(false);
       }
 
-      
     } catch (error) {
       const axiosError = error as AxiosError;
       const data = axiosError.response?.data as {message: string};
@@ -98,7 +91,7 @@ const DashboardPage: FC = () => {
             <div className="p-4 bg-white rounded shadow-md">
               <h2 className="text-lg font-semibold text-center mb-4">지점별 회원 수</h2>
               <ResponsiveContainer width="100%" height={300}>
-                <BarChart data={chartData} margin={{
+                <BarChart data={branchUserCount} margin={{
                     top: 0,
                     right: 0,
                     left: -35,
@@ -107,7 +100,7 @@ const DashboardPage: FC = () => {
                   <XAxis dataKey="name" />
                   <YAxis />
                   <Tooltip />
-                  <Bar dataKey="user" fill="#8884d8"/>
+                  <Bar dataKey="count" fill="#8884d8"/>
                 </BarChart>
               </ResponsiveContainer>
             </div>

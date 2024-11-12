@@ -25,4 +25,19 @@ export class BranchService {
   async getBranchCount(): Promise<number> {
     return await this.branchRepository.count();
   }
+
+  async getBranchUserCount(): Promise<{ name: string; count: number }[]> {
+    const branches = await this.branchRepository
+      .createQueryBuilder('branch')
+      .leftJoinAndSelect('branch.users', 'user')
+      .select('branch.name', 'name')
+      .addSelect('COUNT(user.id)', 'count')
+      .groupBy('branch.id')
+      .getRawMany();
+  
+    return branches.map((branch) => ({
+      name: branch.name.split(' ')[1],
+      count: parseInt(branch.count, 10),
+    }));
+  }
 }

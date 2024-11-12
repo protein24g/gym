@@ -1,11 +1,11 @@
 import { Body, Controller, Post } from '@nestjs/common';
 import { AttendanceService } from './attendance.service';
-import { ApiBody, ApiOkResponse, ApiOperation, ApiTags } from '@nestjs/swagger';
+import { ApiBody, ApiOperation, ApiTags } from '@nestjs/swagger';
 import { AttendanceDTO } from './dto/attendance.dto';
 import { Roles } from 'src/auth/roles/decorators/role.decorator';
 import { RoleType } from 'src/auth/roles/enums/role.type.enum';
 
-@Controller('api/attendance')
+@Controller('api/attendances')
 @ApiTags('Attendance')
 export class AttendanceController {
   constructor(private readonly attendanceService: AttendanceService) {}

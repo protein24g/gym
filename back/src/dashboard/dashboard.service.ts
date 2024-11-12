@@ -17,20 +17,19 @@ export class DashboardService {
 
   async getDashboardSummary(payload: AuthPayload): Promise<SummaryInfo> {
     const res = [
-    this.userService.getUserConut(payload),
-    this.trainerService.getTrainerCount(payload),
-    this.attendanceService.getTodayAttendanceCount(payload),
-    this.userService.getDailyUserRegisters(payload)
+    await this.userService.getUserConut(payload),
+    await this.trainerService.getTrainerCount(payload),
+    await this.attendanceService.getTodayAttendanceCount(payload),
+    await this.userService.getDailyUserRegisters(payload),
   ];
 
   // OWNER 권한인 경우에만 branchCount를 추가
   if (payload.role === RoleType.OWNER) {
-    res.push(this.branchService.getBranchCount());
+    res.push(await this.branchService.getBranchCount());
+    res.push(await this.branchService.getBranchUserCount());
   }
 
-  // Promise.all을 사용하여 병렬 처리
-  const [userCount, trainerCount, todayAttendanceCount, dailyUserRegisters, branchCount] = await Promise.all(res);
-
+  const [userCount, trainerCount, todayAttendanceCount, dailyUserRegisters, branchCount, branchUserCount] = res;
   const summaryInfo: SummaryInfo = {
     userCount: userCount as number,
     trainerCount: trainerCount as number,
@@ -41,6 +40,7 @@ export class DashboardService {
   // OWNER 권한일 때만 branchCount 포함
   if (payload.role === RoleType.OWNER) {
     summaryInfo.branchCount = branchCount as number;
+    summaryInfo.branchUserCount = branchUserCount as { name: string, count: number }[];
   }
 
   return summaryInfo;

@@ -2,12 +2,13 @@ import { Controller, Get, Req, Res, UseGuards } from '@nestjs/common';
 import { DashboardService } from './dashboard.service';
 import { Roles } from 'src/auth/roles/decorators/role.decorator';
 import { RoleType } from 'src/auth/roles/enums/role.type.enum';
-import { ApiOperation } from '@nestjs/swagger';
+import { ApiOperation, ApiTags } from '@nestjs/swagger';
 import { Request, Response } from 'express';
 import { AuthPayload } from 'src/auth/interfaces/auth-payload.interface';
 import { JwtAuthGuard } from 'src/auth/guards/jwt-auth.guard';
 
 @Controller('api/dashboard')
+@ApiTags('Dashboard')
 @UseGuards(JwtAuthGuard)
 export class DashboardController {
   constructor(
