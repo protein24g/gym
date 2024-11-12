@@ -27,7 +27,7 @@ const UserList: FC = () => {
 
   const [page, setPage] = useState<number>(1);
   const [size, setSize] = useState<number>(10);
-  const [, setTotalCount] = useState<number>(0);
+  const [totalCount, setTotalCount] = useState<number>(0);
   const [totalPage, setTotalPage] = useState<number>(0);
   const [, setPageGroup] = useState<number>(0);
   const [startPageNum, setStartPageNum] = useState<number>(0);
@@ -115,7 +115,10 @@ const UserList: FC = () => {
   return (
     <Card>
       <div className='flex justify-between mb-4'>
-        <span className="text-lg xl:text-2xl my-2 font-bold">회원 목록</span>
+        <div className='text-lg'>
+          <span className="xl:text-2xl my-2 font-bold">회원 목록</span>
+          <span className='font-bold'>({totalCount}명)</span>
+        </div>
         <select className='px-2 border rounded' onChange={(e) => {setSizeSelect(parseInt(e.target.value))}}>
           <option value={10}>10개씩 보기</option>
           <option value={20}>20개씩 보기</option>

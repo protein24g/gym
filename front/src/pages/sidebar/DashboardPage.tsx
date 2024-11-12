@@ -55,7 +55,7 @@ const DashboardPage: FC = () => {
 
   return (
     <div className="p-4">
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+      <div className={`${auth && auth.role === 'ROLES_OWNER' ? 'grid grid-cols-1 md:grid-cols-2 gap-4' : ''}`}>
         <div className="grid grid-cols-1 sm:grid-cols-2 text-white gap-4">
           {auth && auth.role === 'ROLES_OWNER' && (
             <Box icon={<PiNetwork className="w-12 h-12 p-2 bg-gray-500 rounded-full"/>} count={branchCount} describe={'지점'}/>
