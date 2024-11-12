@@ -3,14 +3,14 @@ import Card from "../ui/Card"
 import Loading from "../loading/Loading";
 import axios, { AxiosError } from "axios";
 import { useNavigate } from "react-router-dom";
-import BusinessCard from "../ui/businessCard";
 import logoImageWhite1 from "../../assets/logoImage-1-white.png";
+import BusinessCard from "../ui/BusinessCard";
 
 interface ManagerInfo {
-  email: string;
-  name: string;
-  telNumber: string;
   branchName: string;
+  managerName: string;
+  email: string;
+  telNumber: string;
   address: string;
 }
 
@@ -22,8 +22,8 @@ const ManagerList: FC = () => {
 
   const findAllManagers = async () => {
     try {
-      const response = await axios.get('http://localhost:3000/api/managers', {withCredentials: true});
-
+      const response = await axios.get('http://localhost:3000/api/branches', {withCredentials: true});
+      console.log(response.data);
       setBranchList(response.data);
       setIsLoading(false);
     } catch (error) {
@@ -41,9 +41,9 @@ const ManagerList: FC = () => {
 
   return (
     <Card>
-      <div className='text-lg'>
-        <span className="xl:text-2xl my-2 font-bold">지점</span>
-        <span className='font-bold'>({branchList.length}개)</span>
+      <div className="text-lg font-bold">
+        <span className="my-2">지점</span>
+        <span>({branchList.length}개)</span>
       </div>
       <div className="flex flex-wrap justify-evenly">
         {branchList.map((branch, index) => (
@@ -51,7 +51,7 @@ const ManagerList: FC = () => {
             <div className="flex flex-1 h-full">
               <div className="w-full flex flex-col">
                 <div className="flex-1">
-                  <p className="font-bold text-lg">{branch.name}</p>
+                  <p className="font-bold text-lg">{branch.managerName}</p>
                   <p className="text-xs">{branch.branchName}</p>
                 </div>
                 <div className="text-xs">

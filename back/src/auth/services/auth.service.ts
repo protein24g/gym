@@ -28,10 +28,7 @@ export class AuthService {
     private readonly branchRepository: Repository<Branch>,
   ) {}
 
-  async validateUser(signInDTO: SignInDTO): Promise<{
-    user: AuthPayload,
-    resetPassword: boolean,
-  }> {
+  async validateUser(signInDTO: SignInDTO): Promise<AuthPayload> {
     const user = await this.userRepository.findOne({where: {email: signInDTO.email}});
     if (!user || !user.password) {
       throw new UnauthorizedException('아이디 또는 패스워드 오류');
@@ -43,11 +40,8 @@ export class AuthService {
     }
 
     return {
-      user: {
-        userId: user.id,
-        role: user.role,
-      },
-      resetPassword: await argon2.verify(user.password, user.birth)
+      userId: user.id,
+      role: user.role,
     };
   }
 

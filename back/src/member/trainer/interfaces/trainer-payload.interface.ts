@@ -6,4 +6,5 @@ export interface TrainerPayload {
   careerDetails: string[];
   profileImageUrl: string | null;
   studentsCount: number;
+  branchName: string;
 }

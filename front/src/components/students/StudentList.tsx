@@ -25,8 +25,10 @@ const StudentList: FC = () => {
     try {
       const response = await axios.get('http://localhost:3000/api/trainers/users', {withCredentials: true});
 
-      if (response.data) {
-        setStudents(response.data);
+      if (response.status === 200) {
+        if (response.data) {
+          setStudents(response.data);
+        }
         setIsLoading(false);
       }
     } catch (error) {

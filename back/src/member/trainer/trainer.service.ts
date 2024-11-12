@@ -3,7 +3,6 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { Trainer } from './entities/trainer.entity';
 import { Repository } from 'typeorm';
 import { RoleType } from 'src/auth/roles/enums/role.type.enum';
-import * as argon2 from "argon2";
 import { User } from '../user/entities/user.entity';
 import { UserService } from '../user/user.service';
 import { AuthPayload } from 'src/auth/interfaces/auth-payload.interface';
@@ -87,13 +86,24 @@ export class TrainerService {
     });
   }
 
-  async findAll(payload: AuthPayload, page: string, size: string, keyword: string | null): Promise<TrainerPayload[]> {
-    const trainers = await this.trainerRepository.find({
+  async findAll(payload: AuthPayload): Promise<TrainerPayload[]> {
+    let trainers; // console.log
+
+    if (payload.role === RoleType.OWNER) {
+      trainers = await this.trainerRepository.find({
       relations: ['user', 'ptUsers'], // ptUsers 관계 추가
     });
-  
-    if (!trainers.length) {
-      throw new NotFoundException('존재하지 않는 트레이너');
+    } else {
+      const user = await this.userService.findById(payload.userId);
+    
+      trainers = await this.trainerRepository.find({
+        where: {user: {branch: {id: user.branch.id}}},
+        relations: ['user', 'ptUsers']
+      })
+    }
+
+    if (trainers.length === 0) {
+      return;
     }
   
     return Promise.all(
@@ -101,9 +111,9 @@ export class TrainerService {
         // user.id로 user 데이터 조회
         const user = await this.userRepository.findOne({
           where: { id: trainer.user.id },
-          relations: ['profileImage'], // profileImage와 함께 가져오기
+          relations: ['branch', 'profileImage'],
         });
-  
+
         // profileImageUrl 결정
         const profileImageUrl = user?.profileImage
           ? this.configService.get<string>('BACK_URL') + 'uploads/' + user.profileImage.fileName
@@ -117,6 +127,7 @@ export class TrainerService {
           careerDetails: trainer.careerDetails,
           profileImageUrl: profileImageUrl,
           studentsCount: trainer.ptUsers.length, // ptUsers 배열의 길이를 studentsCount로 설정
+          branchName: user.branch.name
         };
       })
     );
@@ -131,7 +142,7 @@ export class TrainerService {
       }
     );
     if (!trainer) {
-      throw new NotFoundException('존재하지 않는 트레이너');
+      return;
     }
 
     return trainer.ptUsers.map(user => ({

@@ -36,10 +36,8 @@ export class AuthController {
   @ApiUnauthorizedResponse({description: '아이디 또는 패스워드 오류'})
   @ApiForbiddenResponse({description: '권한이 없습니다'})
   async signIn(@Req() request: Request, @Res() response: Response, @Body() signInDTO: SignInDTO) {
-    const res = await this.authService.validateUser(signInDTO);
-    request.user = res.user;
+    request.user = await this.authService.validateUser(signInDTO);
     const payload = request.user as AuthPayload;
-    
     try {
       const token = await this.authService.signIn(payload);
 
@@ -61,11 +59,7 @@ export class AuthController {
         }
       );
 
-      if (res.resetPassword) {
-        return response.status(403).json({message: '초기화된 비밀번호입니다. 비밀번호를 변경하세요', role: res.user.role});
-      } else {
-        return response.status(200).json({message: '로그인 성공', role: res.user.role});
-      }
+      return response.status(200).json({message: '로그인 성공', role: payload.role});
     } catch(error) {
       return response.redirect(this.configService.get<string>('FRONT_URL') + 'auth/oauth-signup');
     }

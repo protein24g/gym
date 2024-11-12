@@ -2,7 +2,6 @@ import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Branch } from './entities/branch.entity';
 import { Repository } from 'typeorm';
-import { BranchDTO } from './dto/branch.dto';
 
 @Injectable()
 export class BranchService {
@@ -11,7 +10,22 @@ export class BranchService {
     private readonly branchRepository: Repository<Branch>,
   ) {}
 
-  async findAll(): Promise<BranchDTO[]> {
+  async findAll(): Promise<BranchInfo[]> {
+    const branches = await this.branchRepository.find({order: {id: 'ASC'}, relations: ['manager']});
+    if (!branches) {
+      return;
+    }
+
+    return branches?.map((branch) => ({
+      branchName: branch.name || '',
+      managerName: branch.manager?.name || '공석',
+      email: branch.manager?.email || '',
+      telNumber: branch.manager?.telNumber || '',
+      address: `${branch.address} ${branch.addressDetail || ''}`.trim(),
+    }));
+  }
+
+  async findBranchesForSignup(): Promise<BranchListForSignupResponse[]> {
     const response = await this.branchRepository.find();
 
     return response.map((branch) => {

@@ -45,6 +45,9 @@ export class User {
   @JoinColumn()
   branch: Branch;
 
+  @OneToOne(() => Branch, branch => branch.manager)
+  managerBranch: Branch;
+
   @OneToOne(() => Trainer, trainer => trainer.user, {cascade: true, onDelete: 'SET NULL', nullable: true})
   trainer: Trainer;
 

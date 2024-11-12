@@ -69,14 +69,9 @@ export class TrainerController {
   })
   @ApiOkResponse({description: '트레이너 목록 조회 성공'})
   @ApiNotFoundResponse({description: '존재하지 않는 트레이너'})
-  async findAll(
-    @Req() request: Request,
-    @Query('page') page: string,
-    @Query('size') size: string,
-    @Query('keyword') keyword?: string | null
-  ) {
+  async findAll(@Req() request: Request) {
     const user = request.user as AuthPayload;
-    return await this.trainerService.findAll(user, page, size, keyword);
+    return await this.trainerService.findAll(user);
   }
 
   @Get('users')

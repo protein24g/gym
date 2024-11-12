@@ -90,7 +90,7 @@ const SignUpPage: FC = () => {
   useEffect(() => {
     const findAllBranches = async () => {
       try {
-        const response = await axios.get<Branch[]>('http://localhost:3000/api/branches');
+        const response = await axios.get<Branch[]>('http://localhost:3000/api/branches/signup');
         setBranchList(response.data); // 상태에 배열 저장
       } catch (error) {
         alert('지점 목록을 불러오는 중 오류 발생: ' + error);

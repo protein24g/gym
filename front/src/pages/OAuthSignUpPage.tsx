@@ -30,7 +30,7 @@ const OAuthSignUpPage: FC = () => {
 
     const findAllBranches = async () => {
       try {
-        const response = await axios.get<Branch[]>('http://localhost:3000/api/branches');
+        const response = await axios.get<Branch[]>('http://localhost:3000/api/branches/signup');
         setBranchList(response.data); // 상태에 배열 저장
 
         setIsLoading(false);

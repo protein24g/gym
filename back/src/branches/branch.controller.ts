@@ -12,4 +12,10 @@ export class BranchController {
   async findAll() {
     return await this.branchService.findAll();
   }
+
+  @Get('signup')
+  @ApiOperation({ summary: '가입 시 사용할 지점 리스트 조회' })
+  async findBranchesForSignup() {
+    return await this.branchService.findBranchesForSignup();  // 가입 시 필요한 지점 리스트 반환
+  }
 }
