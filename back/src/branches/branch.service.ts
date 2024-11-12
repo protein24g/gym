@@ -32,7 +32,9 @@ export class BranchService {
       .leftJoinAndSelect('branch.users', 'user')
       .select('branch.name', 'name')
       .addSelect('COUNT(user.id)', 'count')
+      .where('user.role = :role', { role: 'ROLES_USER' })
       .groupBy('branch.id')
+      .orderBy('branch.id', 'ASC')
       .getRawMany();
   
     return branches.map((branch) => ({
