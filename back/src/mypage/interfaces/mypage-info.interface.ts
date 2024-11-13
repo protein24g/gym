@@ -8,7 +8,7 @@ export interface MyPageInfo {
   birth: string;
   createAt: Date;
   role: RoleType;
-  branchName: string;
+  branchName: string | null;
   ptTrainerId?: number;
   profileImageUrl?: string | null;
 }

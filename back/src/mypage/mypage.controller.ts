@@ -30,4 +30,13 @@ export class MypageController {
     const user = request.user as AuthPayload;
     return await this.mypageService.getMyProfileImage(user.userId);
   }
+
+  @Get('side-profile')
+  @ApiOperation({
+    summary: '사이드바 내에 프로필 조회'
+  })
+  async getSideProfile(@Req() request: Request) {
+    const user = request.user as AuthPayload;
+    return await this.mypageService.getSideProfile(user.userId);
+  }
 }

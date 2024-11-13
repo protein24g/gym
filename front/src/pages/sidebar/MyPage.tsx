@@ -12,7 +12,7 @@ interface MyInfoPayload {
   birth: string;
   createAt: Date;
   role: string;
-  branchName: string;
+  branchName: string | null;
   ptTrainerId?: number;
   profileImageUrl?: string | null;
 }
