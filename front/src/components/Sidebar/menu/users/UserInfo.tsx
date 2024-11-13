@@ -58,7 +58,6 @@ const UserInfo: FC = () => {
         }
       );
       
-      console.log(response);
       if (response.status === 200) {
         alert(response.data.message);
       }

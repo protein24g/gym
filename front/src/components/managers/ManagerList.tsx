@@ -23,7 +23,6 @@ const ManagerList: FC = () => {
   const findAllManagers = async () => {
     try {
       const response = await axios.get('http://localhost:3000/api/branches', {withCredentials: true});
-      console.log(response.data);
       setBranchList(response.data);
       setIsLoading(false);
     } catch (error) {

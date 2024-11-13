@@ -87,7 +87,7 @@ export class TrainerService {
   }
 
   async findAll(payload: AuthPayload): Promise<TrainerPayload[]> {
-    let trainers; // console.log
+    let trainers: Trainer[];
 
     if (payload.role === RoleType.OWNER) {
       trainers = await this.trainerRepository.find({
@@ -108,13 +108,11 @@ export class TrainerService {
   
     return Promise.all(
       trainers.map(async (trainer) => {
-        // user.id로 user 데이터 조회
         const user = await this.userRepository.findOne({
           where: { id: trainer.user.id },
           relations: ['branch', 'profileImage'],
         });
 
-        // profileImageUrl 결정
         const profileImageUrl = user?.profileImage
           ? this.configService.get<string>('BACK_URL') + 'uploads/' + user.profileImage.fileName
           : user?.oAuthProfileUrl || null;
