@@ -4,7 +4,6 @@ import { useState } from 'react';
 import { RecoilRoot } from 'recoil';
 import { SidebarContext } from './context/SidebarContext';
 import Layout from './components/layout/Layout';
-import MyPage from './pages/sidebar/MyPage';
 import SignInPage from './pages/SignInPage';
 import SignUpPage from './pages/SignUpPage';
 import OAuthSignUpPage from './pages/OAuthSignUpPage';
@@ -17,6 +16,7 @@ import UserInfoPage from './pages/sidebar/users/UserInfoPage';
 import TrainersPage from './pages/sidebar/trainers/TrainersPage';
 import StudentsPage from './pages/students/StudentsPage';
 import ManagerCrudPage from './pages/managers/ManagerCrudPage';
+import MyPage from './pages/sidebar/MyPage';
 
 function App() {
   const [isSidebarOpen, setSidebarOpen] = useState<boolean>(true);

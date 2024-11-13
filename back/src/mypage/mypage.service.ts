@@ -1,6 +1,7 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { OAuthType } from 'src/auth/enums/oauth-type.enum';
 import { UserService } from 'src/member/user/user.service';
+import { MyPageInfo } from './interfaces/mypage-info.interface';
 
 @Injectable()
 export class MypageService {
@@ -8,7 +9,34 @@ export class MypageService {
     private readonly userService: UserService,
   ) {}
 
-  async getMyProfile(userId: number): Promise<ProfileInfo> {
+  async getMyProfile(userId: number): Promise<MyPageInfo> {
+    const user = await this.userService.findById(userId);
+    if (!user) {
+      throw new NotFoundException('존재하지 않는 유저');
+    }
+
+    return {
+      id: user.id,
+      email: user.email,
+      name: user.name,
+      telNumber: user.telNumber,
+      birth: user.birth,
+      createAt: user.createdAt,
+      role: user.role,
+      branchName: user.branch.name,
+      profileImageUrl: (user.provider === OAuthType.KAKAO ?
+        user.oAuthProfileUrl
+        :
+        (user.profileImage !== null ?
+          `http://localhost:3000/uploads/${user.profileImage.fileName}`
+          :
+          null
+        )
+      )
+    }
+  }
+
+  async getMyProfileImage(userId: number): Promise<ProfileInfo> {
     const user = await this.userService.findById(userId);
     if (!user) {
       throw new NotFoundException('존재하지 않는 유저');
