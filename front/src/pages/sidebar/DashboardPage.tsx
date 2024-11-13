@@ -1,14 +1,14 @@
-import { FC, useEffect, useState } from "react"
-import Box from "../../components/ui/Box"
-import { FaCheck, FaUsers } from "react-icons/fa"
-import { PiNetwork } from "react-icons/pi"
-import { RiUserSettingsLine } from "react-icons/ri"
+import { FC, useEffect, useState } from "react";
+import Box from "../../components/ui/Box";
+import { FaCheck, FaUsers } from "react-icons/fa";
+import { PiNetwork } from "react-icons/pi";
+import { RiUserSettingsLine } from "react-icons/ri";
 import { XAxis, YAxis, Tooltip, ResponsiveContainer, BarChart, Bar, AreaChart, Area, CartesianGrid } from 'recharts';
-import Loading from "../../components/loading/Loading"
-import axios, { AxiosError } from "axios"
-import { useNavigate } from "react-router-dom"
-import { useRecoilValue } from "recoil"
-import { authState } from "../../recoil/AuthState"
+import Loading from "../../components/loading/Loading";
+import axios, { AxiosError } from "axios";
+import { useNavigate } from "react-router-dom";
+import { useRecoilValue } from "recoil";
+import { authState } from "../../recoil/AuthState";
 
 const DashboardPage: FC = () => {
   const [isLoading, setIsLoading] = useState<boolean>(true);
@@ -45,60 +45,55 @@ const DashboardPage: FC = () => {
       alert(data.message);
       navigate('/auth/signin');
     }
-  }
+  };
 
   useEffect(() => {
     getDashboardSummary();
-  }, [])
+  }, []);
 
   if (isLoading) return <Loading />;
 
   return (
-    <div className="p-4">
-      <div className={`${auth && auth.role === 'ROLES_OWNER' ? 'grid grid-cols-1 md:grid-cols-2 gap-4' : ''}`}>
-        <div className="grid grid-cols-1 sm:grid-cols-2 text-white gap-4">
+    <div className="p-6">
+      <div className={`${auth && auth.role === 'ROLES_OWNER' ? 'grid grid-cols-1 md:grid-cols-2 gap-6' : ''}`}>
+        <div className="grid grid-cols-1 sm:grid-cols-2 text-white gap-6">
           {auth && auth.role === 'ROLES_OWNER' && (
             <Box
-              icon={<PiNetwork className="w-12 h-12 p-2 bg-gray-500 rounded-full" />}
+              icon={<PiNetwork className="w-14 h-14 p-3 bg-gray-600 text-white rounded-full shadow-lg" />}
               count={branchCount}
               describe="지점"
-              textColor="text-gray-500"
-              borderColor="border-gray-500"
+              textColor="text-gray-600"
+              borderColor="border-gray-600"
             />
           )}
           <Box
-            icon={<FaUsers className="w-12 h-12 p-2 bg-blue-500 rounded-full" />}
+            icon={<FaUsers className="w-14 h-14 p-3 bg-blue-600 text-white rounded-full shadow-lg" />}
             count={userCount}
             describe="전체 회원"
-            textColor="text-blue-500"
-            borderColor="border-blue-500"
+            textColor="text-blue-600"
+            borderColor="border-blue-600"
           />
           <Box
-            icon={<RiUserSettingsLine className="w-12 h-12 p-2 bg-blue-500 rounded-full" />}
+            icon={<RiUserSettingsLine className="w-14 h-14 p-3 bg-indigo-600 text-white rounded-full shadow-lg" />}
             count={trainerCount}
             describe="트레이너"
-            textColor="text-blue-500"
-            borderColor="border-blue-500"
+            textColor="text-indigo-600"
+            borderColor="border-indigo-600"
           />
           <Box
-            icon={<FaCheck className="w-12 h-12 p-2 bg-green-500 rounded-full" />}
+            icon={<FaCheck className="w-14 h-14 p-3 bg-green-600 text-white rounded-full shadow-lg" />}
             count={todayAttendanceCount}
             describe="출석"
-            textColor="text-green-500"
-            borderColor="border-green-500"
+            textColor="text-green-600"
+            borderColor="border-green-600"
           />
         </div>
         {(auth && auth.role === 'ROLES_OWNER') && (
-          <div className="bg-white border-2">
-            <h2 className="font-bold p-4 bg-blue-50 border-b-2 text-blue-600">지점별 회원 현황</h2>
-            <div className="bg-white h-60">
+          <div className="bg-white border-2 border-gray-300 rounded-lg shadow-lg">
+            <h2 className="font-bold p-4 bg-blue-100 text-blue-600 rounded-t-lg">지점별 회원 현황</h2>
+            <div className="bg-white h-64 p-4 rounded-b-lg">
               <ResponsiveContainer width='100%' height='100%'>
-                <BarChart data={branchUserCount} margin={{
-                    top: 30,
-                    right: 30,
-                    left: -10,
-                    bottom: 0,
-                  }}>
+                <BarChart data={branchUserCount} margin={{ top: 30, right: 30, left: -10, bottom: 0 }}>
                   <CartesianGrid strokeDasharray="3 3" />
                   <XAxis dataKey="name" />
                   <YAxis />
@@ -108,29 +103,24 @@ const DashboardPage: FC = () => {
               </ResponsiveContainer>
             </div>
           </div>
-        )} 
+        )}
       </div>
-      <div className={`my-4 bg-white border-2 ${(auth && auth.role === 'ROLES_OWNER') ? 'col-span-2' : 'col-span-full'}`}>
-        <h2 className="font-bold p-4 bg-blue-50 border-b-2 text-blue-600">일별 회원 등록 현황</h2>
-        <div className="h-80">
+      <div className={`my-6 bg-white border-2 border-gray-300 rounded-lg shadow-lg ${(auth && auth.role === 'ROLES_OWNER') ? 'col-span-2' : 'col-span-full'}`}>
+        <h2 className="font-bold p-4 bg-blue-100 text-blue-600 rounded-t-lg">일별 회원 등록 현황</h2>
+        <div className="h-80 p-4">
           <ResponsiveContainer width='100%' height='100%'>
-            <AreaChart data={dailyUserRegisters} margin={{
-                top: 30,
-                right: 30,
-                left: -10,
-                bottom: 0,
-              }}>
+            <AreaChart data={dailyUserRegisters} margin={{ top: 30, right: 30, left: -10, bottom: 0 }}>
               <CartesianGrid strokeDasharray="3 3" />
               <XAxis dataKey='name' tick={false} />
               <YAxis />
               <Tooltip />
-              <Area type="monotone" dataKey="count" fill="#4E73DF" dot={{r: 2}}/>
+              <Area type="monotone" dataKey="count" fill="#4E73DF" dot={{r: 4}} />
             </AreaChart>
           </ResponsiveContainer>
         </div>
       </div>
     </div>
-  )
-}
+  );
+};
 
-export default DashboardPage
+export default DashboardPage;

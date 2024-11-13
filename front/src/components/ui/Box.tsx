@@ -10,14 +10,13 @@ interface BoxProps {
 
 const Box: FC<BoxProps> = ({ icon, count, describe, textColor, borderColor }) => {
   return (
-    <div className="flex bg-white">
-      <div className={`border-2 ${borderColor}`}></div>
-      <div className="flex flex-1 justify-between items-center p-4">
-        <div>
-          <p className={`font-bold ${textColor}`}>{describe}</p>
-          <p className="text-black text-2xl font-bold">{count}</p>
-        </div>
-        <div>{icon}</div>
+    <div className={`flex flex-col items-center bg-white rounded-lg border-2 ${borderColor} shadow-lg p-2`}>
+      <div className="w-14 h-42 flex items-center justify-center bg-gray-200 rounded-full mb-4">
+        {icon}
+      </div>
+      <div className="text-center">
+        <p className={`text-sm font-medium ${textColor} mb-1`}>{describe}</p>
+        <p className="text-xl font-semibold text-gray-800">{count}</p>
       </div>
     </div>
   );
