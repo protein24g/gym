@@ -9,6 +9,7 @@ import { User } from './entities/user.entity';
 import { AuthPayload } from 'src/auth/interfaces/auth-payload.interface';
 import { UserInfoPayload } from './interfaces/user-info-payload.interface';
 import { ConfigService } from '@nestjs/config';
+import { UpdateUserDto } from './dto/UpdateUserDto';
 
 @Injectable()
 export class UserService {
@@ -257,7 +258,6 @@ export class UserService {
 
   async findUserById(userId: number): Promise<UserInfoPayload> {
     const user = await this.userRepository.findOne({where: {id: userId}, relations: ['ptTrainer', 'profileImage', 'branch']});
-
     if (!user) {
       throw new NotFoundException('존재하지 않는 유저');
     }
@@ -280,6 +280,15 @@ export class UserService {
         :
         null,
     }
+  }
+
+  async UpdateUserById(userId: number, updateUserDto: UpdateUserDto): Promise<void> {
+    const user = await this.findById(userId);
+    if (!user) {
+      throw new NotFoundException('존재하지 않는 유저');
+    }
+
+    await this.userRepository.update(userId, updateUserDto);
   }
 
   async findById(userId: number): Promise<User> {

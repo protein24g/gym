@@ -1,4 +1,4 @@
-import { Controller, Delete, Get, Param, Query, Req, Res, UseGuards } from '@nestjs/common';
+import { Body, Controller, Delete, Get, Param, Patch, Query, Req, Res, UseGuards } from '@nestjs/common';
 import { UserService } from './user.service';
 import { ApiNotFoundResponse, ApiOkResponse, ApiOperation, ApiTags } from '@nestjs/swagger';
 import { Request, Response } from 'express';
@@ -7,6 +7,7 @@ import { JwtAuthGuard } from 'src/auth/guards/jwt-auth.guard';
 import { RoleGuard } from 'src/auth/roles/guards/role.guard';
 import { RoleType } from 'src/auth/roles/enums/role.type.enum';
 import { Roles } from 'src/auth/roles/decorators/role.decorator';
+import { UpdateUserDto } from './dto/UpdateUserDto';
 
 @Controller('api/users')
 @UseGuards(JwtAuthGuard, RoleGuard)
@@ -36,6 +37,15 @@ export class UserController {
   async findByName(@Param('userId') userId: string, @Res() response: Response) {
     const user = await this.userService.findUserById(parseInt(userId));
     return response.status(200).json({user});
+  }
+
+  @Patch('id/:userId')
+  @Roles(RoleType.OWNER, RoleType.MANAGER, RoleType.TRAINER)
+  @ApiOperation({ summary: '고유 ID로 회원 검색' })
+  @ApiNotFoundResponse({ description: '존재하지 않는 유저' })
+  async UpdateUserById(@Param('userId') userId: string, @Res() response: Response, @Body() updateUserDto: UpdateUserDto) {
+    await this.userService.UpdateUserById(parseInt(userId), updateUserDto);
+    return response.status(200).json({message: '정보 수정 완료'});
   }
 
   @Get('me')
