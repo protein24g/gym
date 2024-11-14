@@ -11,7 +11,7 @@ interface BoxProps {
 const Box: FC<BoxProps> = ({ icon, count, describe, textColor, borderColor }) => {
   return (
     <div className={`flex flex-col items-center bg-white rounded-lg border-2 ${borderColor} shadow-lg p-2`}>
-      <div className="w-14 h-42 flex items-center justify-center bg-gray-200 rounded-full mb-4">
+      <div className="w-14 h-42 flex items-center justify-center flex-1">
         {icon}
       </div>
       <div className="text-center">
