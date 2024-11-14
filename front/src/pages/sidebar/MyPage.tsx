@@ -27,7 +27,6 @@ const MyPage: FC = () => {
     setIsLoading(true); // 데이터 로딩 시작 시 true로 설정
     try {
       const response = await axios.get(`http://localhost:3000/api/mypage`, { withCredentials: true });
-      console.log(response);
       if (response.status === 200) {
         setUserData(response.data);
       }

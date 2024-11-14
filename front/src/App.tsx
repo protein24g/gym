@@ -17,6 +17,7 @@ import TrainersPage from './pages/sidebar/trainers/TrainersPage';
 import StudentsPage from './pages/students/StudentsPage';
 import ManagerCrudPage from './pages/managers/ManagerCrudPage';
 import MyPage from './pages/sidebar/MyPage';
+import AttendanceCheckPage from './pages/attendance/AttendanceCheckPage';
 
 function App() {
   const [isSidebarOpen, setSidebarOpen] = useState<boolean>(true);
@@ -67,6 +68,7 @@ function App() {
               <Route path='oauth-signup' element={<OAuthSignUpPage />} />
               <Route path='oauth-callback' element={<OAuthCallback />} />
             </Route>
+            <Route path='attendance-check' element={<AttendanceCheckPage />}></Route>
             <Route path='*' element={<NotFound />} />
           </Routes>
         </SidebarContext.Provider>

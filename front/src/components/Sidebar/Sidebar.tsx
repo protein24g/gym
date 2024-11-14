@@ -56,7 +56,6 @@ const Sidebar: FC<{isUser: boolean}> = ({isUser}) => {
     try {
       const response = await axios.get('http://localhost:3000/api/mypage/side-profile', {withCredentials: true});
 
-      console.log(response);
       if (response.status === 200) {
         setSideProfile(response.data);
       }

@@ -9,11 +9,11 @@ export class Attendance {
 
   @ManyToOne(() => User , user => user.attendances)
   @JoinColumn({name: 'userId'})
-  user: number;
+  user: User;
 
   @ManyToOne(() => Branch, branch => branch.attendances)
   @JoinColumn({name: 'branchId'})
-  branch: number;
+  branch: Branch;
 
   @CreateDateColumn()
   createAt: Date;
