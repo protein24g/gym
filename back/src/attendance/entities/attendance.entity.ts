@@ -16,5 +16,5 @@ export class Attendance {
   branch: Branch;
 
   @CreateDateColumn()
-  createAt: Date;
+  createdAt: Date;
 }

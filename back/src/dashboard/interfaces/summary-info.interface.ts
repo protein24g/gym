@@ -5,4 +5,5 @@ interface SummaryInfo {
   dailyUserRegisters: { name: string; count: number }[];
   branchCount?: number;
   branchUserCount?: { name: string; count: number }[];
+  userAttendances?: { name: string; count: number }[];
 }

@@ -17,7 +17,7 @@ export class AttendanceService {
     private readonly branchRepository: Repository<Branch>,
   ) {}
 
-  async getUserAttendances(payload: AuthPayload): Promise<Record<string, string | number>[]> {
+  async getUserAttendances(payload: AuthPayload): Promise<{ name: string; count: number; }[] | { branchName: string; data: { name: string; count: number; }[] }[]> {
     // 오늘 날짜 자정
     const now = new Date();
     now.setHours(0, 0, 0, 0);
@@ -89,34 +89,21 @@ export class AttendanceService {
         branchDict[branchName][String(attendance.createdAt.getFullYear()) + String((attendance.createdAt.getMonth() + 1)).padStart(2, '0') + String(attendance.createdAt.getDate()).padStart(2, '0')]++;
       });
 
-      // branchDict를 배열로 변환하여 순서 보장
-      const branchArray = Object.keys(branchDict)
-      .map(branchName => ({ name: branchName, data: branchDict[branchName] }))
-      .sort((a, b) => {
-        const aBranch = parseInt(a.name.replace('호점', '')); // '1호점' -> 1
-        const bBranch = parseInt(b.name.replace('호점', '')); // '2호점' -> 2
-        return aBranch - bBranch; // 호점 순으로 정렬
-      });
+      // dateDict를 { branchName: string; data: { name: string; count: number; }[] }[] 형식으로 변환
+      return Object.keys(branchDict).map((key) => ({
+        branchName: key,
+        data: Object.keys(branchDict[key]).map((dateKey) => ({
+          name: dateKey,
+          count: branchDict[key][dateKey]
+        }))
+      }));
 
-      // dateDict를 Record<string, string | number>[] 형식으로 변환
-      const result = Object.keys(dateDict).map(dateKey => {
-        const row: Record<string, string | number> = { name: dateKey };
-
-        // branchArray를 순서대로 처리하여 각 호점의 출석 데이터를 추가
-        branchArray.forEach(({ name, data }) => {
-          row[name] = data[dateKey] || 0; // 해당 날짜의 출석 수 추가
-        });
-        
-        return row;
-      })
-
-      return result;
     } else {
       res.forEach((user) => {
         dateDict[String(user.createdAt.getFullYear()) + String((user.createdAt.getMonth() + 1)).padStart(2, '0') + String(user.createdAt.getDate()).padStart(2, '0')]++;
       })
 
-      // dateDict를 Record<string, string | number>[] 형식으로 변환
+      // dateDict를 { name: string, count: number }[] 형식으로 변환
       const chartData = Object.keys(dateDict).map((dateKey) => ({
         name: dateKey, // 날짜 (예: '20241015')
         count: dateDict[dateKey], // 해당 날짜의 사용자 수

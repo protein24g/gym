@@ -21,6 +21,7 @@ export class DashboardService {
     await this.trainerService.getTrainerCount(payload),
     await this.attendanceService.getTodayAttendanceCount(payload),
     await this.userService.getDailyUserRegisters(),
+    await this.attendanceService.getUserAttendances(payload),
   ];
 
   // OWNER 권한인 경우에만 branchCount를 추가
@@ -29,12 +30,13 @@ export class DashboardService {
     res.push(await this.branchService.getBranchUserCount());
   }
 
-  const [userCount, trainerCount, todayAttendanceCount, dailyUserRegisters, branchCount, branchUserCount] = res;
+  const [userCount, trainerCount, todayAttendanceCount, dailyUserRegisters, userAttendances, branchCount, branchUserCount] = res;
   const summaryInfo: SummaryInfo = {
     userCount: userCount as number,
     trainerCount: trainerCount as number,
     todayAttendanceCount: todayAttendanceCount as number,
     dailyUserRegisters: dailyUserRegisters as { name: string; count: number }[],
+    userAttendances: userAttendances as { name: string; count: number }[]
   };
 
   // OWNER 권한일 때만 branchCount 포함

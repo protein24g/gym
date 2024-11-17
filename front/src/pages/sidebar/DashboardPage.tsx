@@ -3,7 +3,7 @@ import Box from "../../components/ui/Box";
 import { FaCheck, FaUsers } from "react-icons/fa";
 import { PiNetwork } from "react-icons/pi";
 import { RiUserSettingsLine } from "react-icons/ri";
-import { XAxis, YAxis, Tooltip, ResponsiveContainer, BarChart, Bar, AreaChart, Area, CartesianGrid } from 'recharts';
+import { XAxis, YAxis, Tooltip, ResponsiveContainer, BarChart, Bar, AreaChart, Area, CartesianGrid, Legend } from 'recharts';
 import Loading from "../../components/loading/Loading";
 import axios, { AxiosError } from "axios";
 import { useNavigate } from "react-router-dom";
@@ -21,6 +21,7 @@ const DashboardPage: FC = () => {
   const [todayAttendanceCount, setTodayAttendanceCount] = useState<number>(0);
   const [dailyUserRegisters, setDailyUserRegisters] = useState<{name: string, count: number}[]>();
   const [branchUserCount, setBranchUserCount] = useState<{name: string, count: number}[]>();
+  const [userAttendancesCount, setUserAttendancesCount] = useState<Record<string, string | number>[]>();
 
   const navigate = useNavigate();
 
@@ -35,6 +36,7 @@ const DashboardPage: FC = () => {
         setTodayAttendanceCount(response.data.todayAttendanceCount);
         setDailyUserRegisters(response.data.dailyUserRegisters);
         setBranchUserCount(response.data.branchUserCount);
+        setUserAttendancesCount(response.data.userAttendances);
         
         setIsLoading(false);
       }
@@ -88,10 +90,12 @@ const DashboardPage: FC = () => {
             borderColor="border-green-600"
           />
         </div>
-        {auth && auth.role === 'ROLES_OWNER' ?
-          <div className="bg-white border-2 border-gray-300 rounded-lg shadow-lg">
-            <h2 className="font-bold p-4 bg-slate-100 text-blue-600 text-xl rounded-t-lg">지점별 회원 현황</h2>
-            <div className="h-72 p-4">
+        <div className="bg-white border-2 border-gray-300 rounded-lg shadow-lg">
+          <p className="font-bold p-4 bg-slate-100 text-blue-600 text-xl rounded-t-lg">
+            {auth && auth.role === 'ROLES_OWNER' ? '지점별 회원 현황' : '출석 현황'}
+          </p>
+          <div className="h-72 p-4">
+            {auth && auth.role === 'ROLES_OWNER' ? (
               <ResponsiveContainer width='100%' height='100%'>
                 <BarChart data={branchUserCount} margin={{ top: 30, right: 30, left: -10, bottom: 0 }}>
                   <CartesianGrid strokeDasharray="3 3" />
@@ -101,16 +105,19 @@ const DashboardPage: FC = () => {
                   <Bar dataKey="count" fill="#4E73DF" />
                 </BarChart>
               </ResponsiveContainer>
-            </div>
+            ) : (
+              <ResponsiveContainer width='100%' height='100%'>
+                <AreaChart data={userAttendancesCount} margin={{ top: 30, right: 30, left: -10, bottom: 0 }}>
+                  <CartesianGrid strokeDasharray="3 3" />
+                  <XAxis dataKey='name' tick={false} />
+                  <YAxis />
+                  <Tooltip />
+                  <Area key='name' type="monotone" dataKey='count' fill="#4E73DF" dot={{r: 3}} />
+                </AreaChart>
+              </ResponsiveContainer>
+            )}
           </div>
-          :
-          <div className='bg-white border-2 border-gray-300 rounded-lg shadow-lg'>
-            <h2 className="font-bold p-4 bg-slate-100 text-blue-600 text-xl rounded-t-lg">출석 현황</h2>
-            <div className="h-72 p-4">
-              {/* 출석 그래프 */}
-            </div>
-          </div>
-        }
+        </div>
       </div>
       {auth && auth.role === 'ROLES_OWNER' ? (
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
@@ -131,7 +138,35 @@ const DashboardPage: FC = () => {
           <div className='my-6 bg-white border-2 border-gray-300 rounded-lg shadow-lg'>
             <h2 className="font-bold p-4 bg-slate-100 text-blue-600 text-xl rounded-t-lg">출석 현황</h2>
             <div className="h-72 p-4">
-              {/* 출석 그래프 */}
+            <ResponsiveContainer width="100%" height="100%">
+              <AreaChart data={userAttendancesCount} margin={{ top: 0, right: 30, left: -10, bottom: 0 }}>
+                <CartesianGrid strokeDasharray="3 3" />
+                <XAxis dataKey="name" tick={false} />
+                <YAxis />
+                <Tooltip />
+                <Legend verticalAlign="top" height={36} />
+                {/* 데이터에서 'name' 키를 제외한 나머지 키로 Area 컴포넌트 생성 */}
+                {userAttendancesCount && Object.keys(userAttendancesCount[0])
+                  .filter((key) => key !== "name") // 'name' 제외
+                  .map((key, index) => {
+                    // 호점별로 색상을 지정
+                    const colors = ['#4E73DF', '#1CC88A', '#36B9CC', '#F6C23E', '#E74A3B']; // 색상 배열
+                    const color = colors[index % colors.length]; // 색상 순환
+                    
+                    return (
+                      <Area
+                        key={key} // 고유한 키 설정
+                        type="monotone"
+                        dataKey={key} // dataKey를 점포 이름으로 설정
+                        fill={color} // 각 호점에 고유 색상 적용
+                        stroke={color} // 선 색상도 동일하게 설정
+                        dot={{ r: 3 }} // 점 크기 설정
+                      />
+                    );
+                  })
+                }
+              </AreaChart>
+            </ResponsiveContainer>
             </div>
           </div>
         </div>
