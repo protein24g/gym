@@ -1,4 +1,5 @@
 interface BranchInfo {
+  id: number;
   branchName: string;
   managerName: string;
   email: string;

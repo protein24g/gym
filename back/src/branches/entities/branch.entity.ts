@@ -30,7 +30,7 @@ export class Branch {
   @JoinColumn({name: 'gymId'})
   gym: Gym;
 
-  @OneToMany(() => User, user => user.branch, {cascade: true, onDelete: 'CASCADE'})
+  @OneToMany(() => User, user => user.branch, {cascade: true, onDelete: 'SET NULL'})
   users: User[];
 
   @OneToOne(() => User, user => user.managerBranch, {nullable: true, onDelete: 'SET NULL'})

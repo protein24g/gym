@@ -41,11 +41,11 @@ export class User {
   @Column({ type: 'text', nullable: true})
   oAuthProfileUrl: string;
 
-  @ManyToOne(() => Branch, branch => branch.users)
+  @ManyToOne(() => Branch, branch => branch.users, {onDelete: 'SET NULL'})
   @JoinColumn()
   branch: Branch;
 
-  @OneToOne(() => Branch, branch => branch.manager)
+  @OneToOne(() => Branch, branch => branch.manager, {onDelete: 'SET NULL'})
   managerBranch: Branch;
 
   @OneToOne(() => Trainer, trainer => trainer.user, {cascade: true, onDelete: 'SET NULL', nullable: true})

@@ -5,8 +5,10 @@ import axios, { AxiosError } from "axios";
 import { useNavigate } from "react-router-dom";
 import logoImageWhite1 from "../../assets/logoImage-1-white.png";
 import BusinessCard from "../ui/BusinessCard";
+import { HiMinusCircle } from "react-icons/hi";
 
 interface ManagerInfo {
+  id: number;
   branchName: string;
   managerName: string;
   email: string;
@@ -32,6 +34,21 @@ const ManagerList: FC = () => {
     }
   }
 
+  const deleteBranch = async (id: number) => {
+    if (confirm('삭제 하시겠습니까?')) {
+      alert('yes' + id);
+      try {
+        await axios.delete(`http://localhost:3000/api/branches/${id}`, {withCredentials: true});
+
+        alert('삭제 성공');
+        findAllManagers();
+      } catch (error) {
+        const axiosError = error as AxiosError;
+        alert(axiosError.message);
+      }
+    }
+  }
+
   useEffect(() => {
     findAllManagers();
   }, [])
@@ -44,10 +61,15 @@ const ManagerList: FC = () => {
         <span className="my-2">지점</span>
         <span>({branchList.length}개)</span>
       </div>
-      <div className="flex flex-wrap justify-evenly">
+      <div className="flex relative flex-wrap justify-evenly">
         {branchList.map((branch, index) => (
           <BusinessCard key={index}>
-            <div className="flex flex-1 h-full">
+            <div className="flex relative flex-1 h-full">
+              <div className="absolute right-2 -top-4">
+                <HiMinusCircle
+                  className="text-red-500 w-6 h-6"
+                  onClick={() => deleteBranch(branch.id)} />
+              </div>
               <div className="w-full flex flex-col">
                 <div className="flex-1">
                   <p className="font-bold text-lg">{branch.managerName}</p>

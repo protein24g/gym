@@ -60,7 +60,6 @@ export class ManagerController {
       }
     }
   })
-  @ApiCreatedResponse({description: '매니저 생성 성공'})
   @ApiNotFoundResponse({description: '존재하지 않는 유저'})
   @ApiConflictResponse({description: '자신의 권한은 삭제할 수 없습니다'})
   @ApiConflictResponse({description: '이미 권한이 해지된 유저'})

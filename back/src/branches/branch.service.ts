@@ -17,6 +17,7 @@ export class BranchService {
     }
 
     return branches?.map((branch) => ({
+      id: branch.id,
       branchName: branch.name || '',
       managerName: branch.manager?.name || '공석',
       email: branch.manager?.email || '',
@@ -55,5 +56,10 @@ export class BranchService {
       name: branch.name.split(' ')[1],
       count: parseInt(branch.count, 10),
     }));
+  }
+
+  async delete(id: number) {
+    const branch = await this.branchRepository.findOne({where: {id}, relations: ['manager']});
+    await this.branchRepository.remove(branch);
   }
 }

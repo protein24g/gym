@@ -5,6 +5,7 @@ import { Repository } from 'typeorm';
 import { User } from '../user/entities/user.entity';
 import { AuthPayload } from 'src/auth/interfaces/auth-payload.interface';
 import { RoleType } from 'src/auth/roles/enums/role.type.enum';
+import { BranchService } from 'src/branches/branch.service';
 
 @Injectable()
 export class ManagerService {
