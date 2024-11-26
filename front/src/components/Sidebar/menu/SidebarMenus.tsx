@@ -23,13 +23,6 @@ export const SidebarMenus: SideBarMenuType[] = [
     icon: <MdDashboard className="w-6 h-6"/>,
   },
   {
-    roles: ['ROLES_USER'],
-    key: 'dashboard',
-    name: '메인',
-    path: '/',
-    icon: <MdDashboard className="w-6 h-6"/>,
-  },
-  {
     roles: ['ROLES_OWNER'],
     key: 'managers',
     name: '지점 관리', 

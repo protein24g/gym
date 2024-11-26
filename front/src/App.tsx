@@ -33,7 +33,6 @@ function App() {
           <Routes>
             {role && JSON.parse(role) === "ROLES_USER" ? (
               <Route element={<Layout roles={["ROLES_USER"]} />}>
-                <Route path='/' element={<MyPage />} />
                 <Route path='/my-page' element={<MyPage />} />
               </Route>
             ) : (

@@ -17,7 +17,7 @@ const SignInPage: FC = () => {
   const [password, setPassword] = useState<string>('');
 
   const navigate = useNavigate();
-  const [, setAuth] = useRecoilState(authState);
+  const [auth, setAuth] = useRecoilState(authState);
 
   const signIn = async (e: React.FormEvent<HTMLFormElement>): Promise<void> => {
     e.preventDefault(); // 기본 폼 제출 방지
@@ -35,7 +35,11 @@ const SignInPage: FC = () => {
       if (response.status === 200) {
         setAuth({isAuthenticated: true, role: response.data.role});
         sessionStorage.setItem('expiresAt', JSON.stringify(Date.now() + SESSION_DURATION));
-        navigate('/');
+        if (auth.role === 'ROLES_USER') {
+          navigate('/my-page');
+        } else {
+          navigate('/');
+        }
       }
     } catch (error) {
       if (axios.isAxiosError(error)) {
