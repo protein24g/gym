@@ -17,7 +17,7 @@ export class AttendanceService {
     private readonly branchRepository: Repository<Branch>,
   ) {}
 
-  async getUserAttendances(payload: AuthPayload): Promise<Record<string, string | number>[]> {
+  async getRecentMonthAttendance(payload: AuthPayload): Promise<Record<string, string | number>[]> {
     // 오늘 날짜 자정
     const now = new Date();
     now.setHours(0, 0, 0, 0);

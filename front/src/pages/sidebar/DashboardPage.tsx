@@ -21,7 +21,7 @@ const DashboardPage: FC = () => {
   const [todayAttendanceCount, setTodayAttendanceCount] = useState<number>(0);
   const [dailyUserRegisters, setDailyUserRegisters] = useState<{name: string, count: number}[]>();
   const [branchUserCount, setBranchUserCount] = useState<{name: string, count: number}[]>();
-  const [userAttendancesCount, setUserAttendancesCount] = useState<Record<string, string | number>[]>();
+  const [recentMonthAttendance, setRecentMonthAttendance] = useState<Record<string, string | number>[]>();
 
   const navigate = useNavigate();
 
@@ -36,7 +36,7 @@ const DashboardPage: FC = () => {
         setTodayAttendanceCount(response.data.todayAttendanceCount);
         setDailyUserRegisters(response.data.dailyUserRegisters);
         setBranchUserCount(response.data.branchUserCount);
-        setUserAttendancesCount(response.data.userAttendances);
+        setRecentMonthAttendance(response.data.userAttendances);
         
         setIsLoading(false);
       }
@@ -107,7 +107,7 @@ const DashboardPage: FC = () => {
               </ResponsiveContainer>
             ) : (
               <ResponsiveContainer width='100%' height='100%'>
-                <AreaChart data={userAttendancesCount} margin={{ top: 30, right: 30, left: -10, bottom: 0 }}>
+                <AreaChart data={recentMonthAttendance} margin={{ top: 30, right: 30, left: -10, bottom: 0 }}>
                   <CartesianGrid strokeDasharray="3 3" />
                   <XAxis dataKey='name' tick={false} />
                   <YAxis />
@@ -139,14 +139,14 @@ const DashboardPage: FC = () => {
             <h2 className="font-bold p-4 bg-slate-100 text-blue-600 text-xl rounded-t-lg">출석 현황</h2>
             <div className="h-72 p-4">
             <ResponsiveContainer width="100%" height="100%">
-              <AreaChart data={userAttendancesCount} margin={{ top: 0, right: 30, left: -10, bottom: 0 }}>
+              <AreaChart data={recentMonthAttendance} margin={{ top: 0, right: 30, left: -10, bottom: 0 }}>
                 <CartesianGrid strokeDasharray="3 3" />
                 <XAxis dataKey="name" tick={false} />
                 <YAxis />
                 <Tooltip />
                 <Legend verticalAlign="top" height={36} />
                 {/* 데이터에서 'name' 키를 제외한 나머지 키로 Area 컴포넌트 생성 */}
-                {userAttendancesCount && Object.keys(userAttendancesCount[0])
+                {recentMonthAttendance && Object.keys(recentMonthAttendance[0])
                   .filter((key) => key !== "name") // 'name' 제외
                   .map((key, index) => {
                     // 호점별로 색상을 지정

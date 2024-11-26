@@ -21,7 +21,7 @@ export class DashboardService {
     await this.trainerService.getTrainerCount(payload),
     await this.attendanceService.getTodayAttendanceCount(payload),
     await this.userService.getDailyUserRegisters(),
-    await this.attendanceService.getUserAttendances(payload),
+    await this.attendanceService.getRecentMonthAttendance(payload),
   ];
 
   // OWNER 권한인 경우에만 branchCount를 추가
