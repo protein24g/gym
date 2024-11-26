@@ -3,24 +3,28 @@ import Card from "../../../ui/Card";
 import axios, { AxiosError } from "axios";
 import { useNavigate, useParams } from "react-router-dom";
 import Loading from "../../../loading/Loading";
+import { IoIosSettings } from "react-icons/io";
+import { MdOutlineMailOutline, MdPhoneIphone } from "react-icons/md";
+import { LiaBirthdayCakeSolid } from "react-icons/lia";
 
 interface UserInfoPayload {
-  email: string | null;
+  id: number;
+  email: string;
   name: string;
   telNumber: string;
   birth: string;
   createAt: Date;
   role: string;
-  branchId: number;
-  branchName: string;
-  profileImageUrl: string | null;
+  branchName: string | null;
+  ptTrainerId?: number;
+  profileImageUrl?: string | null;
 }
 
 const UserInfo: FC = () => {
   const [isLoading, setIsLoading] = useState<boolean>(true);
   const navigate = useNavigate();
   const param = useParams();
-  const [userData, setUserData] = useState<UserInfoPayload>();
+  const [userData, setUserData] = useState<UserInfoPayload | null>(null); // 초기 상태를 null로 설정
   const [isEditing, setIsEditing] = useState<boolean>(false);
 
   const findUserByUserId = async () => {
@@ -75,77 +79,138 @@ const UserInfo: FC = () => {
 
   if (isLoading) return <Loading />;
 
+  if (!userData) return <div>유저 데이터를 찾을 수 없습니다.</div>; // 데이터가 없을 경우 안내 메시지 표시
+
   return (
     <Card>
-      {userData && (
-        <div className="flex flex-col items-center p-6">
+      <div className="flex flex-col items-center relative">
+        {/* 프로필 이미지 */}
+        <div className="mb-6">
           {userData.profileImageUrl ? (
-            <img src={userData.profileImageUrl} alt="Profile" className="w-24 h-24 rounded-full mb-4 shadow-md object-cover" />
+            <img
+              src={userData.profileImageUrl}
+              alt="Profile"
+              className="w-32 h-32 rounded-full shadow-lg object-cover"
+            />
           ) : (
-            <svg className="w-24 h-24 text-gray-400 p-2 my-2 bg-gray-300 rounded-full -left-1" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><path fillRule="evenodd" d="M10 9a3 3 0 100-6 3 3 0 000 6zm-7 9a7 7 0 1114 0H3z" clipRule="evenodd"></path></svg>
+            <svg
+              className="w-28 h-28 rounded-full bg-gray-300 text-gray-200 mx-auto"
+              fill="currentColor"
+              viewBox="2 2 16 14"
+              xmlns="http://www.w3.org/2000/svg"
+            >
+              <path
+                fillRule="evenodd"
+                d="M10 9a3 3 0 100-6 3 3 0 000 6zm-7 9a7 7 0 1114 0H3z"
+                clipRule="evenodd"
+              />
+            </svg>
           )}
-          {isEditing ? (
-            <form onSubmit={handleSaveChanges} className="w-full flex flex-col items-center">
-              <h2 className="font-extrabold text-center mb-2">
-                <span className="text-2xl">{userData.name}</span>
-                <span>({userData.role.split('_')[1]})</span>
-              </h2>
-              <p className="text-xl font-semibold text-blue-700 mb-4">{userData.branchName}</p>
-              
+        </div>
+
+        {/* 프로필 정보 또는 수정 폼 */}
+        {isEditing ? (
+          <form onSubmit={handleSaveChanges} className="w-full flex flex-col items-center">
+            <h2 className="font-extrabold text-2xl text-center mb-4">
+              <span>{userData.name}</span>
+              <span className="text-sm text-gray-500"> ({userData.role.split('_')[1]})</span>
+            </h2>
+            <p className="text-xl font-semibold text-blue-700 mb-6">{userData.branchName}</p>
+
+            {/* 이메일 */}
+            <div className="w-full sm:w-3/4 lg:w-1/2 mb-5">
+              <label className="block text-gray-700 font-semibold mb-2">이메일</label>
               <input
                 type="email"
                 value={userData.email ?? ""}
                 onChange={(e) => setUserData({ ...userData, email: e.target.value })}
-                className="py-2 p-2 w-1/2 border-b font-extrabold text-center"
+                className="py-2 px-4 w-full border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
                 placeholder="이메일"
               />
+            </div>
+
+            {/* 전화번호 */}
+            <div className="w-full sm:w-3/4 lg:w-1/2 mb-5">
+              <label className="block text-gray-700 font-semibold mb-2">전화번호</label>
               <input
                 type="text"
                 value={userData.telNumber}
                 onChange={(e) => setUserData({ ...userData, telNumber: e.target.value })}
-                className="py-2 p-2 w-1/2 border-b font-extrabold text-center"
+                className="py-2 px-4 w-full border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
                 placeholder="전화번호"
               />
+            </div>
+
+            {/* 생년월일 */}
+            <div className="w-full sm:w-3/4 lg:w-1/2 mb-8">
+              <label className="block text-gray-700 font-semibold mb-2">생년월일</label>
               <input
                 type="text"
                 value={userData.birth}
                 onChange={(e) => setUserData({ ...userData, birth: e.target.value })}
-                className="py-2 p-2 w-1/2 border-b font-extrabold text-center"
+                className="py-2 px-4 w-full border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
                 placeholder="생년월일"
               />
-              <div className="flex justify-between w-full mt-4">
-                <button type="submit" className="p-2 bg-blue-500 text-white rounded w-1/2 mr-2 font-semibold hover:bg-blue-600">
-                  수정 저장
-                </button>
-                <button
-                  type="button"
-                  onClick={() => setIsEditing(false)}
-                  className="p-2 bg-gray-400 text-white rounded w-1/2 font-semibold hover:bg-gray-500"
-                >
-                  수정 취소
-                </button>
-              </div>
-            </form>
-          ) : (
-            <>
-              <h2 className="font-extrabold text-center mb-2">
-                <span className="text-2xl">{userData.name}</span>
-                <span>({userData.role.split('_')[1]})</span>
-              </h2>
-              <p className="text-xl font-semibold text-blue-700 mb-4">{userData.branchName}</p>
-              <p className="text-sm text-gray-600">{userData.email ?? "이메일 없음"}</p>
-              <p className="text-sm text-gray-600">{userData.telNumber}</p>
-              <p className="text-sm text-gray-600">{userData.birth}</p>
+            </div>
+
+            {/* 수정/취소 버튼 */}
+            <div className="flex flex-col sm:flex-row justify-center w-full gap-4">
               <button
-                onClick={() => setIsEditing(true)}
-                className="mt-4 p-3 bg-blue-500 text-white rounded w-3/4 font-semibold hover:bg-blue-600"
+                type="submit"
+                className="w-full sm:w-1/2 p-3 bg-blue-500 text-white rounded-lg font-semibold hover:bg-blue-600 transition duration-200"
               >
-                수정하기
+                저장
               </button>
-            </>
-          )}
-        </div>
-      )}
+              <button
+                type="button"
+                onClick={() => setIsEditing(false)}
+                className="w-full sm:w-1/2 p-3 bg-gray-400 text-white rounded-lg font-semibold hover:bg-gray-500 transition duration-200"
+              >
+                취소
+              </button>
+            </div>
+          </form>
+        ) : (
+          <>
+            <button
+              onClick={() => setIsEditing(true)}
+              className="absolute right-0"
+            >
+              <IoIosSettings className="w-8 h-8" />
+            </button>
+            {/* 프로필 정보 출력 */}
+            <h2 className="font-extrabold text-2xl text-center mb-4">
+              <span>{userData.name}</span>
+              <span className="text-sm text-gray-500"> ({userData.role.split('_')[1]})</span>
+            </h2>
+            <p className="text-xl font-semibold text-blue-700 mb-6">{userData.branchName}</p>
+
+            {/* 이메일 */}
+            <div className="w-full sm:w-3/4 lg:w-1/2 mb-4">
+              <p className="text-sm text-gray-600 flex items-center">
+                <MdOutlineMailOutline className="w-5 h-5 text-blue-500 mr-2" />
+                {userData.email ?? "이메일 없음"}
+              </p>
+            </div>
+
+            {/* 전화번호 */}
+            <div className="w-full sm:w-3/4 lg:w-1/2 mb-4">
+              <p className="text-sm text-gray-600 flex items-center">
+                <MdPhoneIphone className="w-5 h-5 text-blue-500 mr-2" />
+                {userData.telNumber}
+              </p>
+            </div>
+
+            {/* 생년월일 */}
+            <div className="w-full sm:w-3/4 lg:w-1/2 mb-4">
+              <p className="text-sm text-gray-600 flex items-center">
+                <LiaBirthdayCakeSolid className="w-5 h-5 text-blue-500 mr-2" />
+                {userData.birth}
+              </p>
+            </div>
+          </>
+        )}
+      </div>
     </Card>
   );
 };

@@ -174,14 +174,14 @@ const MyPage: FC = () => {
                   type="submit"
                   className="w-full sm:w-1/2 p-3 bg-blue-500 text-white rounded-lg font-semibold hover:bg-blue-600 transition duration-200"
                 >
-                  수정 저장
+                  저장
                 </button>
                 <button
                   type="button"
                   onClick={() => setIsEditing(false)}
                   className="w-full sm:w-1/2 p-3 bg-gray-400 text-white rounded-lg font-semibold hover:bg-gray-500 transition duration-200"
                 >
-                  수정 취소
+                  취소
                 </button>
               </div>
             </form>
