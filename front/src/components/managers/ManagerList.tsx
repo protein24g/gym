@@ -64,34 +64,45 @@ const ManagerList: FC = () => {
         <span className="my-2">지점</span>
         <span>({branchList.length}개)</span>
       </div>
-      <div className="flex relative flex-wrap justify-evenly">
+      <div className="flex flex-wrap justify-evenly">
         {branchList.map((branch) => (
-          <div
-            key={branch.id}
-            onClick={() => {setSelectedBranch(branch); setIsDialogOpen(true)}}
-            className="m-4 p-6 pr-0 bg-white shadow-[0px_0px_20px_10px_rgba(0,0,0,0.1)] w-80 min-w-sm h-44 border hover:border-gray-500 cursor-pointer"
-          >
-            <div className="flex relative flex-1 h-full">
-              <div className="absolute right-2 -top-4">
-                <HiMinusCircle
-                  className="text-red-500 w-6 h-6"
-                  onClick={() => {deleteBranch(branch.id)}}
-                />
-              </div>
-              <div className="w-full flex flex-col">
-                <div className="flex-1">
-                  <p className="font-bold text-lg">{branch.managerName}</p>
-                  <p className="text-xs">{branch.branchName}</p>
+          <div className="group relative">
+            <div
+              key={branch.id}
+              onClick={() => {setSelectedBranch(branch); setIsDialogOpen(true)}}
+              className="m-4 p-6 pr-0 bg-white shadow-[0px_0px_20px_10px_rgba(0,0,0,0.1)] w-96 h-52 min-w-sm border hover:border-gray-500 cursor-pointer"
+            >
+              <div className="flex flex-1 h-full">
+                <div className="w-full flex flex-col text-xs gap-4">
+                  <div>
+                    <p>점장</p>
+                    <p className="font-bold text-lg">{branch.managerName}</p>
+                  </div>
+                  <div>
+                    <p>
+                      <span className="font-bold">Tel. </span>
+                      <span>{branch.telNumber.replace(/(\d{3})(\d{4})(\d{4})/, '$1-$2-$3')}</span>
+                    </p>
+                    <p>
+                      <span className="font-bold">Email. </span>
+                      <span>{branch.email}</span>
+                    </p>
+                  </div>
+                  <div>
+                    <p className="font-bold">{branch.branchName}</p>
+                    <p>{branch.address}</p>
+                  </div>
                 </div>
-                <div className="text-xs">
-                  <p>{branch.email}</p>
-                  <p>{branch.telNumber}</p>
-                  <p>{branch.address}</p>
+                <div className="w-full h-full flex items-center">
+                  <img src={logoImageWhite1} className="w-full h-full" alt="logo" />
                 </div>
               </div>
-              <div className="w-full h-full flex items-center">
-                <img src={logoImageWhite1} className="w-full h-full" alt="logo" />
-              </div>
+            </div>
+            <div className="absolute right-6 top-6 hidden group-hover:block">
+              <HiMinusCircle
+                className="text-red-500 w-6 h-6 hidden group-hover:block"
+                onClick={() => {deleteBranch(branch.id)}}
+              />
             </div>
           </div>
         ))}

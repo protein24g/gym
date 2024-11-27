@@ -19,7 +19,7 @@ export class UserService {
     private readonly configService: ConfigService,
   ) {}
 
-  async getDailyUserRegisters(): Promise<{ name: string; count: number }[]> {
+  async getRecentMonthUserRegisters(payload: AuthPayload): Promise<{ name: string; count: number }[]> {
     // 오늘 날짜 자정
     const now = new Date();
     now.setHours(0, 0, 0, 0);
@@ -33,13 +33,19 @@ export class UserService {
     const endDate = new Date(now);
     endDate.setHours(23, 59, 59, 999); // 23:59:59로 설정
 
+    const user = await this.findById(payload.userId);
+
     // `startDate`와 `endDate`를 Between으로 사용하여 쿼리 실행
     const res = await this.userRepository.find({
+      relations: ['branch'],
       where: {
         createdAt: Between(startDate, endDate),
-        role: RoleType.USER
+        role: RoleType.USER,
+        ...(payload.role === RoleType.OWNER
+          ? {} // OWNER는 전체 조회
+          : { branch: { id: user.branch.id } }) // MANAGER, TRAINER는 해당 branch 조회
       },
-      order: { id: 'asc'}
+      order: { id: 'asc' }
     });
 
     const dateDict: Record<string, number> = {};

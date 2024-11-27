@@ -20,7 +20,7 @@ export class DashboardService {
     await this.userService.getUserConut(payload),
     await this.trainerService.getTrainerCount(payload),
     await this.attendanceService.getTodayAttendanceCount(payload),
-    await this.userService.getDailyUserRegisters(),
+    await this.userService.getRecentMonthUserRegisters(payload),
     await this.attendanceService.getRecentMonthAttendance(payload),
   ];
 
