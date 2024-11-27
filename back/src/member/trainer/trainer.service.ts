@@ -105,7 +105,10 @@ export class TrainerService {
     if (trainers.length === 0) {
       return;
     }
-  
+
+    // trainers 배열을 studentsCount 기준으로 내림차순 정렬
+    trainers.sort((a, b) => b.ptUsers.length - a.ptUsers.length);
+
     return Promise.all(
       trainers.map(async (trainer) => {
         const user = await this.userRepository.findOne({

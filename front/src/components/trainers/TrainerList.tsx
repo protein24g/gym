@@ -79,7 +79,18 @@ const TrainerList: FC = () => {
                     className="w-16 h-16 rounded-full mr-4"
                   />
                 ) : (
-                  <svg className="w-16 h-16 text-gray-400 p-2 mr-4 bg-gray-300 rounded-full -left-1" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><path fillRule="evenodd" d="M10 9a3 3 0 100-6 3 3 0 000 6zm-7 9a7 7 0 1114 0H3z" clipRule="evenodd"></path></svg>
+                  <svg
+                    className="w-16 h-16 rounded-full bg-gray-300 text-gray-200 mr-4"
+                    fill="currentColor"
+                    viewBox="2 2 16 14"
+                    xmlns="http://www.w3.org/2000/svg"
+                  >
+                    <path
+                      fillRule="evenodd"
+                      d="M10 9a3 3 0 100-6 3 3 0 000 6zm-7 9a7 7 0 1114 0H3z"
+                      clipRule="evenodd"
+                    />
+                  </svg>
                 )}
                 <div>
                   <h3 className="text-xl font-semibold">{trainer.name}</h3>
@@ -90,7 +101,7 @@ const TrainerList: FC = () => {
                 </div>
               </div>
               
-              <p className="text-gray-700">{trainer.introduction}</p>
+              <p className="text-gray-700">{trainer.introduction ? trainer.introduction : '소개글이 없습니다'}</p>
               <div className="mt-4 text-gray-600">
                 <span>수강생: {trainer.studentsCount}</span>
               </div>
