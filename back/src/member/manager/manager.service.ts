@@ -5,7 +5,7 @@ import { Repository } from 'typeorm';
 import { User } from '../user/entities/user.entity';
 import { AuthPayload } from 'src/auth/interfaces/auth-payload.interface';
 import { RoleType } from 'src/auth/roles/enums/role.type.enum';
-import { BranchService } from 'src/branches/branch.service';
+import { Branch } from 'src/branches/entities/branch.entity';
 
 @Injectable()
 export class ManagerService {
@@ -13,6 +13,8 @@ export class ManagerService {
     private readonly userService: UserService,
     @InjectRepository(User)
     private readonly userRepository: Repository<User>,
+    @InjectRepository(Branch)
+    private readonly branchRepository: Repository<Branch>,
   ) {}
 
   async create(payload: AuthPayload, userId: number): Promise<void> {
@@ -49,6 +51,31 @@ export class ManagerService {
       branchName: manager.branch.name,
       address: manager.branch.address + manager.branch.addressDetail
     }));
+  }
+
+  async update(payload: AuthPayload, body: {prevUserId: number, userId: number, address: string}): Promise<void> {
+    const prevUser = await this.userService.findById(body.userId);
+    if (!prevUser) {
+      throw new NotFoundException('존재하지 않는 유저');
+    }
+
+    if (body.userId) {
+      const user = await this.userService.findById(body.userId);
+      if (!user) {
+        throw new NotFoundException('존재하지 않는 유저');
+      }
+  
+      try {
+        if (body.prevUserId !== body.userId) {
+          await this.delete(payload, body.prevUserId);
+        }
+      } catch (error) {
+      } finally {
+        await this.create(payload, body.userId);
+      }
+    }
+
+    await this.branchRepository.update({id: prevUser.branch.id}, {manager: {id: body.userId}, address: body.address});
   }
 
   async delete(payload: AuthPayload, userId: number): Promise<void> {

@@ -1,4 +1,4 @@
-import { Body, Controller, Delete, Get, Post, Req, UseGuards } from '@nestjs/common';
+import { Body, Controller, Delete, Get, Patch, Post, Req, UseGuards } from '@nestjs/common';
 import { ManagerService } from './manager.service';
 import { JwtAuthGuard } from 'src/auth/guards/jwt-auth.guard';
 import { RoleGuard } from 'src/auth/roles/guards/role.guard';
@@ -38,7 +38,6 @@ export class ManagerController {
   }
 
   @Get()
-  @Roles(RoleType.OWNER)
   @ApiOperation({
     summary: '매니저 목록'
   })
@@ -46,6 +45,25 @@ export class ManagerController {
   @ApiNotFoundResponse({description: '존재하지 않는 매니저'})
   async findAll() {
     return await this.managerService.findAll();
+  }
+
+  @Patch()
+  @ApiOperation({
+    summary: '매니저 변경'
+  })
+  @ApiBody({
+    schema: {
+      type: 'object',
+      properties: {
+        prevUserId: { type: 'number', example: '123' },    
+        userId: { type: 'number', example: '456' },
+        address: { type: 'string', example: '대구 달서구' },
+      }
+    }
+  })
+  async update(@Req() request: Request, @Body() body: {prevUserId: number, userId: number, address: string}) {
+    const user = request.user as AuthPayload;
+    await this.managerService.update(user, body);
   }
 
   @Delete()

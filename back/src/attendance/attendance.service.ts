@@ -127,7 +127,12 @@ export class AttendanceService {
   }
 
   async getTodayAttendanceCount(payload: AuthPayload): Promise<number> {
-    return await this.attendanceRepository.count();
+    if (payload.role === RoleType.OWNER) {
+      return await this.attendanceRepository.count();
+    } else {
+      const user = await this.userService.findById(payload.userId);
+      return await this.attendanceRepository.count({where: {branch: {id: user.branch.id}}});
+    }
   }
 
   async checkIn(telNumber: string): Promise<void> {

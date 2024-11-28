@@ -2,6 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Branch } from './entities/branch.entity';
 import { Repository } from 'typeorm';
+import { AuthPayload } from 'src/auth/interfaces/auth-payload.interface';
 
 @Injectable()
 export class BranchService {
@@ -56,6 +57,10 @@ export class BranchService {
       name: branch.name.split(' ')[1],
       count: parseInt(branch.count, 10),
     }));
+  }
+
+  async update(payload: AuthPayload, body: {prevUserId: number, userId: number}) {
+    const branch = await this.branchRepository.findOne({where: {manager: {id: body.userId}}, relations: ['manager']});
   }
 
   async delete(id: number) {

@@ -85,7 +85,7 @@ const DashboardPage: FC = () => {
           <Box
             icon={<FaCheck className="w-14 h-14 p-3 bg-gradient-to-r from-green-600 to-green-400 text-white rounded-xl shadow-lg" />}
             count={todayAttendanceCount}
-            describe="출석"
+            describe="최근 한달 출석 수"
             textColor="text-green-600"
             borderColor="border-green-600"
           />
